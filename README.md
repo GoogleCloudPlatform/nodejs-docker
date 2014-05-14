@@ -1,4 +1,4 @@
 runtime-nodejs-docker-image
 ===========================
 
-Docker image for running nodejs applications on GCP
+See [initial import PR](https://github.com/GoogleCloudPlatform/runtime-nodejs-docker-image/pull/1).
