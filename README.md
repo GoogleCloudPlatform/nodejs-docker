@@ -23,8 +23,7 @@ docker -t myorg/myapp .
 ## Notes
 
 The image assumes that your application:
-- contains a `package.json` file listing your application dependencies.
-- contains a `server.js` file for starting your application.
+- contains a `package.json` file listing dependencies and defining a `main` script for your application.
 - listens on port `8080`
 
 When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
