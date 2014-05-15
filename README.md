@@ -5,7 +5,7 @@ Source for `google/runtime-nodejs` docker image.
 
 ## Description
 
-A [Docker](https://docker.io) base image for running nodejs applications.
+[Docker](https://docker.io) base image for running nodejs applications.
 
 It bundles the latest version of [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
 
