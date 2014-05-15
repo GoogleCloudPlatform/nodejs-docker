@@ -1,4 +1,29 @@
 runtime-nodejs-docker-image
 ===========================
 
-See [initial import PR](https://github.com/GoogleCloudPlatform/runtime-nodejs-docker-image/pull/1).
+Source for `google/runtime-nodejs` docker image.
+
+## Description
+
+[Docker](https://docker.io) base image for running nodejs applications.
+
+It bundles the latest version of [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
+
+## Usage
+
+- Create a Dockerfile in your nodejs application directory with the following content:
+```
+FROM google/runtime-nodejs
+```
+- Run the following command in your application directory:
+```
+docker -t myorg/myapp .
+```
+
+## Notes
+
+The image assumes that your application:
+- contains a `package.json` file listing dependencies and defining a `main` script for your application.
+- listens on port `8080`
+
+When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
