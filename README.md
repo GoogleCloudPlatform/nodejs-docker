@@ -26,4 +26,17 @@ The image assumes that your application:
 - contains a `package.json` file listing dependencies and defining a `main` script for your application.
 - listens on port `8080`
 
+### Example
+```
+{
+    "name": "app",
+    "version": "0.0.0",
+    "description": "a nodejs app",
+    "dependencies": {
+        "googleapis": "0.7.0"
+    },
+    "main": "server.js"
+}
+```
+
 When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
