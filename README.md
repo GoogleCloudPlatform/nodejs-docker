@@ -27,6 +27,7 @@ The image assumes that your application:
 - listens on port `8080`
 
 ### Example
+`package.json`
 ```
 {
     "name": "app",
