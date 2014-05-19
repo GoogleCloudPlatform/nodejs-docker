@@ -23,7 +23,7 @@ docker -t myorg/myapp .
 ## Notes
 
 The image assumes that your application:
-- contains a `package.json` file listing dependencies and defining a `main` script for your application.
+- contains a [`package.json`](https://www.npmjs.org/doc/json.html) file listing dependencies and defining a `main` script for your application.
 - listens on port `8080`
 
 ### Example
