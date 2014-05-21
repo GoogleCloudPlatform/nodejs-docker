@@ -32,16 +32,16 @@ The image assumes that your application:
 
 `package.json`
 
-```
-{
-    "name": "app",
-    "version": "0.0.0",
-    "description": "a nodejs app",
-    "dependencies": {
-        "googleapis": "0.7.0"
-    },
-    "scripts": {"start": "node app.js"}
-}
-```
+
+    {
+        "name": "app",
+        "version": "0.0.0",
+        "description": "a nodejs app",
+        "dependencies": {
+            "googleapis": "0.7.0"
+        },
+        "scripts": {"start": "node app.js"}
+    }
+
 
 When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
