@@ -12,4 +12,5 @@ ONBUILD ADD package.json /app/
 ONBUILD RUN npm install
 ONBUILD ADD . /app
 
+CMD []
 ENTRYPOINT ["/nodejs/bin/npm", "start"]
