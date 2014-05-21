@@ -23,10 +23,13 @@ docker -t myorg/myapp .
 ## Notes
 
 The image assumes that your application:
-- contains a [`package.json`](https://www.npmjs.org/doc/json.html) file listing dependencies and defining a `main` script for your application.
+
+- has a file named [`package.json`](https://www.npmjs.org/doc/json.html) listing its dependencies.
+- has a file named `server.js` as the entrypoint script or define in `package.json` the attribute: `"scripts": {"start": "node <entrypoint_script_js>"}`
 - listens on port `8080`
 
 ### Example
+
 `package.json`
 ```
 {
@@ -36,7 +39,7 @@ The image assumes that your application:
     "dependencies": {
         "googleapis": "0.7.0"
     },
-    "main": "server.js"
+    "scripts": {"start": "node app.js"}
 }
 ```
 
