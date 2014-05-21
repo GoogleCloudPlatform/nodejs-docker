@@ -31,6 +31,7 @@ The image assumes that your application:
 ### Example
 
 `package.json`
+
 ```
 {
     "name": "app",
