@@ -1,15 +1,17 @@
-runtime-nodejs-docker-image
-===========================
+nodejs-docker
+=============
 
-Source for [`google/runtime-nodejs`](https://index.docker.io/u/google/runtime-nodejs/) docker image.
+This repository contains the sources for the following [docker][0] base images:
+- [`google/runtime-nodejs`](#google-runtime-nodejs)
+- [`google/nodejs`](#google-nodejs)
 
-## Description
+## google/runtime-nodejs
 
-[Docker](https://docker.io) base image for easily running nodejs applications.
+[`google/runtime-nodejs`][2] is a [docker][0] base image for easily running [nodejs][3] application.
 
-It is based on [`google/nodejs`](https://index.docker.io/u/google/runtime-nodejs/) base image.
+It is based on [`google/nodejs`](#google-nodejs) base image.
 
-## Usage
+### Usage
 
 - Create a Dockerfile in your nodejs application directory with the following content:
 
@@ -44,3 +46,29 @@ The image assumes that your application:
 
 
 When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
+
+## google/nodejs
+
+[`google/nodejs`][1] is a [docker][0] base image that bundles the latest version of [nodejs][3] and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
+
+### Usage
+
+- Create a Dockerfile in your nodejs application directory with the following content:
+
+        FROM google/nodejs
+        WORKDIR /app
+        ADD package.json /app/
+        RUN npm install
+        ADD . /app
+        
+        CMD []
+        ENTRYPOINT ["/nodejs/bin/npm", "start"]
+
+- Run the following command in your application directory:
+
+        docker build -t my/app .
+
+[0]: https://docker.io
+[1]: https://index.docker.io/u/google/nodejs
+[2]: https://index.docker.io/u/google/runtime-nodejs
+[3]: https://nodejs.org
