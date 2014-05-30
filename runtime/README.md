@@ -1,6 +1,6 @@
-# google/runtime-nodejs
+# google/nodejs-runtime
 
-[`google/runtime-nodejs`](https://index.docker.io/u/google/runtime-nodejs) is a [docker](https://docker.io) base image for easily running [nodejs](https://nodejs.org) application.
+[`google/nodejs-runtime`](https://index.docker.io/u/google/nodejs-runtime) is a [docker](https://docker.io) base image for easily running [nodejs](https://nodejs.org) application.
 
 It is based on [`google/nodejs`](https://index.docker.io/u/google/nodejs) base image.
 
@@ -8,7 +8,7 @@ It is based on [`google/nodejs`](https://index.docker.io/u/google/nodejs) base i
 
 - Create a Dockerfile in your nodejs application directory with the following content:
 
-        FROM google/runtime-nodejs
+        FROM google/nodejs-runtime
 
 - Run the following command in your application directory:
 
@@ -26,15 +26,15 @@ The image assumes that your application:
 
 `package.json`
 
-
     {
-        "name": "app",
-        "version": "0.0.0",
-        "description": "a nodejs app",
-        "dependencies": {
-            "googleapis": "0.7.0"
-        },
-        "scripts": {"start": "node app.js"}
+      "name": "hello-world",
+      "description": "hello world test app",
+      "version": "0.0.1",
+      "private": true,
+      "dependencies": {
+        "express": "3.x"
+      },
+     "scripts": {"start": "node app.js"}
     }
 
 When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
