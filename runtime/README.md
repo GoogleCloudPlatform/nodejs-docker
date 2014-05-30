@@ -12,7 +12,7 @@ It is based on [`google/nodejs`](https://index.docker.io/u/google/nodejs) base i
 
 - Run the following command in your application directory:
 
-        docker -t my/app .
+        docker build -t my/app .
 
 ## Notes
 
