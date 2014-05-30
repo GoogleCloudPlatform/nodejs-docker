@@ -17,7 +17,7 @@ FROM google/runtime-nodejs
 ```
 - Run the following command in your application directory:
 ```
-docker -t myorg/myapp .
+docker build -t myorg/myapp .
 ```
 
 ## Notes
