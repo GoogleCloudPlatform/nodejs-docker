@@ -34,7 +34,7 @@ The image assumes that your application:
       "dependencies": {
         "express": "3.x"
       },
-     "scripts": {"start": "node app.js"}
+      "scripts": {"start": "node app.js"}
     }
 
 When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
