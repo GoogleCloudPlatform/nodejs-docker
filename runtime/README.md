@@ -43,4 +43,4 @@ The image assumes that your application:
       "scripts": {"start": "node app.js"}
     }
 
-When building your application docker image, dependencies listed in `package.json` are fetched and properly cached.
+When building your application docker image, `ONBUILD` triggers fetch the dependencies listed in `package.json` and cache them appropriatly.
