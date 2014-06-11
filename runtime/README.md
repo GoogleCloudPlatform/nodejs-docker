@@ -2,6 +2,8 @@
 
 [`google/nodejs-runtime`](https://index.docker.io/u/google/nodejs-runtime) is a [docker](https://docker.io) base image for easily running [nodejs](https://nodejs.org) application.
 
+It can automatically bundle a nodejs application with its dependencies and set the default entrypoint with no additional Dockerfile instructions.
+
 It is based on [`google/nodejs`](https://index.docker.io/u/google/nodejs) base image.
 
 ## Usage
@@ -12,7 +14,11 @@ It is based on [`google/nodejs`](https://index.docker.io/u/google/nodejs) base i
 
 - Run the following command in your application directory:
 
-        docker build -t my/app .
+        docker build -t app .
+
+## Sample
+  
+See the [sources](/hello) for [`google/nodejs-hello`](https://index.docker.io/u/google/nodejs-hello) based on this image.
 
 ## Notes
 
