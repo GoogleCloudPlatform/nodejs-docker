@@ -7,7 +7,8 @@
 - Create a Dockerfile in your nodejs application directory with the following content:
 
         FROM gcr.io/google_appengine/nodejs
-        
+        ADD package.json npm-shrinkwrap.json* /app/
+        RUN npm install
         ADD . /app
         
 - Run the following command in your application directory:
