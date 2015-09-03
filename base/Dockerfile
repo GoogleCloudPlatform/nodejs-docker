@@ -7,11 +7,11 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.26.1/install.sh
 ENV BASH_ENV /root/.bashrc
 RUN bash -c "nvm install 0.10"
 RUN bash -c "nvm install 0.12"
+ADD nvm_link.sh /bin/
 
-# Use the latest version as the default.  We have to add this to .bashrc since
-# it works by modifying the PATH.
-RUN echo "nvm use 0.12" >>/root/.bashrc
+# Link the latest versions of node and npm into /bin to serve as a default.
+RUN nvm_link.sh 0.12
 
 ENV NODE_ENV production
 WORKDIR /app
-CMD ["bash", "-c", "npm", "start"]
+CMD ["npm", "start"]
