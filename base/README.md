@@ -8,7 +8,7 @@
 
         FROM gcr.io/google_appengine/nodejs
         ADD package.json npm-shrinkwrap.json* /app/
-        RUN npm install
+        RUN npm --unsafe-perm install
         ADD . /app
         
 - Run the following command in your application directory:
