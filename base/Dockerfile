@@ -1,2 +1,10 @@
-FROM google/debian:wheezy
-ONBUILD RUN echo "This image is now deprecated. If you are using the nodejs runtime for Google Managed VMs, please set \"runtime: nodejs\" in your app.yaml.  If you are not using Managed VMs, you should use the official Node Docker image located at: https://hub.docker.com/_/node/.  To learn more, visit http://cloud.google.com/nodejs/."
+# Base Dockerfile for App Engine Node runtime.
+FROM gcr.io/google_appengine/base
+RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl python build-essential git ca-certificates && \
+    apt-get clean && rm /var/lib/apt/lists/*_*
+RUN mkdir /nodejs && curl https://nodejs.org/dist/v0.12.7/node-v0.12.7-linux-x64.tar.gz | tar xvzf - -C /nodejs --strip-components=1
+
+ENV PATH $PATH:/nodejs/bin
+ENV NODE_ENV production
+WORKDIR /app
+CMD ["npm", "start"]
