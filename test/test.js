@@ -5,6 +5,7 @@ const spawn = require('child_process').spawn;
 const exec = require('child_process').exec;
 const request = require('request');
 const util = require('util');
+const uuid = require('node-uuid');
 
 describe('nodejs-docker', () => {
 
@@ -48,8 +49,9 @@ describe('nodejs-docker', () => {
  * Start a docker process for the given test
  */
 function runDocker(tag, port, callback) {
+  let name = uuid.v4();
   let d = spawn('docker', [
-    'run', '-i', '-p', `${port}:${port}`, tag
+    'run', '-i', '--name', name, '-p', `${port}:${port}`, tag
   ]);
 
   d.stdout.on('data', (data) => {
@@ -74,7 +76,7 @@ function runDocker(tag, port, callback) {
   console.log(`host: ${host}`);
   callback(host, (callback) => {
     console.log('stopping docker process...');
-    exec('docker stop $(docker ps -q)', (err, stdout, stderr) => {
+    exec(`docker stop ${name}`, (err, stdout, stderr) => {
       if (err) {
         console.error(`exec error: ${error}`);
       }
