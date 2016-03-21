@@ -1,0 +1,6 @@
+{
+  "name": "nodeversion-test",
+  "engines": {
+    "node": "5.9.0"
+  }
+}

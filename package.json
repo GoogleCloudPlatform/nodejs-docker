@@ -1,0 +1,14 @@
+{
+  "name": "nodejs-docker",
+  "description": "This repository contains the Dockerfile used to build the Node.js runtime image used by Google App Engine",
+  "scripts": {
+    "test": "mocha --timeout 25000",
+    "prepare-test": "find test/* -type d -maxdepth 0 -exec docker build -t {} {} \\;",
+    "build": "docker build -t test/nodejs base"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "node-uuid": "^1.4.7",
+    "request": "^2.69.0"
+  }
+}
