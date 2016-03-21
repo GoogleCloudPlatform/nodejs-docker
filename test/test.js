@@ -83,6 +83,5 @@ function runDocker(tag, port, callback) {
       console.log('docker process stopped.');
       callback();
     });
-    //d.kill(); // this isn't killing the process
   });  
 }
