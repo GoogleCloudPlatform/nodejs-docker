@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var semver = require('semver');
-var http = require('http');
+var https = require('https');
 var exec = require('child_process').exec;
 
 function request(method, host, path, cb) {
@@ -11,7 +11,7 @@ function request(method, host, path, cb) {
     'path': path
   };
 
-  var req = http.request(options, function(res) {
+  var req = https.request(options, function(res) {
     if (res.statusCode != 200) {
       return cb(new Error('Returned status code: ' + res.statusCode));
     }
