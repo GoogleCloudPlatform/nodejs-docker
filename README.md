@@ -6,11 +6,13 @@ This repository contains the source for the `gcr.io/google_appengine/nodejs` [do
 
 This image is based on Debian Jessie and includes [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
 
+For a more thorough walk through of getting started with Node.js on Google Cloud Platform, please see the [documentation and guides](https://cloud.google.com/nodejs).
+
 ## App Engine
 
-To generate a Dockerfile that uses this image as a base, use the [`Cloud SDK`](https://cloud.google.com/sdk/gcloud/reference/preview/app/gen-config):
+To generate a Dockerfile that uses this image as a base, use the [`Cloud SDK`](https://cloud.google.com/sdk/gcloud/reference/beta/app/gen-config). From your existing Node.js application:
 
-    gcloud preview app gen-config --custom 
+    gcloud beta app gen-config --custom
 
 You can then modify the `Dockerfile` and `.dockerignore` as needed for you application.
 
@@ -53,4 +55,3 @@ Node.js is installed with binary packages hosted on a Google-provided mirror.
 ## Licensing
 
 * See [LICENSE.md](LICENSE)
-
