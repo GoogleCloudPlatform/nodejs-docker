@@ -36,8 +36,8 @@ The image includes the `install_node` script that can be used to install a parti
 
         FROM gcr.io/google_appengine/nodejs
 
-        # Install node.js 0.12.7
-        RUN install_node v0.12.7
+        # Install node.js 4.6.1
+        RUN install_node v4.6.1
 
         # Copy application code.
         COPY . /app/
