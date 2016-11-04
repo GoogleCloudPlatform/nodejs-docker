@@ -5,11 +5,13 @@ commandTests:
   expectedOutput: ['/app\n']
 
 - name: 'Node Installation Directory'
-  command: 'which node'
+  command: 'which'
+  flags: ['node']
   expectedOutput: ['/nodejs/bin/node\n']
 
 - name: 'Node Version'
-  command: 'node -v'
+  command: 'node'
+  flags: ['-v']
   expectedOutput: ['v6.9.1\n']
 
 - name: 'Custom Node Version'
