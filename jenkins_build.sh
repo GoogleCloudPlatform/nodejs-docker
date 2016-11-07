@@ -4,9 +4,9 @@ CANDIDATE_NAME=`date +%Y-%m-%d_%H_%M`
 echo "CANDIDATE_NAME:${CANDIDATE_NAME}"
 IMAGE_NAME="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
-envsubst < cloudbuild.yaml.in > cloudbuild.yaml
+envsubst < base/cloudbuild.yaml.in > base/cloudbuild.yaml
 
-gcloud beta container builds submit --config cloudbuild.yaml base/
+gcloud beta container builds submit --config base/cloudbuild.yaml .
 
 if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
   gcloud beta container images add-tag ${IMAGE_NAME} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:staging -q
