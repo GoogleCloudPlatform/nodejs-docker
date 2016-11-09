@@ -26,5 +26,3 @@ fileExistenceTests:
   path: '/node_modules/semver'
   isDirectory: true
   shouldExist: true
-
-fileContentTests:  
