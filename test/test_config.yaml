@@ -22,7 +22,7 @@ commandTests:
   expectedOutput: ['v5.9.0\n']
 
 fileExistenceTests:
-- name: 'Semvar'
+- name: 'semver'
   path: '/node_modules/semver'
   isDirectory: true
   shouldExist: true
