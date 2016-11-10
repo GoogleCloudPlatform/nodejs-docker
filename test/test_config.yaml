@@ -1,0 +1,25 @@
+schemaVersion: "1.0.0"
+commandTests:
+- name: 'Default directory'
+  command: ['pwd']
+  expectedOutput: ['/app\n']
+
+- name: 'Node Installation Directory'
+  command: ['which', 'node']
+  expectedOutput: ['/nodejs/bin/node\n']
+
+- name: 'Node Version'
+  command: ['node', '-v']
+  expectedOutput: ['v6.9.1\n']
+
+- name: 'Custom Node Version'
+  setup: [['install_node', 'v5.9.0']]
+  teardown: [['install_node', 'v6.9.1']]
+  command: ['node', '-v']
+  expectedOutput: ['v5.9.0\n']
+
+fileExistenceTests:
+- name: 'semver'
+  path: '/node_modules/semver'
+  isDirectory: true
+  shouldExist: true

@@ -25,24 +25,6 @@ describe('nodejs-docker', () => {
       }, 3000);
     });
   });
-
-  it('can use a custom nodejs version', (done) => {
-    runDocker('test/nodeversion', 3000, (host, callback) => {
-      setTimeout(() => {
-        request(`http://${host}:3000`, (err, res, body) => {
-          if (err) {
-            console.error(`Error requesting content: ${util.inspect(err)}`);
-            throw err;
-          }
-          assert.equal(body, 'v5.9.0');
-          callback(() => {
-            done();
-          });
-        });
-      }, 3000);
-    });
-  });
-
 });
 
 /**

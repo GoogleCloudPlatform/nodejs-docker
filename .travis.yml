@@ -12,3 +12,6 @@ before_script:
 
 script:
 - npm test
+- curl https://raw.githubusercontent.com/GoogleCloudPlatform/runtimes-common/master/structure_tests/ext_run.sh > ext_run.sh
+- chmod +x ext_run.sh
+- ./ext_run.sh -i test/nodejs -v --config test/test_config.yaml
