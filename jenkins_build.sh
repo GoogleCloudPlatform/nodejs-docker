@@ -2,7 +2,7 @@ RUNTIME_NAME="nodejs"
 
 CANDIDATE_NAME=`date +%Y-%m-%d_%H_%M`
 echo "CANDIDATE_NAME:${CANDIDATE_NAME}"
-IMAGE_NAME="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
+export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
 envsubst < base/cloudbuild.yaml.in > base/cloudbuild.yaml
 
