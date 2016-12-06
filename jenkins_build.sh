@@ -1,3 +1,6 @@
+echo "gcloud --version"
+gcloud --version
+
 RUNTIME_NAME="nodejs"
 
 CANDIDATE_NAME=`date +%Y-%m-%d_%H_%M`
