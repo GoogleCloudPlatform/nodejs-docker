@@ -33,7 +33,7 @@ describe('nodejs-docker', () => {
 function runDocker(tag, port, callback) {
   let name = uuid.v4();
   let d = spawn('docker', [
-    'run', '-i', '--name', name, '-p', `${port}:${port}`, tag
+    'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag
   ]);
 
   d.stdout.on('data', (data) => {
