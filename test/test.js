@@ -13,14 +13,39 @@ describe('nodejs-docker', () => {
     runDocker('test/express', 8080, (host, callback) => {
       setTimeout(() => {
         request(`http://${host}:8080`, (err, res, body) => {
-          if (err) {
-            console.error(`Error requesting content: ${util.inspect(err)}`);
-            throw err;
+          try {
+            if (err) {
+              console.error(`Error requesting content: ${util.inspect(err)}`);
+              throw err;
+            }
+            assert.equal(body, 'Hello World!');
           }
-          assert.equal(body, 'Hello World!');
-          callback(() => {
-            done();
-          });
+          finally {
+            callback(() => {
+              done();
+            });
+          }
+        });
+      }, 3000);
+    });
+  });
+
+  it('should report the correct Node version', (done) => {
+    runDocker('test/nodeversion', 8080, (host, callback) => {
+      setTimeout(() => {
+        request(`http://${host}:8080`, (err, res, body) => {
+          try {
+            if (err) {
+              console.error(`Error requesting content: ${util.inspect(err)}`);
+              throw err;
+            }
+            assert.equal(body, 'v5.9.0');
+          }
+          finally {
+            callback(() => {
+              done();
+            });
+          }
         });
       }, 3000);
     });
