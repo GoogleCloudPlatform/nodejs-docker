@@ -23,3 +23,11 @@ fileExistenceTests:
   path: '/node_modules/semver'
   isDirectory: true
   shouldExist: true
+
+licenseTests:
+- debian: true
+  files: [
+          '/nodejs/lib/node_modules/npm/LICENSE',
+          '/nodejs/LICENSE',
+          '/nodejs/lib/node_modules/npm/node_modules/semver/LICENSE' 
+  ]
