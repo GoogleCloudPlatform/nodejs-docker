@@ -10,7 +10,7 @@ RUN mkdir /nodejs && curl https://nodejs.org/dist/v6.9.2/node-v6.9.2-linux-x64.t
 ENV PATH $PATH:/nodejs/bin
 
 # Install semver, as required by the node version install script.
-RUN npm install https://storage.googleapis.com/gae_node_packages/semver.tar.gz
+RUN npm install semver
 
 # Add the node version install script
 ADD install_node /usr/local/bin/install_node
