@@ -10,7 +10,11 @@ RUN mkdir /nodejs && curl https://nodejs.org/dist/v6.9.2/node-v6.9.2-linux-x64.t
 ENV PATH $PATH:/nodejs/bin
 
 # Install semver, as required by the node version install script.
-RUN npm install semver
+# The use of --unsafe-perm is used here so that the installation is done
+# as the current (root) user.  Otherwise, a failure in running 'npm install'
+# (for example through a failure in a pre-or-post install hook) won't cause
+# npm install to have a non-zero exit code.
+RUN npm install --unsafe-perm semver
 
 # Add the node version install script
 ADD install_node /usr/local/bin/install_node
