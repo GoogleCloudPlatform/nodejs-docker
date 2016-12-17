@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# fail fast
+set -e
+
+# Bail with a help message if the arguments look wrong
+if [ $# != 2 -o "${1}" == "help" ]; then
+  echo "Usage: ${0} <node version number> <install dir>"
+  echo ""
+  echo "Verifies and installs the specified version of Node.js to the"
+  echo "specified directory where the version number is expected to be"
+  echo "of the form 'v#.#.#'."
+  echo ""
+  echo "An exit code of 0 indicates success and a non-zero exit code "
+  echo "indicates failure."
+  exit 1
+fi
+
+
+# The node version to install expected to be of the form 'v#.#.#'
+node_version="${1}"
+
+# The location where the Node will be installed
+install_dir="${2}"
+
+# The name of the Node.js binary to install
+node_filename="node-${node_version}-linux-x64.tar.gz"
+
+# The name of the checksum file used to verify the Node.js binary
+checksum_file='SHASUMS256.txt.asc'
+
+# The temporary location where the downloaded files are stored while being
+# verified.  The script will ensure that this directory is removed before 
+# the script exits.
+script_name=`basename ${0}`
+tmp_dir=`mktemp -d /tmp/${script_name}.XXXXXX` || exit 1
+
+function cleanUp {
+  rm -Rf "${tmp_dir}"
+}
+
+# Make sure we are in the correct place in the fs and it is pristine
+cleanUp
+mkdir -p "${tmp_dir}"
+cd "${tmp_dir}"
+
+# wget is used over curl so that a non-zero exit code is produced if a 
+# 404 error is encountered
+wget https://nodejs.org/dist/${node_version}/${node_filename} \
+  || (cleanUp; exit 1)
+wget https://nodejs.org/dist/${node_version}/${checksum_file} \
+  || (cleanUp; exit 1)
+
+# The verify node script has a non-zero exit code on failure
+/opt/nodejs/verify_node ${node_filename} ${checksum_file} \
+  || (cleanUp; exit 1)
+
+# If the verification is successful, proceed to install Node
+(mkdir "${install_dir}" ) \
+  || (cleanUp; exit 1)
+
+(tar xvzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
+  || (cleanUp; exit 1)
+
+cleanUp
