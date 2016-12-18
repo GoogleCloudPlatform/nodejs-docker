@@ -4,8 +4,8 @@
 set -e
 
 # Bail with a help message if the arguments look wrong
-if [ $# != 4 -o "${1}" == "help" ]; then
-  echo "Usage: ${0} <base url> <node version number> <checksum filename> <install dir>"
+if [ $# != 5 -o "${1}" == "help" ]; then
+  echo "Usage: ${0} <base url> <node version number> <checksum filename> <install dir> <FAIL_ON_ERROR | WARN_ON_ERROR>"
   echo ""
   echo "Verifies and installs the specified version of Node.js to the"
   echo "specified directory where the version number is expected to be"
@@ -14,6 +14,21 @@ if [ $# != 4 -o "${1}" == "help" ]; then
   echo "The Node.js binary with the specified version and the checksum"
   echo "file with the specified name will be downloaded from the specified"
   echo "base url."
+  echo ""
+  echo "The last argument is used to specify the behavior to do if the"
+  echo "verification of the Node.js binary fails."
+  echo ""
+  echo "If the string FAIL_ON_ERROR is specified, this script will exit "
+  echo "with a nonzero exit code if Node.js verification fails.  "
+  echo ""
+  echo "If the string WARN_ON_ERROR is specified, this script will"
+  echo "print a warning message if the verification of the Node.js"
+  echo "binary fails, but will still continue with the installation.  "
+  echo "Note that this script could still return a non-zero exit code"
+  echo "if other aspects of the installation fail."
+  echo ""
+  echo "If neither FAIL_ON_ERROR nor WARN_ON_ERROR is specified, this script"
+  echo "will print an error message and will return with a non-zero exit code."
   echo ""
   echo "Note:  The installation directory will be deleted completely"
   echo "       before the installation takes place."
@@ -44,14 +59,89 @@ install_dir="${4}"
 # The name of the Node.js binary to install
 node_filename="node-${node_version}-linux-x64.tar.gz"
 
+# Determine whether to have the script fail or to issue a warning
+# if node verification fails
+if [ "${5}" == "FAIL_ON_ERROR" ]; then
+  verify_failure_action="fail"
+elif [ "${5}" == "WARN_ON_ERROR" ]; then
+  verify_failure_action="warn"
+else
+  echo "Either FAIL_ON_ERROR or WARN_ON_ERROR must be specified."
+  exit 1
+fi
+
 # The temporary location where the downloaded files are stored while being
 # verified.  The script will ensure that this directory is removed before 
 # the script exits.
 script_name=`basename ${0}`
 tmp_dir=`mktemp -d /tmp/${script_name}.XXXXXX` || exit 1
 
+# Used to issue warnings to the user, directing the message to standard error
+function warn {
+  echo ${1} 1>&2;
+}
+
+# Used to cleanup any temporary directories
 function cleanUp {
   rm -Rf "${tmp_dir}"
+}
+
+# Used to cleanup any temporary directories and immediately exit this
+# script with an error code indicating failure
+function exitAsFailure {
+  cleanUp
+  exit 1
+}
+
+# Used to handle not being able to download the checksum file needed to
+# verify the Node.js binary by either causing the script to fail or just
+# print a warning message depending on the parameters given to this script.
+function handleFailedChecksumDownload {
+  warn "The files required to verify the requested Node.js binary could not be"
+  warn "downloaded."
+  warn ""
+
+  if [ "${verify_failure_action}" == "fail" ]; then
+    warn "Aborting the installation."
+    warn ""
+    exitAsFailure
+  elif [ "${verify_failure_action}" == "warn" ]; then
+    warn "The installation will continue, but it is strongly recommended"
+    warn "that you install a version of Node.js that can been verified."
+    warn ""
+  else
+    warn "Unable to determine the appropriate action to take if"
+    warn "verifying the Node.js binary cannot proceed."
+    warn ""
+    warn "Continuing with the installation."
+    warn ""
+  fi
+}
+
+# Used to handle a failure in verifying the specified Node.js binary
+# by either causing the script to fail or just print a warning message
+# depending on the parameters given to this script.
+function handleFailedVerification {
+  warn "The Node.js binary could not be verified."
+  warn "This means it may not be an officially released Node.js binary"
+  warn "or may have been tampered with."
+  warn ""
+
+  if [ "${verify_failure_action}" == "fail" ]; then
+    warn "Aborting the installation."
+    warn ""
+    exitAsFailure
+  elif [ "${verify_failure_action}" == "warn" ]; then
+    warn "The installation will continue, but it is strongly recommended"
+    warn "that you install a version of Node.js that has been verified."
+    warn ""
+  else
+    warn "Unable to determine the appropriate action to take if"
+    warn "verifying the Node.js binary failed."
+    warn ""
+    warn "Continuing with the installation."
+    warn ""
+  fi
 }
 
 # Make sure we are in the correct place in the fs and it is pristine
@@ -61,21 +151,23 @@ cd "${tmp_dir}"
 
 # wget is used over curl so that a non-zero exit code is produced if a 
 # 404 error is encountered
-wget ${base_url}/${node_filename} || (cleanUp; exit 1)
-wget ${base_url}/${checksum_file} || (cleanUp; exit 1)
+wget ${base_url}/${node_filename} || exitAsFailure
+wget ${base_url}/${checksum_file} || handleFailedChecksumDownload
 
 # The verify node script has a non-zero exit code on failure
 /opt/nodejs/verify_node ${node_filename} ${checksum_file} \
-  || (cleanUp; exit 1)
+  || handleFailedVerification
 
-# If the verification is successful, proceed to install Node
+# Proceed to install Node
 # First, remove the installation directory to prepare for a fresh install
 # Note: The -f option is used with rm so that rm will still succeed if
 #       the installation directory doesn't exist.
-(rm -Rf "${install_dir}") || (cleanUp; exit 1)
-(mkdir -p "${install_dir}") || (cleanUp; exit 1)
+(rm -Rf "${install_dir}") || exitAsFailure
+(mkdir -p "${install_dir}") || exitAsFailure
 
+# Do the actual installation
 (tar xvzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
-  || (cleanUp; exit 1)
+  || exitAsFailure
 
+# Remove any temporary directories
 cleanUp

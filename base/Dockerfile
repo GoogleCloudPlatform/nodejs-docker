@@ -16,7 +16,7 @@ ADD verify_node /opt/nodejs
 ADD verify_install_node /opt/nodejs
 
 # Install the latest LTS release of nodejs
-RUN /opt/nodejs/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs
+RUN /opt/nodejs/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs FAIL_ON_ERROR
 ENV PATH $PATH:/nodejs/bin
 
 # The bootstrapping script should not be used after an initial version

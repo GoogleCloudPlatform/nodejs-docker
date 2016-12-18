@@ -82,9 +82,17 @@ function downloadAndInstallVersion(version, cb) {
   var destPath = '/nodejs';
   var baseUrl = 'https://storage.googleapis.com/gae_node_packages';
   var cmd = '/opt/nodejs/verify_install_node ' + baseUrl +
-    ' ' + version + ' ' + version + '-SHASUMS256.txt.asc ' + destPath;
+    ' ' + version + ' ' + version + '-SHASUMS256.txt.asc ' + destPath +
+    ' WARN_ON_ERROR';
 
-  exec(cmd, cb);
+  exec(cmd, function(error, stdout, stderr) {
+    if (error){
+      return cb(error);
+    }
+    console.error(stderr);
+    console.log(stdout);
+    cb(null, stdout, stderr);
+  });
 }
 
 
