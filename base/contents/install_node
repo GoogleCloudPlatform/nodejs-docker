@@ -85,13 +85,16 @@ function downloadAndInstallVersion(version, cb) {
     ' ' + version + ' ' + version + '-SHASUMS256.txt.asc ' + destPath +
     ' WARN_ON_ERROR';
 
-  exec(cmd, function(error, stdout, stderr) {
-    if (error){
-      return cb(error);
-    }
-    console.error(stderr);
-    console.log(stdout);
-    cb(null, stdout, stderr);
+  var proc = exec(cmd, function(error) {
+    cb(error);
+  });
+
+  proc.stdout.on('data', function(data) {
+    process.stdout.write(data);
+  });
+
+  proc.stderr.on('data', function(data) {
+    process.stderr.write(data);
   });
 }
 
