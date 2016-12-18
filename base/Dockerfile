@@ -6,10 +6,14 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
     apt-get clean && rm /var/lib/apt/lists/*_*
 
 # Add the files necessary for verifying and installing node
+# These files are placed in /opt/nodejs so that they will remain
+# even if the /nodejs directory is removed.  Further, the PATH is
+# is not updated, because these scripts should only be called
+# using an absolute path.
 RUN mkdir /opt/nodejs
 ADD KEYS /opt/nodejs
 ADD verify_node /opt/nodejs
-ADD bootstrap_node /opt/nodejs
+ADD verify_install_node /opt/nodejs
 
 # Install the latest LTS release of nodejs
 RUN /opt/nodejs/bootstrap_node v6.11.1 /nodejs
