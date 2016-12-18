@@ -79,18 +79,12 @@ function verifyBinaryExists(version, cb) {
 
 
 function downloadAndInstallVersion(version, cb) {
-  var downloadUrl = 'https://storage.googleapis.com' +
-    '/gcp-node-packages/node-' + version + '-linux-x64.tar.gz';
   var destPath = '/nodejs';
-  var cmd = 'curl ' + downloadUrl + '| tar xzf - -C ' + destPath +
-    ' --strip-components=1';
+  var baseUrl = 'https://storage.googleapis.com/gae_node_packages';
+  var cmd = '/opt/nodejs/verify_install_node ' + baseUrl +
+    ' ' + version + ' ' + version + '-SHASUMS256.txt.asc ' + destPath;
 
-  exec('rm -rf ' + destPath + '/*', function(err) {
-    if (err) {
-      return cb(err);
-    }
-    exec(cmd, cb);
-  });
+  exec(cmd, cb);
 }
 
 
