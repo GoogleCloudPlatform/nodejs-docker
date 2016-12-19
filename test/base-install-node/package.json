@@ -1,5 +1,5 @@
 {
-  "name": "test-old-node",
+  "name": "base-install-node",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
