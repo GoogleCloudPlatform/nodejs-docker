@@ -151,8 +151,8 @@ cd "${tmp_dir}"
 
 # wget is used over curl so that a non-zero exit code is produced if a 
 # 404 error is encountered
-wget ${base_url}/${node_filename} || exitAsFailure
-wget ${base_url}/${checksum_file} || handleFailedChecksumDownload
+wget -nv ${base_url}/${node_filename} || exitAsFailure
+wget -nv ${base_url}/${checksum_file} || handleFailedChecksumDownload
 
 # The verify node script has a non-zero exit code on failure
 /opt/nodejs/verify_node ${node_filename} ${checksum_file} \
