@@ -55,13 +55,17 @@ describe('nodejs-docker', () => {
 
   verifyInstallNode('install_node installs and verifies deprecated ' +
                     'verifiable Node versions',
-                    'test/old-node', 'v0.8.10');
+                    'test/old-verifiable-node', 'v0.8.10');
   
+  verifyInstallNode('install_node still installs deprecated versions of' +
+                    'Node even if they cannot be verified',
+                    'test/old-unverifiable-node', 'v0.8.7');
+
   verifyInstallNode('install_node installs and verifies verifiable ' +
                     'Node versions',
                     'test/verifiable-node', 'v6.0.0');
 
-  verifyInstallNode('install_node still installs Node even if it cannot ' +
+  verifyInstallNode('install_node still installs Node even if they cannot ' +
                     'be verified',
                     'test/unverifiable-node',
                     'v0.10.7');
