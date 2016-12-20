@@ -55,15 +55,15 @@ describe('nodejs-docker', () => {
                'test/unverifiable-node',
                'v0.10.7');
 
-  //verifyOutput('verify_node has a non-zero exit code if it is not supplied ' +
-  //             'the files it need for verification',
-  //             'test/verify-fail-without-files',
-  //             'Correctly failed verification');
+  verifyOutput('verify_node has a non-zero exit code if it is not supplied ' +
+               'the files it need for verification',
+               'test/verify-fail-without-files',
+               'Correctly failed verification');
 
-  //verifyOutput('verify_node has a non-zero exit code if the checksum ' +
-  //             'check fails',
-  //             'test/verify-fail-on-invalid-data',
-  //             'Correctly failed verification');
+  verifyOutput('verify_node has a non-zero exit code if the checksum ' +
+               'check fails',
+               'test/verify-fail-on-invalid-data',
+               'Correctly failed verification');
 });
 
 /**

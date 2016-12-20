@@ -1,8 +1,17 @@
 FROM test/nodejs
 
+COPY . /app/
+
+WORKDIR /app
+
 # Get the SHASUMS256 file from one version of Node and get the binary
 # from a different version of Node
 RUN wget https://nodejs.org/dist/v6.9.2/SHASUMS256.txt.asc
 RUN wget -O node-v6.9.2-linux-x64.tar.gz https://nodejs.org/dist/v5.0.0/node-v5.0.0-linux-x64.tar.gz
 
-CMD (/opt/nodejs/verify_node node-v6.9.2-linux-x64.tar.gz SHASUMS256.txt.asc) || echo "Correctly failed verification"
+RUN npm install --unsafe-perm || \
+  ((if [ -f npm-debug.log ]; then \
+      cat npm-debug.log; \
+    fi) && false)
+
+CMD npm start
