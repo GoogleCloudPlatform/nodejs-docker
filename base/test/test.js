@@ -9,7 +9,7 @@ const uuid = require('node-uuid');
 
 describe('nodejs-docker', () => {
 
-  function verifyInstallNode(description, dockerImage, expectedVersion) {
+  function verifyOutput(description, dockerImage, expectedOutput) {
     it(description, (done) => {
       runDocker(dockerImage, 8080, (host, callback) => {
         setTimeout(() => {
@@ -19,7 +19,7 @@ describe('nodejs-docker', () => {
                 console.error(`Error requesting content: ${util.inspect(err)}`);
                 throw err;
               }
-              assert.equal(body, expectedVersion);
+              assert.equal(body, expectedOutput);
             }
             finally {
               callback(() => {
@@ -32,43 +32,38 @@ describe('nodejs-docker', () => {
     });
   }
 
-  it('serves traffic on 8080', (done) => {
-    runDocker('test/express', 8080, (host, callback) => {
-      setTimeout(() => {
-        request(`http://${host}:8080`, (err, res, body) => {
-          try {
-            if (err) {
-              console.error(`Error requesting content: ${util.inspect(err)}`);
-              throw err;
-            }
-            assert.equal(body, 'Hello World!');
-          }
-          finally {
-            callback(() => {
-              done();
-            });
-          }
-        });
-      }, 3000);
-    });
-  });
+  verifyOutput('serves traffic on 8080',
+               'test/express',
+               'Hello World!');
 
-  verifyInstallNode('install_node installs and verifies deprecated ' +
-                    'verifiable Node versions',
-                    'test/old-verifiable-node', 'v0.8.10');
+  verifyOutput('install_node installs and verifies deprecated verifiable ' +
+               'Node versions',
+               'test/old-verifiable-node',
+               'v0.8.10');
   
-  verifyInstallNode('install_node still installs deprecated versions of' +
-                    'Node even if they cannot be verified',
-                    'test/old-unverifiable-node', 'v0.8.7');
+  verifyOutput('install_node still installs deprecated versions of ' +
+               'Node even if they cannot be verified ',
+               'test/old-unverifiable-node',
+               'v0.8.7');
 
-  verifyInstallNode('install_node installs and verifies verifiable ' +
-                    'Node versions',
-                    'test/verifiable-node', 'v6.0.0');
+  verifyOutput('install_node installs and verifies verifiable Node versions',
+               'test/verifiable-node',
+               'v6.0.0');
 
-  verifyInstallNode('install_node still installs Node even if they cannot ' +
-                    'be verified',
-                    'test/unverifiable-node',
-                    'v0.10.7');
+  verifyOutput('install_node still installs Node even if it cannot ' +
+               'be verified',
+               'test/unverifiable-node',
+               'v0.10.7');
+
+  //verifyOutput('verify_node has a non-zero exit code if it is not supplied ' +
+  //             'the files it need for verification',
+  //             'test/verify-fail-without-files',
+  //             'Correctly failed verification');
+
+  //verifyOutput('verify_node has a non-zero exit code if the checksum ' +
+  //             'check fails',
+  //             'test/verify-fail-on-invalid-data',
+  //             'Correctly failed verification');
 });
 
 /**
