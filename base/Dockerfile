@@ -10,10 +10,7 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
 # even if the /nodejs directory is removed.  Further, the PATH is
 # is not updated, because these scripts should only be called
 # using an absolute path.
-RUN mkdir /opt/nodejs
-ADD KEYS /opt/nodejs
-ADD verify_node /opt/nodejs
-ADD verify_install_node /opt/nodejs
+ADD KEYS verify_node verify_install_node /opt/nodejs/
 
 # Install the latest LTS release of nodejs
 RUN /opt/nodejs/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs FAIL_ON_ERROR
