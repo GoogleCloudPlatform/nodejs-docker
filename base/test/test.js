@@ -15,16 +15,11 @@ describe('nodejs-docker', () => {
         setTimeout(() => {
           request(`http://${host}:8080`, (err, res, body) => {
             try {
-              if (err) {
-                console.error(`Error requesting content: ${util.inspect(err)}`);
-                throw err;
-              }
+              assert.ifError(err);
               assert.equal(body, expectedOutput);
             }
             finally {
-              callback(() => {
-                done();
-              });
+              callback(done);
             }
           });
         }, 3000);
@@ -101,7 +96,9 @@ function runDocker(tag, port, callback) {
       if (err) {
         console.error(`exec error: ${error}`);
       }
-      console.log('docker process stopped.');
+      else{
+        console.log('docker process stopped.');
+      }
       callback();
     });
   });  
