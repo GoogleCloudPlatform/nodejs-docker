@@ -42,6 +42,12 @@ if [ $# != 5 -o "${1}" == "help" ]; then
   exit 1
 fi
 
+# Use absolute paths for safety
+CURL='/usr/bin/curl'
+MKDIR='/bin/mkdir'
+RM='/bin/rm'
+TAR='/bin/tar'
+
 # The URL of the location from which the specified Node.js file 
 # and checksum file can be downloaded
 base_url="${1}"
@@ -83,7 +89,7 @@ function warn {
 
 # Used to cleanup any temporary directories
 function cleanUp {
-  rm -Rf "${tmp_dir}"
+  ${RM} -Rf "${tmp_dir}"
 }
 
 # Used to cleanup any temporary directories and immediately exit this
@@ -146,13 +152,13 @@ function handleFailedVerification {
 
 # Make sure we are in the correct place in the fs and it is pristine
 cleanUp
-mkdir -p "${tmp_dir}"
+${MKDIR} -p "${tmp_dir}"
 cd "${tmp_dir}"
 
-# wget is used over curl so that a non-zero exit code is produced if a 
+# Use the --fail option so that a non-zero exit code is produced if a 
 # 404 error is encountered
-wget -nv ${base_url}/${node_filename} || exitAsFailure
-wget -nv ${base_url}/${checksum_file} || handleFailedChecksumDownload
+${CURL} --fail -O ${base_url}/${node_filename} || exitAsFailure
+${CURL} --fail -O ${base_url}/${checksum_file} || handleFailedChecksumDownload
 
 # The verify node script has a non-zero exit code on failure
 /opt/nodejs/verify_node ${node_filename} ${checksum_file} \
@@ -162,11 +168,11 @@ wget -nv ${base_url}/${checksum_file} || handleFailedChecksumDownload
 # First, remove the installation directory to prepare for a fresh install
 # Note: The -f option is used with rm so that rm will still succeed if
 #       the installation directory doesn't exist.
-(rm -Rf "${install_dir}") || exitAsFailure
-(mkdir -p "${install_dir}") || exitAsFailure
+(${RM} -Rf "${install_dir}") || exitAsFailure
+(${MKDIR} -p "${install_dir}") || exitAsFailure
 
 # Do the actual installation
-(tar xvzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
+(${TAR} xvzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
   || exitAsFailure
 
 # Remove any temporary directories

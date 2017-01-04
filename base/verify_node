@@ -19,6 +19,7 @@ fi
 GREP='/bin/grep'
 CAT='/bin/cat'
 GPG='/usr/bin/gpg'
+RM='/bin/rm'
 SHASUM='/usr/bin/shasum'
 
 nodejs_file=${1}
@@ -34,7 +35,7 @@ keys_gpg_file=`mktemp /tmp/${script_name}.XXXXXX.keys.gpg`
 
 # Clean up any temporary files created by this script
 function cleanUp {
-  rm -Rf "${keys_gpg_file}"
+  ${RM} -Rf "${keys_gpg_file}"
 }
 
 # The KEYS file needs to be dearmored so that it can be used as a 

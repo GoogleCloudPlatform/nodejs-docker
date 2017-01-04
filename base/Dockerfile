@@ -2,7 +2,7 @@
 FROM gcr.io/google-appengine/debian8
 
 # Install updates and dependencies
-RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl python build-essential git ca-certificates libkrb5-dev imagemagick netbase wget && \
+RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl python build-essential git ca-certificates libkrb5-dev imagemagick netbase && \
     apt-get clean && rm /var/lib/apt/lists/*_*
 
 # Add the files necessary for verifying and installing node
