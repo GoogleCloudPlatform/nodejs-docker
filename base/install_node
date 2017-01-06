@@ -50,6 +50,8 @@ function getSatisfyingVersion(requestedVersion, cb) {
       return cb(err);
     }
     var satisfied = versions.some(function(version) {
+      console.log('Comparing version ' + version + ' to requested ' +
+        requestedVersion);
       if (semver.satisfies(version, requestedVersion)) {
         cb(null, version);
         return true;
