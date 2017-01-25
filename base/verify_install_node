@@ -161,7 +161,7 @@ ${CURL} --fail -O ${base_url}/${node_filename} || exitAsFailure
 ${CURL} --fail -O ${base_url}/${checksum_file} || handleFailedChecksumDownload
 
 # The verify node script has a non-zero exit code on failure
-/opt/nodejs/verify_node ${node_filename} ${checksum_file} \
+/opt/google_appengine/runtime/verify_node ${node_filename} ${checksum_file} \
   || handleFailedVerification
 
 # Proceed to install Node

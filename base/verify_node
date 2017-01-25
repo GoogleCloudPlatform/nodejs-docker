@@ -26,7 +26,7 @@ nodejs_file=${1}
 shasums_file=${2}
 
 # Use the absolute path of the KEYS file for safety
-keys_file='/opt/nodejs/KEYS'
+keys_file='/opt/google_appengine/runtime/KEYS'
 
 # Use a temporary file for the keyring file created from the KEYS file
 # to avoid file access conflicts with concurrent invocations of this script

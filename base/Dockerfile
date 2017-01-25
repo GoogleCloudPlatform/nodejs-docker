@@ -6,14 +6,14 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
     apt-get clean && rm /var/lib/apt/lists/*_*
 
 # Add the files necessary for verifying and installing node
-# These files are placed in /opt/nodejs so that they will remain
-# even if the /nodejs directory is removed.  Further, the PATH is
-# is not updated, because these scripts should only be called
-# using an absolute path.
-ADD KEYS verify_node verify_install_node /opt/nodejs/
+# These files are placed in /opt/google_appengine/runtime so that
+# they will remain even if the /nodejs directory is removed.
+# Further, the PATH is is not updated, because these scripts should
+# only be called using an absolute path.
+ADD KEYS verify_node verify_install_node /opt/google_appengine/runtime/
 
 # Install the latest LTS release of nodejs
-RUN /opt/nodejs/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs FAIL_ON_ERROR
+RUN /opt/google_appengine/runtime/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs FAIL_ON_ERROR
 ENV PATH $PATH:/nodejs/bin
 
 # The bootstrapping script should not be used after an initial version
