@@ -14,13 +14,9 @@ describe('nodejs-docker', () => {
       runDocker(dockerImage, 8080, (host, callback) => {
         setTimeout(() => {
           request(`http://${host}:8080`, (err, res, body) => {
-            try {
-              assert.ifError(err);
-              assert.equal(body, expectedOutput);
-            }
-            finally {
-              callback(done);
-            }
+            assert.ifError(err);
+            assert.equal(body, expectedOutput);
+            callback(done);
           });
         }, 3000);
       });
