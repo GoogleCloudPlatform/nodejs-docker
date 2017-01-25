@@ -89,6 +89,23 @@ function downloadAndInstallVersion(version, cb) {
 
   proc.stdout.pipe(process.stdout);
   proc.stderr.pipe(process.stderr);
+
+  // wrap the callback to use state to ensure the callback
+  // is not called more than once
+  var invoked = false;
+  function guardedCallback(err) {
+    if (invoked) {
+      return;
+    }
+
+    invoked = true;
+    return cb(err);
+  }
+
+  proc.on('error', guardedCallback);
+  proc.on('exit', function(code) {
+    return guardedCallback(null);
+  });
 }
 
 
