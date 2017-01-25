@@ -2,7 +2,7 @@
 
 var semver = require('semver');
 var https = require('https');
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 
 function request(method, host, path, cb) {
   var options = {
@@ -79,23 +79,16 @@ function verifyBinaryExists(version, cb) {
 
 
 function downloadAndInstallVersion(version, cb) {
-  var destPath = '/nodejs';
-  var baseUrl = 'https://storage.googleapis.com/gae_node_packages';
-  var cmd = '/opt/nodejs/verify_install_node ' + baseUrl +
-    ' ' + version + ' ' + version + '-SHASUMS256.txt.asc ' + destPath +
-    ' WARN_ON_ERROR';
+  var proc = spawn('/opt/nodejs/verify_install_node', [
+    'https://storage.googleapis.com/gae_node_packages',
+    version,
+    version + '-SHASUMS256.txt.asc',
+    '/nodejs',
+    'WARN_ON_ERROR'
+  ]);
 
-  var proc = exec(cmd, { maxBuffer: 500*1024 }, function(error) {
-    cb(error);
-  });
-
-  proc.stdout.on('data', function(data) {
-    process.stdout.write(data);
-  });
-
-  proc.stderr.on('data', function(data) {
-    process.stderr.write(data);
-  });
+  proc.stdout.pipe(process.stdout);
+  proc.stderr.pipe(process.stderr);
 }
 
 
