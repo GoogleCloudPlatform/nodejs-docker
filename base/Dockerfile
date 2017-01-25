@@ -10,7 +10,8 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
 # they will remain even if the /nodejs directory is removed.
 # Further, the PATH is is not updated, because these scripts should
 # only be called using an absolute path.
-ADD KEYS verify_node verify_install_node /opt/google_appengine/runtime/
+ADD support/ /opt/google_appengine/runtime/
+RUN ln -s /opt/google_appengine/runtime/install_node /usr/local/bin/install_node
 
 # Install the latest LTS release of nodejs
 RUN /opt/google_appengine/runtime/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs FAIL_ON_ERROR
@@ -31,9 +32,6 @@ ENV PATH $PATH:/opt/yarn/bin
 
 # Install semver as required by the node version install script.
 RUN npm install --unsafe-perm semver
-
-# Add the node version install script
-ADD contents/install_node /usr/local/bin/install_node
 
 # Set common env vars
 ENV NODE_ENV production
