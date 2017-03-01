@@ -1,0 +1,12 @@
+{
+  "files": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true
+  }
+}

@@ -1,0 +1,9 @@
+# Cloud Builder pipeline
+# https://cloud.google.com/container-builder/docs/overview
+
+steps:
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '--tag=${IMAGE}', '--no-cache=true', '.']
+  id: BUILD
+
+images: ['${IMAGE}']
