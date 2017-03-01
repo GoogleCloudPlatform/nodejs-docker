@@ -30,6 +30,8 @@ For other docker hosts, you'll need to create a `Dockerfile` based on this image
 
 By default, the `CMD` is set to `npm start`. You can change this by specifying your own [`CMD` or `ENTRYPOINT`](http://docs.docker.com/engine/reference/builder/#cmd).
 
+For a full example on deploying an application to Google Container Engine, see [this tutorial](https://cloud.google.com/nodejs/tutorials/bookshelf-on-container-engine).
+
 ## Installing a different Node.js version
 
 The image includes the `install_node` script that can be used to install a particular Node.js version. For example:
