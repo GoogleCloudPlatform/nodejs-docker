@@ -31,4 +31,6 @@ cd gen-dockerfile
 cd ..
 
 sed -e "s|\$PROJECT|${PROJECT}|g; s|\$TAG|${TAG}|g" \
-  < nodejs.yaml.in > nodejs.yaml
+  < nodejs.yaml.in > nodejs-${2}.yaml
+
+echo ${2} > nodejs.version

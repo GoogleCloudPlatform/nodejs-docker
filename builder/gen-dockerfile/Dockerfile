@@ -11,4 +11,4 @@ ADD contents/ /opt/nodejs-runtime-builder
 RUN cd /opt/nodejs-runtime-builder && npm install
 RUN cd /opt/nodejs-runtime-builder && ./transpile.sh
 
-ENTRYPOINT ["/opt/nodejs-runtime-builder/src/run.sh", "/workspace"]
+ENTRYPOINT ["/opt/nodejs-runtime-builder/dist/src/run.sh", "/workspace"]

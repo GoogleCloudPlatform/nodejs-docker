@@ -7,8 +7,6 @@ import * as path from 'path';
 import { Setup } from './detect-setup';
 import { Reader, Writer, FsView } from './fsview';
 
-const shellescape = require('shell-escape');
-
 async function genFile(writer: Writer, genFiles: Map<string, string>,
                        name: string, contents: string) {
   await writer.write(name, contents);
@@ -33,7 +31,10 @@ export async function genConfig(config: Setup, appDirWriter: Writer): Promise<Ma
     if (config.nodeVersion) {
       // Let node check to see if it satisfies the version constraint and
       // try to install the correct version if not.
-      var versionSpec = shellescape(config.nodeVersion);
+
+      // TODO: Add proper shell escaping here.  The 'shell-escape' module
+      // appears to have a bug.
+      var versionSpec = config.nodeVersion;
       var installContents = await dataDirReader.read('install-node-version');
       dockerfile += util.format(installContents, versionSpec, versionSpec);
     }
