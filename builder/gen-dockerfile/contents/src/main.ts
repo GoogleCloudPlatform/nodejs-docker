@@ -28,5 +28,5 @@ if (require.main === module) {
       console.error(message);
     }
   };
-  generateConfigs(new FsView('/workspace/'), logger);
+  generateConfigs(new FsView(process.argv[2]), logger);
 }
