@@ -13,6 +13,7 @@
     "@types/js-yaml": "^3.5.29",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
+    "@types/pify": "0.0.28",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.4.1",
     "gulp-typescript": "^3.1.5",
@@ -23,6 +24,7 @@
   "dependencies": {
     "dedent-js": "^1.0.1",
     "js-yaml": "^3.8.1",
+    "pify": "^2.3.0",
     "shell-escape": "^0.2.0"
   }
 }

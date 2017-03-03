@@ -1,6 +1,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as pify from 'pify';
 
 export interface Reader {
   read(path: string): Promise<string>
@@ -23,34 +24,14 @@ export class FsView implements Reader, Writer, Locator {
   }
 
   async read(path: string) {
-    return new Promise<string>((resolve, reject) => {
-      fs.readFile(this.resolvePath(path), 'utf8', (err, data) => {
-        if (err) {
-          reject(err);
-        }
-        else {
-          resolve(data);
-        }
-      });
-    });
+    return pify(fs.readFile)(this.resolvePath(path), 'utf8');
   }
 
   async write(path: string, contents: string) {
-    return new Promise<any>((resolve, reject) => {
-      fs.writeFile(this.resolvePath(path), contents, 'utf8', err => {
-        if (err) {
-          reject(err);
-        }
-        else {
-          resolve(null);
-        }
-      });
-    });
+    return pify(fs.writeFile)(this.resolvePath(path), contents, 'utf8');
   }
 
   async exists(path: string) {
-    return new Promise<boolean>((resolve, reject) => {
-      resolve(fs.existsSync(this.resolvePath(path)));
-    });
+    return fs.existsSync(this.resolvePath(path));
   }
 }
