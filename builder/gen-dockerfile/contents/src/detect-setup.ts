@@ -45,7 +45,8 @@ export async function detectSetup(logger: Logger,
   const config = await loadConfig(fsview);
 
   // If nodejs has been explicitly specified then treat warnings as errors.
-  var warn: (m: string) => void = config && config.runtime ? logger.error : logger.log;
+  var warn: (m: string) => void = config && config.runtime ? logger.error
+                                                           : logger.log;
 
   logger.log('Checking for Node.js.');
 
@@ -120,14 +121,13 @@ export async function detectSetup(logger: Logger,
                     'the "server.js" file were found.');
   }
 
-  var runtime = config && config.runtime === 'custom' ? 'custom' : 'nodejs';
   return {
     gotAppYaml: !!config,
     gotPackageJson: gotPackageJson,
     gotScriptsStart: gotScriptsStart,
     nodeVersion: nodeVersion,
     useYarn: useYarn,
-    runtime: runtime,
+    runtime: config && config.runtime === 'custom' ? 'custom' : 'nodejs',
     env: 'flex'
   };
 }
