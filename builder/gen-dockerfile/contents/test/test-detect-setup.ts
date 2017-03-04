@@ -146,29 +146,29 @@ describe('loadConfig', () => {
 });
 
 describe('detect setup', () => {
-
   function performTest(title: string,
                        fsviewConfig: Array<FakeReadViewConfig>,
                        expectedLogs: Array<string>,
                        expectedErrors: Array<string>,
-                       expectedResult?: Setup,
+                       expectedResult: Setup,
                        expectedThrownErrMessage?: string) {
     it(title, async () => {
       const logger = new RecordedLogger();
       const fsview = new FakeReadView(fsviewConfig);
 
+      var setup;
       try {
-        const setup = await detectSetup(logger, fsview);
-        assert.deepStrictEqual(setup, expectedResult);
+        setup = await detectSetup(logger, fsview);
       }
       catch (e) {
         if (expectedThrownErrMessage) {
           assert.strictEqual(e.message, expectedThrownErrMessage);
         }
         else {
-          assert.fail(e, undefined, 'Unexception error thrown', '!=');
+          assert.ok(!e, `Unexpected error thrown ${e.message}`);
         }
       }
+      assert.deepStrictEqual(setup, expectedResult);
 
       assert.deepStrictEqual(logger.logs, expectedLogs);
       assert.deepStrictEqual(logger.errors, expectedErrors);
@@ -281,6 +281,80 @@ describe('detect setup', () => {
                 gotAppYaml: false,
                 gotPackageJson: true,
                 gotScriptsStart: false,
+                nodeVersion: null,
+                useYarn: true,
+                runtime: 'nodejs',
+                env: 'flex'
+              });
+
+  performTest('should detect without app.yaml, with package.json, ' +
+              'with start script, without yarn.lock, and without server.js',
+              [{
+                path: 'app.yaml',
+                contents: null
+              }, {
+                path: 'package.json',
+                contents: JSON.stringify({
+                  scripts: {
+                    start: 'npm start'
+                  }
+                })
+              }, {
+                path: 'server.js',
+                contents: 'some content'
+              }, {
+                path: 'yarn.lock',
+                contents: null
+              }],
+              [
+                'Checking for Node.js.',
+                'node.js checker: ignoring invalid "engines" field in package.json',
+                'No node version specified.  Please add your node ' +
+                'version, see ' + 
+                'https://docs.npmjs.com/files/package.json#engines'
+              ],
+              [],
+              {
+                gotAppYaml: false,
+                gotPackageJson: true,
+                gotScriptsStart: true,
+                nodeVersion: null,
+                useYarn: false,
+                runtime: 'nodejs',
+                env: 'flex'
+              });
+
+  performTest('should detect without app.yaml, with package.json, ' +
+              'with start script, with yarn.lock, and without server.js',
+              [{
+                path: 'app.yaml',
+                contents: null
+              }, {
+                path: 'package.json',
+                contents: JSON.stringify({
+                  scripts: {
+                    start: 'npm start'
+                  }
+                })
+              }, {
+                path: 'server.js',
+                contents: 'some content'
+              }, {
+                path: 'yarn.lock',
+                contents: 'some content'
+              }],
+              [
+                'Checking for Node.js.',
+                'node.js checker: ignoring invalid "engines" field in package.json',
+                'No node version specified.  Please add your node ' +
+                'version, see ' + 
+                'https://docs.npmjs.com/files/package.json#engines'
+              ],
+              [],
+              {
+                gotAppYaml: false,
+                gotPackageJson: true,
+                gotScriptsStart: true,
                 nodeVersion: null,
                 useYarn: true,
                 runtime: 'nodejs',
