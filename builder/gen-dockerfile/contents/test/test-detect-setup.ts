@@ -146,141 +146,144 @@ describe('loadConfig', () => {
 });
 
 describe('detect setup', () => {
-  it('should fail without app.yaml, package.json, or server.js', async () => {
-    const logger = new RecordedLogger();
-    const fsview = new FakeReadView([{
-      path: 'app.yaml',
-      contents: null
-    }, {
-      path: 'package.json',
-      contents: null
-    }, {
-      path: 'server.js',
-      contents: null
-    }]);
 
-    try {
-      await detectSetup(logger, fsview);
-    }
-    catch(e) {
-      assert.ok(e);
-      assert.strictEqual(e.message,
-                         'node.js checker: Neither "start" in the '+
-                         '"scripts" section of "package.json" nor ' +
-                         'the "server.js" file were found.');
-    }
+  function performTest(title: string,
+                       fsviewConfig: Array<FakeReadViewConfig>,
+                       expectedLogs: Array<string>,
+                       expectedErrors: Array<string>,
+                       expectedResult?: Setup,
+                       expectedThrownErrMessage?: string) {
+    it(title, async () => {
+      const logger = new RecordedLogger();
+      const fsview = new FakeReadView(fsviewConfig);
 
-    assert.deepStrictEqual(logger.logs, [
-      'Checking for Node.js.',
-      'node.js checker: No package.json file.'
-    ]);
-  });
+      try {
+        const setup = await detectSetup(logger, fsview);
+        assert.deepStrictEqual(setup, expectedResult);
+      }
+      catch (e) {
+        if (expectedThrownErrMessage) {
+          assert.strictEqual(e.message, expectedThrownErrMessage);
+        }
+        else {
+          assert.fail(e, undefined, 'Unexception error thrown', '!=');
+        }
+      }
 
-  it('should detect without app.yaml without package.json, ' +
-     'and with server.js', async () => {
-    const logger = new RecordedLogger();
-    const fsview = new FakeReadView([{
-      path: 'app.yaml',
-      contents: null
-    }, {
-      path: 'package.json',
-      contents: null
-    }, {
-      path: 'server.js',
-      contents: 'some content'
-    }]);
+      assert.deepStrictEqual(logger.logs, expectedLogs);
+      assert.deepStrictEqual(logger.errors, expectedErrors);
+    });
+  }
 
-    const setup = await detectSetup(logger, fsview);
-    assert.deepStrictEqual(logger.logs, [
-      'Checking for Node.js.',
-      'node.js checker: No package.json file.'
-    ]);
+  performTest('should fail without app.yaml, package.json, or server.js',
+              [{
+                path: 'app.yaml',
+                contents: null
+              }, {
+                path: 'package.json',
+                contents: null
+              }, {
+                path: 'server.js',
+                contents: null
+              }],
+              [ 'Checking for Node.js.',
+                'node.js checker: No package.json file.' ],
+              [],
+              undefined,
+              'node.js checker: Neither "start" in the '+
+              '"scripts" section of "package.json" nor ' +
+              'the "server.js" file were found.');
 
-    const expectedSetup: Setup = {
-      gotAppYaml: false,
-      gotPackageJson: false,
-      gotScriptsStart: false,
-      nodeVersion: null,
-      useYarn: false,
-      runtime: 'nodejs',
-      env: 'flex'
-    };
-    assert.deepStrictEqual(setup, expectedSetup);
-  });
+  performTest('should detect without app.yaml without package.json, ' +
+              'and with server.js',
+              [{
+                path: 'app.yaml',
+                contents: null
+              }, {
+                path: 'package.json',
+                contents: null
+              }, {
+                path: 'server.js',
+                contents: 'some content'
+              }],
+              [
+                'Checking for Node.js.',
+                'node.js checker: No package.json file.'
+              ],
+              [],
+              {
+                gotAppYaml: false,
+                gotPackageJson: false,
+                gotScriptsStart: false,
+                nodeVersion: null,
+                useYarn: false,
+                runtime: 'nodejs',
+                env: 'flex'
+              });
 
-  it('should detect without app.yaml, with package.json, ' +
-     'without a start script, without yarn.lock, and with server.js', async () => {
-    const logger = new RecordedLogger();
-    const fsview = new FakeReadView([{
-      path: 'app.yaml',
-      contents: null
-    }, {
-      path: 'package.json',
-      contents: '{}'
-    }, {
-      path: 'server.js',
-      contents: 'some content'
-    }, {
-      path: 'yarn.lock',
-      contents: null
-    }]);
+  performTest('should detect without app.yaml, with package.json, ' +
+              'without a start script, without yarn.lock, and with server.js',
+              [{
+                path: 'app.yaml',
+                contents: null
+              }, {
+                path: 'package.json',
+                contents: '{}'
+              }, {
+                path: 'server.js',
+                contents: 'some content'
+              }, {
+                path: 'yarn.lock',
+                contents: null
+              }],
+              [
+                'Checking for Node.js.',
+                'node.js checker: ignoring invalid "engines" field in package.json',
+                'No node version specified.  Please add your node ' +
+                'version, see ' + 
+                'https://docs.npmjs.com/files/package.json#engines'
+              ],
+              [],
+              {
+                gotAppYaml: false,
+                gotPackageJson: true,
+                gotScriptsStart: false,
+                nodeVersion: null,
+                useYarn: false,
+                runtime: 'nodejs',
+                env: 'flex'
+              });
 
-    const setup = await detectSetup(logger, fsview);
-    assert.deepStrictEqual(logger.logs, [
-      'Checking for Node.js.',
-      'node.js checker: ignoring invalid "engines" field in package.json',
-      'No node version specified.  Please add your node ' +
-      'version, see ' + 
-      'https://docs.npmjs.com/files/package.json#engines'
-    ]);
-
-    const expectedSetup: Setup = {
-      gotAppYaml: false,
-      gotPackageJson: true,
-      gotScriptsStart: false,
-      nodeVersion: null,
-      useYarn: false,
-      runtime: 'nodejs',
-      env: 'flex'
-    };
-    assert.deepStrictEqual(setup, expectedSetup);
-  });
-
-  it('should detect without app.yaml, with package.json, ' +
-     'without a start script, with yarn.lock, and with server.js', async () => {
-    const logger = new RecordedLogger();
-    const fsview = new FakeReadView([{
-      path: 'app.yaml',
-      contents: null
-    }, {
-      path: 'package.json',
-      contents: '{}'
-    }, {
-      path: 'server.js',
-      contents: 'some content'
-    }, {
-      path: 'yarn.lock',
-      contents: 'some content'
-    }]);
-
-    const setup = await detectSetup(logger, fsview);
-    assert.deepStrictEqual(logger.logs, [
-      'Checking for Node.js.',
-      'node.js checker: ignoring invalid "engines" field in package.json',
-      'No node version specified.  Please add your node ' +
-      'version, see ' + 
-      'https://docs.npmjs.com/files/package.json#engines'
-    ]);
-
-    const expectedSetup: Setup = {
-      gotAppYaml: false,
-      gotPackageJson: true,
-      gotScriptsStart: false,
-      nodeVersion: null,
-      useYarn: true,
-      runtime: 'nodejs',
-      env: 'flex'
-    };
-    assert.deepStrictEqual(setup, expectedSetup);
-  });
+  performTest('should detect without app.yaml, with package.json, ' +
+              'without a start script, with yarn.lock, and with server.js',
+              [{
+                path: 'app.yaml',
+                contents: null
+              }, {
+                path: 'package.json',
+                contents: '{}'
+              }, {
+                path: 'server.js',
+                contents: 'some content'
+              }, {
+                path: 'yarn.lock',
+                contents: 'some content'
+              }],
+              [
+                'Checking for Node.js.',
+                'node.js checker: ignoring invalid "engines" field in package.json',
+                'No node version specified.  Please add your node ' +
+                'version, see ' + 
+                'https://docs.npmjs.com/files/package.json#engines'
+              ],
+              [],
+              {
+                gotAppYaml: false,
+                gotPackageJson: true,
+                gotScriptsStart: false,
+                nodeVersion: null,
+                useYarn: true,
+                runtime: 'nodejs',
+                env: 'flex'
+              });
 });
