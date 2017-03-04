@@ -363,4 +363,176 @@ describe('detect setup', () => {
                   env: 'flex'
                 });
   });
+
+  describe('with app.yaml', () => {
+    performTest('should detect without package.json and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: 'env: flex\nruntime: nodejs'
+                }, {
+                  path: 'package.json',
+                  contents: null
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }],
+                [
+                  'Checking for Node.js.',
+                  'node.js checker: No package.json file.'
+                ],
+                [],
+                {
+                  gotAppYaml: true,
+                  gotPackageJson: false,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
+
+    performTest('should detect with package.json, without a start script, ' +
+                'without yarn.lock, and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: 'env: flex\nruntime: nodejs'
+                }, {
+                  path: 'package.json',
+                  contents: '{}'
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: null
+                }],
+                [
+                  'Checking for Node.js.'
+                ],
+                [
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                {
+                  gotAppYaml: true,
+                  gotPackageJson: true,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
+
+    performTest('should detect with package.json, without a start script, ' +
+                'with yarn.lock, and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: 'env: flex\nruntime: nodejs'
+                }, {
+                  path: 'package.json',
+                  contents: '{}'
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: 'some content'
+                }],
+                [
+                  'Checking for Node.js.'
+                ],
+                [
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                {
+                  gotAppYaml: true,
+                  gotPackageJson: true,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: true,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
+
+    performTest('should detect with package.json, with start script, ' +
+                'without yarn.lock, and without server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: 'env: flex\nruntime: nodejs'
+                }, {
+                  path: 'package.json',
+                  contents: JSON.stringify({
+                    scripts: {
+                      start: 'npm start'
+                    }
+                  })
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: null
+                }],
+                [
+                  'Checking for Node.js.'
+                ],
+                [
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                {
+                  gotAppYaml: true,
+                  gotPackageJson: true,
+                  gotScriptsStart: true,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
+
+    performTest('should detect with package.json, with start script, ' +
+                'with yarn.lock, and without server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: 'env: flex\nruntime: nodejs'
+                }, {
+                  path: 'package.json',
+                  contents: JSON.stringify({
+                    scripts: {
+                      start: 'npm start'
+                    }
+                  })
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: 'some content'
+                }],
+                [
+                  'Checking for Node.js.'
+                ],
+                [
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                {
+                  gotAppYaml: true,
+                  gotPackageJson: true,
+                  gotScriptsStart: true,
+                  nodeVersion: null,
+                  useYarn: true,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
+  });
 });
