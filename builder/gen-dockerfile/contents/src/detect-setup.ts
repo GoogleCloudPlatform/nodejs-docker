@@ -45,8 +45,8 @@ export async function detectSetup(logger: Logger,
   const config = await loadConfig(fsview);
 
   // If nodejs has been explicitly specified then treat warnings as errors.
-  var warn: (m: string) => void = config && config.runtime ? logger.error
-                                                           : logger.log;
+  var warn: (m: string) => void = config && config.runtime ? logger.error.bind(logger)
+                                                           : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
@@ -97,13 +97,14 @@ export async function detectSetup(logger: Logger,
     }
 
     // See if we've got a scripts.start field.
-    gotScriptsStart = packageJson.scripts && packageJson.scripts.start;
+    gotScriptsStart = !!(packageJson.scripts && packageJson.scripts.start);
 
     // See if a version of node is specified.
     if (packageJson.engines && packageJson.engines.node) {
       nodeVersion = packageJson.engines.node;
     }
     else {
+      nodeVersion = null;
       warn('node.js checker: ignoring invalid "engines" field in ' +
           'package.json');
     }
