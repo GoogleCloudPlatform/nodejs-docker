@@ -175,189 +175,192 @@ describe('detect setup', () => {
     });
   }
 
-  performTest('should fail without app.yaml, package.json, or server.js',
-              [{
-                path: 'app.yaml',
-                contents: null
-              }, {
-                path: 'package.json',
-                contents: null
-              }, {
-                path: 'server.js',
-                contents: null
-              }],
-              [ 'Checking for Node.js.',
-                'node.js checker: No package.json file.' ],
-              [],
-              undefined,
-              'node.js checker: Neither "start" in the '+
-              '"scripts" section of "package.json" nor ' +
-              'the "server.js" file were found.');
+  describe('should fail correctly', () => {
+    performTest('should fail without app.yaml, package.json, or server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: null
+                }, {
+                  path: 'package.json',
+                  contents: null
+                }, {
+                  path: 'server.js',
+                  contents: null
+                }],
+                [ 'Checking for Node.js.',
+                  'node.js checker: No package.json file.' ],
+                [],
+                undefined,
+                'node.js checker: Neither "start" in the '+
+                '"scripts" section of "package.json" nor ' +
+                'the "server.js" file were found.');
+  });
 
-  performTest('should detect without app.yaml without package.json, ' +
-              'and with server.js',
-              [{
-                path: 'app.yaml',
-                contents: null
-              }, {
-                path: 'package.json',
-                contents: null
-              }, {
-                path: 'server.js',
-                contents: 'some content'
-              }],
-              [
-                'Checking for Node.js.',
-                'node.js checker: No package.json file.'
-              ],
-              [],
-              {
-                gotAppYaml: false,
-                gotPackageJson: false,
-                gotScriptsStart: false,
-                nodeVersion: null,
-                useYarn: false,
-                runtime: 'nodejs',
-                env: 'flex'
-              });
+  describe('without app.yaml', () => {
+    performTest('should detect without package.json and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: null
+                }, {
+                  path: 'package.json',
+                  contents: null
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }],
+                [
+                  'Checking for Node.js.',
+                  'node.js checker: No package.json file.'
+                ],
+                [],
+                {
+                  gotAppYaml: false,
+                  gotPackageJson: false,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
 
-  performTest('should detect without app.yaml, with package.json, ' +
-              'without a start script, without yarn.lock, and with server.js',
-              [{
-                path: 'app.yaml',
-                contents: null
-              }, {
-                path: 'package.json',
-                contents: '{}'
-              }, {
-                path: 'server.js',
-                contents: 'some content'
-              }, {
-                path: 'yarn.lock',
-                contents: null
-              }],
-              [
-                'Checking for Node.js.',
-                'node.js checker: ignoring invalid "engines" field in package.json',
-                'No node version specified.  Please add your node ' +
-                'version, see ' + 
-                'https://docs.npmjs.com/files/package.json#engines'
-              ],
-              [],
-              {
-                gotAppYaml: false,
-                gotPackageJson: true,
-                gotScriptsStart: false,
-                nodeVersion: null,
-                useYarn: false,
-                runtime: 'nodejs',
-                env: 'flex'
-              });
+    performTest('should detect with package.json, without a start script, ' +
+                'without yarn.lock, and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: null
+                }, {
+                  path: 'package.json',
+                  contents: '{}'
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: null
+                }],
+                [
+                  'Checking for Node.js.',
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                [],
+                {
+                  gotAppYaml: false,
+                  gotPackageJson: true,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
 
-  performTest('should detect without app.yaml, with package.json, ' +
-              'without a start script, with yarn.lock, and with server.js',
-              [{
-                path: 'app.yaml',
-                contents: null
-              }, {
-                path: 'package.json',
-                contents: '{}'
-              }, {
-                path: 'server.js',
-                contents: 'some content'
-              }, {
-                path: 'yarn.lock',
-                contents: 'some content'
-              }],
-              [
-                'Checking for Node.js.',
-                'node.js checker: ignoring invalid "engines" field in package.json',
-                'No node version specified.  Please add your node ' +
-                'version, see ' + 
-                'https://docs.npmjs.com/files/package.json#engines'
-              ],
-              [],
-              {
-                gotAppYaml: false,
-                gotPackageJson: true,
-                gotScriptsStart: false,
-                nodeVersion: null,
-                useYarn: true,
-                runtime: 'nodejs',
-                env: 'flex'
-              });
+    performTest('should detect with package.json, without a start script, ' +
+                'with yarn.lock, and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: null
+                }, {
+                  path: 'package.json',
+                  contents: '{}'
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: 'some content'
+                }],
+                [
+                  'Checking for Node.js.',
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                [],
+                {
+                  gotAppYaml: false,
+                  gotPackageJson: true,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: true,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
 
-  performTest('should detect without app.yaml, with package.json, ' +
-              'with start script, without yarn.lock, and without server.js',
-              [{
-                path: 'app.yaml',
-                contents: null
-              }, {
-                path: 'package.json',
-                contents: JSON.stringify({
-                  scripts: {
-                    start: 'npm start'
-                  }
-                })
-              }, {
-                path: 'server.js',
-                contents: 'some content'
-              }, {
-                path: 'yarn.lock',
-                contents: null
-              }],
-              [
-                'Checking for Node.js.',
-                'node.js checker: ignoring invalid "engines" field in package.json',
-                'No node version specified.  Please add your node ' +
-                'version, see ' + 
-                'https://docs.npmjs.com/files/package.json#engines'
-              ],
-              [],
-              {
-                gotAppYaml: false,
-                gotPackageJson: true,
-                gotScriptsStart: true,
-                nodeVersion: null,
-                useYarn: false,
-                runtime: 'nodejs',
-                env: 'flex'
-              });
+    performTest('should detect with package.json, with start script, ' +
+                'without yarn.lock, and without server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: null
+                }, {
+                  path: 'package.json',
+                  contents: JSON.stringify({
+                    scripts: {
+                      start: 'npm start'
+                    }
+                  })
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: null
+                }],
+                [
+                  'Checking for Node.js.',
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                [],
+                {
+                  gotAppYaml: false,
+                  gotPackageJson: true,
+                  gotScriptsStart: true,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
 
-  performTest('should detect without app.yaml, with package.json, ' +
-              'with start script, with yarn.lock, and without server.js',
-              [{
-                path: 'app.yaml',
-                contents: null
-              }, {
-                path: 'package.json',
-                contents: JSON.stringify({
-                  scripts: {
-                    start: 'npm start'
-                  }
-                })
-              }, {
-                path: 'server.js',
-                contents: 'some content'
-              }, {
-                path: 'yarn.lock',
-                contents: 'some content'
-              }],
-              [
-                'Checking for Node.js.',
-                'node.js checker: ignoring invalid "engines" field in package.json',
-                'No node version specified.  Please add your node ' +
-                'version, see ' + 
-                'https://docs.npmjs.com/files/package.json#engines'
-              ],
-              [],
-              {
-                gotAppYaml: false,
-                gotPackageJson: true,
-                gotScriptsStart: true,
-                nodeVersion: null,
-                useYarn: true,
-                runtime: 'nodejs',
-                env: 'flex'
-              });
+    performTest('should detect with package.json, with start script, ' +
+                'with yarn.lock, and without server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: null
+                }, {
+                  path: 'package.json',
+                  contents: JSON.stringify({
+                    scripts: {
+                      start: 'npm start'
+                    }
+                  })
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: 'some content'
+                }],
+                [
+                  'Checking for Node.js.',
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                [],
+                {
+                  gotAppYaml: false,
+                  gotPackageJson: true,
+                  gotScriptsStart: true,
+                  nodeVersion: null,
+                  useYarn: true,
+                  runtime: 'nodejs',
+                  env: 'flex'
+                });
+  });
 });
