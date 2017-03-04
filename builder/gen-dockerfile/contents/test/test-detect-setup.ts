@@ -245,4 +245,42 @@ describe('detect setup', () => {
     };
     assert.deepStrictEqual(setup, expectedSetup);
   });
+
+  it('should detect without app.yaml, with package.json, ' +
+     'without a start script, with yarn.lock, and with server.js', async () => {
+    const logger = new RecordedLogger();
+    const fsview = new FakeReadView([{
+      path: 'app.yaml',
+      contents: null
+    }, {
+      path: 'package.json',
+      contents: '{}'
+    }, {
+      path: 'server.js',
+      contents: 'some content'
+    }, {
+      path: 'yarn.lock',
+      contents: 'some content'
+    }]);
+
+    const setup = await detectSetup(logger, fsview);
+    assert.deepStrictEqual(logger.logs, [
+      'Checking for Node.js.',
+      'node.js checker: ignoring invalid "engines" field in package.json',
+      'No node version specified.  Please add your node ' +
+      'version, see ' + 
+      'https://docs.npmjs.com/files/package.json#engines'
+    ]);
+
+    const expectedSetup: Setup = {
+      gotAppYaml: false,
+      gotPackageJson: true,
+      gotScriptsStart: false,
+      nodeVersion: null,
+      useYarn: true,
+      runtime: 'nodejs',
+      env: 'flex'
+    };
+    assert.deepStrictEqual(setup, expectedSetup);
+  });
 });
