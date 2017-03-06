@@ -2,7 +2,7 @@
   "name": "nodejs-gen-dockerfile",
   "description": "",
   "scripts": {
-    "transpile": "./transpile.sh",
+    "transpile": "gulp",
     "pretest": "npm run transpile",
     "test": "mocha dist/test/**/*.js",
     "prestart": "npm run transpile",
@@ -14,6 +14,7 @@
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
     "@types/pify": "0.0.28",
+    "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.4.1",
     "gulp-typescript": "^3.1.5",
