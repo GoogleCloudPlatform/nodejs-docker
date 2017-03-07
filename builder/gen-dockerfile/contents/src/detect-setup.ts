@@ -24,13 +24,11 @@ const PACKAGE_JSON = 'package.json';
 const YARN_LOCK = 'yarn.lock';
 
 export interface Setup {
-  gotAppYaml: boolean;
   gotPackageJson: boolean;
   gotScriptsStart: boolean;
   nodeVersion: string;
   useYarn: boolean;
   runtime: string;
-  env: string;
 }
 
 export async function loadConfig(fsview: Reader & Locator) {
@@ -43,10 +41,13 @@ export async function loadConfig(fsview: Reader & Locator) {
 export async function detectSetup(logger: Logger,
                                   fsview: Reader & Locator): Promise<Setup> {
   const config = await loadConfig(fsview);
+  if (!config) {
+    throw new Error('app.yaml does not exist');
+  }
 
   // If nodejs has been explicitly specified then treat warnings as errors.
-  var warn: (m: string) => void = config && config.runtime ? logger.error.bind(logger)
-                                                           : logger.log.bind(logger);
+  var warn: (m: string) => void = config.runtime ? logger.error.bind(logger)
+                                                 : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
@@ -56,7 +57,7 @@ export async function detectSetup(logger: Logger,
   var useYarn: boolean;
 
   if (!(await fsview.exists(PACKAGE_JSON))){
-    logger.log('node.js checker: No package.json file.')
+    logger.log('node.js checker: No package.json file.');
     gotPackageJson = false;
     gotScriptsStart = false;
     nodeVersion = null;
@@ -67,7 +68,7 @@ export async function detectSetup(logger: Logger,
 
     // Consider the yarn.lock file as present if and only if the yarn.lock
     // file exists and is not specified as being skipped in app.yaml.
-    var skipFiles = (config && config.skip_files) || [];
+    var skipFiles = config.skip_files || [];
     if (!Array.isArray(skipFiles)) {
       skipFiles = [ skipFiles ];
     }
@@ -123,12 +124,10 @@ export async function detectSetup(logger: Logger,
   }
 
   return {
-    gotAppYaml: !!config,
     gotPackageJson: gotPackageJson,
     gotScriptsStart: gotScriptsStart,
     nodeVersion: nodeVersion,
     useYarn: useYarn,
-    runtime: config && config.runtime === 'custom' ? 'custom' : 'nodejs',
-    env: 'flex'
+    runtime: config && config.runtime === 'custom' ? 'custom' : 'nodejs'
   };
 }
