@@ -1,6 +1,4 @@
 node_modules
 cloudbuild.yaml
-nodejs*.yaml
-nodejs.version
 dist
 .DS_Store

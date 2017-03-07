@@ -1,10 +1,17 @@
+
+if [ -z "${DOCKER_NAMESPACE}" ]; then
+  echo "The DOCKER_NAMESPACE environment variable must be set when "
+  echo "running this script."
+  exit 1
+fi
+
 echo "gcloud --version"
 gcloud --version
 
 echo "gcloud docker -- version"
 gcloud docker -- version
 
-RUNTIME_NAME="nodejs"
+echo "DOCKER_NAMESPACE:${DOCKER_NAMESPACE}"
 
 if [ -z "${TAG}" ]; then
   TAG=`date +%Y-%m-%d_%H_%M`
@@ -12,16 +19,13 @@ fi
 
 CANDIDATE_NAME="${TAG}"
 echo "CANDIDATE_NAME:${CANDIDATE_NAME}"
-export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
-envsubst < base/cloudbuild.yaml.in > base/cloudbuild.yaml
+cd base
+echo "Building the base image"
+./build.sh "${DOCKER_NAMESPACE}" "${CANDIDATE_NAME}"
+cd ..
 
-gcloud beta container builds submit --config base/cloudbuild.yaml .
-
-if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
-  gcloud beta container images add-tag ${IMAGE} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:staging -q
-fi
-
-if [ ! -z "${NODE_VERSION_TAG}" ]; then
-  gcloud beta container images add-tag ${IMAGE} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${NODE_VERSION_TAG} -q
-fi
+cd builder
+echo "Building the Flex Runtime Builder"
+./build.sh "${DOCKER_NAMESPACE}" "${CANDIDATE_NAME}"
+cd ..

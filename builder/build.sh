@@ -17,20 +17,23 @@
 # fail-fast
 set -e
 
-export PROJECT=$1
-export TAG=$2
+BUILDS_DIR="../builds"
 
-if [ -z "${TAG}" -o -z "${PROJECT}" ]; then
-  echo "Usage: ${0} <project> <tag>"
-  echo "Please provide release a project name and tag."
+DOCKER_NAMESPACE=${1}
+CANDIDATE_NAME=${2}
+
+if [ -z "${DOCKER_NAMESPACE}" -o -z "${CANDIDATE_NAME}" ]; then
+  echo "Usage: ${0} <docker namespace> <candidate name>"
+  echo "Please provide release a docker namespace and candidate name."
   exit 1
 fi
 
 cd gen-dockerfile
-./build.sh "${PROJECT}" "$TAG"
+./build.sh "${DOCKER_NAMESPACE}" "${CANDIDATE_NAME}"
 cd ..
 
-sed -e "s|\$PROJECT|${PROJECT}|g; s|\$TAG|${TAG}|g" \
-  < nodejs.yaml.in > nodejs-${2}.yaml
+mkdir -p ${BUILDS_DIR}
+sed -e "s|\$DOCKER_NAMESPACE|${DOCKER_NAMESPACE}|g; s|\$CANDIDATE_NAME|${CANDIDATE_NAME}|g" \
+  < nodejs.yaml.in > ${BUILDS_DIR}/nodejs-${2}.yaml
 
-echo ${2} > nodejs.version
+echo ${2} > ${BUILDS_DIR}/nodejs.version

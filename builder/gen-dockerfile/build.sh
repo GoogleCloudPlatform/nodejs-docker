@@ -18,20 +18,24 @@
 set -e
 
 RUNTIME_NAME="nodejs-gen-dockerfile"
-PROJECT=${1}
-TAG=${2}
+DOCKER_NAMESPACE=${1}
+CANDIDATE_NAME=${2}
 
-if [ -z "${TAG}" -o -z "${PROJECT}" ]; then
-  echo "Usage: ${0} <project> <tag>"
-  echo "Please provide release a project name and a tag."
+if [ -z "${DOCKER_NAMESPACE}" -o -z "${CANDIDATE_NAME}" ]; then
+  echo "Usage: ${0} <docker namespace> <candidate name>"
+  echo "Please provide release a docker namespace and candidate name."
   exit 1
 fi
 
 # This is referenced within cloudbuild.yaml.in
-export IMAGE="gcr.io/${PROJECT}/${RUNTIME_NAME}:${TAG}"
+export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
 # Generate the yaml file used to create the image
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 
 # Build the image
 gcloud container builds submit --config=cloudbuild.yaml .
+
+if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
+  gcloud beta container images add-tag ${IMAGE} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:staging -q
+fi
