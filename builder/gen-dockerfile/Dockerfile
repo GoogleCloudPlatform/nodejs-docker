@@ -8,7 +8,6 @@ RUN npm install -g gulp-cli
 ADD contents/ /opt/nodejs-runtime-builder
 
 # Setup the runtime builder code
-RUN cd /opt/nodejs-runtime-builder && npm install
-RUN cd /opt/nodejs-runtime-builder && ./transpile.sh
+RUN cd /opt/nodejs-runtime-builder && npm install && npm run transpile
 
-ENTRYPOINT ["/opt/nodejs-runtime-builder/dist/src/run.sh", "/workspace"]
+ENTRYPOINT ["node", "/opt/nodejs-runtime-builder/dist/src/main.js", "/workspace"]
