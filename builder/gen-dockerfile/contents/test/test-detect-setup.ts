@@ -61,7 +61,7 @@ class FakeReadView implements Reader, Locator {
 }
 
 describe('loadConfig', () => {
-  it('should return null if app.yaml does not exist', async () => {
+  it('should throw if app.yaml does not exist', async () => {
     const fsview: Reader & Locator = {
       read: async path => {
         throw new Error('This should not have been called.');
@@ -72,7 +72,16 @@ describe('loadConfig', () => {
       }
     };
 
-    assert.strictEqual(await loadConfig(fsview), null);
+    var err;
+    try {
+      await loadConfig(fsview);
+    }
+    catch(e) {
+      err = e;
+    }
+
+    assert.ok(err);
+    assert.strictEqual(err.message, 'The file app.yaml does not exist');
   });
 
   it('should load a valid app.yaml', async () => {
@@ -125,7 +134,7 @@ describe('loadConfig', () => {
     assert.strictEqual(err.message, 'CUSTOM ERROR');
   });
 
-  it('should fail on an invalid app.yaml', async () => {
+  it('should throw on an invalid app.yaml', async () => {
     const fsview = new FakeReadView([{
       path: 'app.yaml',
       contents: 'runtime: \'nodejs'
@@ -151,7 +160,7 @@ describe('detect setup', () => {
                        expectedLogs: Array<string>,
                        expectedErrors: Array<string>,
                        expectedResult: Setup,
-                       expectedThrownErrMessage?: string) {
+                       expectedThrownErrMessage?: RegExp) {
     it(title, async () => {
       const logger = new RecordedLogger();
       const fsview = new FakeReadView(fsviewConfig);
@@ -162,7 +171,9 @@ describe('detect setup', () => {
       }
       catch (e) {
         if (expectedThrownErrMessage) {
-          assert.strictEqual(e.message, expectedThrownErrMessage);
+          assert(expectedThrownErrMessage.test(e.message),
+                 '"' +e.message + '" does not match "' +
+                 expectedThrownErrMessage + '"');
         }
         else {
           assert.ok(!e, `Unexpected error thrown ${e.message}`);
@@ -184,7 +195,19 @@ describe('detect setup', () => {
                 [],
                 [],
                 undefined,
-                'app.yaml does not exist');
+                /The file app.yaml does not exist/);
+
+    performTest('should fail with an invalid app.yaml',
+                [{
+                  path: 'app.yaml',
+                  contents: 'runtime: \'nodejs'
+                  //                  ^
+                  //                  +-- This is intentionally unclosed
+                }],
+                [],
+                [],
+                undefined,
+                /unexpected end of the stream within a single quoted scalar.*/);
 
     performTest('should fail with app.yaml ' +
                 'but wihtout package.json or server.js',
@@ -205,9 +228,9 @@ describe('detect setup', () => {
                   'node.js checker: No package.json file.' ],
                 [],
                 undefined,
-                'node.js checker: Neither "start" in the '+
-                '"scripts" section of "package.json" nor ' +
-                'the "server.js" file were found.');
+                new RegExp('node.js checker: Neither "start" in the '+
+                           '"scripts" section of "package.json" nor ' +
+                           'the "server.js" file were found.'));
   });
 
   describe('should detect correctly', () => {
