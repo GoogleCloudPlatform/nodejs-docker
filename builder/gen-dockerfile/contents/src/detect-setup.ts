@@ -31,17 +31,12 @@ export interface Setup {
   runtime: string;
 }
 
-// This throws if app.yaml does not exist or cannot be parsed
-export async function loadConfig(fsview: Reader & Locator) {
+export async function detectSetup(logger: Logger,
+                                  fsview: Reader & Locator): Promise<Setup> {
   if (!(await fsview.exists(APP_YAML))) {
     throw new Error(`The file ${APP_YAML} does not exist`);
   }
-  return yaml.safeLoad(await fsview.read(APP_YAML));
-}
-
-export async function detectSetup(logger: Logger,
-                                  fsview: Reader & Locator): Promise<Setup> {
-  const config = await loadConfig(fsview);
+  const config = yaml.safeLoad(await fsview.read(APP_YAML));
 
   // If nodejs has been explicitly specified then treat warnings as errors.
   var warn: (m: string) => void = config.runtime ? logger.error.bind(logger)

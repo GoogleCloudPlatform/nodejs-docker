@@ -4,9 +4,7 @@ import * as assert from 'assert';
 
 import { Reader, Locator } from '../src/fsview';
 import { Logger } from '../src/logger';
-import { loadConfig, Setup, detectSetup } from '../src/detect-setup';
-
-const dedent = require('dedent-js');
+import { Setup, detectSetup } from '../src/detect-setup';
 
 class RecordedLogger implements Logger {
   logs: Array<string> = [];
@@ -60,99 +58,17 @@ class FakeReadView implements Reader, Locator {
   }
 }
 
-describe('loadConfig', () => {
-  it('should throw if app.yaml does not exist', async () => {
-    const fsview: Reader & Locator = {
-      read: async path => {
-        throw new Error('This should not have been called.');
-      },
-
-      exists: async path => {
-        return false;
-      }
-    };
-
-    var err;
-    try {
-      await loadConfig(fsview);
-    }
-    catch(e) {
-      err = e;
-    }
-
-    assert.ok(err);
-    assert.strictEqual(err.message, 'The file app.yaml does not exist');
-  });
-
-  it('should load a valid app.yaml', async () => {
-    const fsview = new FakeReadView([{
-      path: 'app.yaml',
-      contents: dedent(`
-        # A comment
-        runtime: node.js
-        env: flex
-        service: some-service
-        skip_files:
-        - ^(.*/)?\.bak$
-        - ^yarn\.lock$
-      `)
-    }]);
-
-    const appYaml = await loadConfig(fsview);
-    assert.ok(appYaml);
-    assert.strictEqual(appYaml.runtime, 'node.js');
-    assert.strictEqual(appYaml.env, 'flex');
-    assert.strictEqual(appYaml.service, 'some-service');
-    assert.deepStrictEqual(appYaml.skip_files, [
-      '^(.*/)?\.bak$',
-      '^yarn\.lock$'
-    ]);
-  });
-
-  it('should fail if reading app.yaml fails', async () => {
-    const fsview: Reader & Locator = {
-      read: async path => {
-        assert.strictEqual(path, 'app.yaml');
-        throw new Error('CUSTOM ERROR');
-      },
-
-      exists: async path => {
-        assert.strictEqual(path, 'app.yaml');
-        return path === 'app.yaml';
-      }
-    };
-
-    var err;
-    try {
-      await loadConfig(fsview);
-    }
-    catch(e) {
-      err = e;
-    }
-
-    assert.ok(err);
-    assert.strictEqual(err.message, 'CUSTOM ERROR');
-  });
-
-  it('should throw on an invalid app.yaml', async () => {
-    const fsview = new FakeReadView([{
-      path: 'app.yaml',
-      contents: 'runtime: \'nodejs'
-        //                ^------- This is intentionally unterminated
-        //                         to cause the yaml file to be invalid
-    }]);
-
-    var err;
-    try {
-      await loadConfig(fsview);
-    }
-    catch(e) {
-      err = e;
-    }
-
-    assert.ok(err);
-  });
-});
+const VALID_APP_YAML_CONTENTS = '' + 
+`# A comment
+runtime: node.js
+env: flex
+service: some-service
+`;
+const VALID_APP_YAML_CONTENTS_SKIP_YARN = VALID_APP_YAML_CONTENTS +
+`skip_files:
+- ^(.*/)?\.bak$
+- ^yarn\.lock$
+`;
 
 describe('detect setup', () => {
   function performTest(title: string,
@@ -213,10 +129,7 @@ describe('detect setup', () => {
                 'but wihtout package.json or server.js',
                 [{
                   path: 'app.yaml',
-                  contents: JSON.stringify({
-                    runtime: 'nodejs',
-                    env: 'flex'
-                  })
+                  contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
                   contents: null
@@ -237,7 +150,7 @@ describe('detect setup', () => {
     performTest('should detect without package.json and with server.js',
                 [{
                   path: 'app.yaml',
-                  contents: 'env: flex\nruntime: nodejs'
+                  contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
                   contents: null
@@ -262,7 +175,7 @@ describe('detect setup', () => {
                 'without yarn.lock, and with server.js',
                 [{
                   path: 'app.yaml',
-                  contents: 'env: flex\nruntime: nodejs'
+                  contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
                   contents: '{}'
@@ -291,10 +204,42 @@ describe('detect setup', () => {
                 });
 
     performTest('should detect with package.json, without a start script, ' +
+                'with yarn.lock, with yarn.lock skipped, and with server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
+                }, {
+                  path: 'package.json',
+                  contents: '{}'
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: 'some contents'
+                }],
+                [
+                  'Checking for Node.js.'
+                ],
+                [
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                {
+                  gotPackageJson: true,
+                  gotScriptsStart: false,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs'
+                });
+
+    performTest('should detect with package.json, without a start script, ' +
                 'with yarn.lock, and with server.js',
                 [{
                   path: 'app.yaml',
-                  contents: 'env: flex\nruntime: nodejs'
+                  contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
                   contents: '{}'
@@ -326,7 +271,7 @@ describe('detect setup', () => {
                 'without yarn.lock, and without server.js',
                 [{
                   path: 'app.yaml',
-                  contents: 'env: flex\nruntime: nodejs'
+                  contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
                   contents: JSON.stringify({
@@ -359,10 +304,46 @@ describe('detect setup', () => {
                 });
 
     performTest('should detect with package.json, with start script, ' +
+                'with yarn.lock, with yarn.lock skipped, and without server.js',
+                [{
+                  path: 'app.yaml',
+                  contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
+                }, {
+                  path: 'package.json',
+                  contents: JSON.stringify({
+                    scripts: {
+                      start: 'npm start'
+                    }
+                  })
+                }, {
+                  path: 'server.js',
+                  contents: 'some content'
+                }, {
+                  path: 'yarn.lock',
+                  contents: 'some contents'
+                }],
+                [
+                  'Checking for Node.js.'
+                ],
+                [
+                  'node.js checker: ignoring invalid "engines" field in package.json',
+                  'No node version specified.  Please add your node ' +
+                  'version, see ' + 
+                  'https://docs.npmjs.com/files/package.json#engines'
+                ],
+                {
+                  gotPackageJson: true,
+                  gotScriptsStart: true,
+                  nodeVersion: null,
+                  useYarn: false,
+                  runtime: 'nodejs'
+                });
+
+    performTest('should detect with package.json, with start script, ' +
                 'with yarn.lock, and without server.js',
                 [{
                   path: 'app.yaml',
-                  contents: 'env: flex\nruntime: nodejs'
+                  contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
                   contents: JSON.stringify({
