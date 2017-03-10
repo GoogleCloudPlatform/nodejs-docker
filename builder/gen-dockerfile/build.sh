@@ -19,16 +19,16 @@ set -e
 
 RUNTIME_NAME="nodejs-gen-dockerfile"
 DOCKER_NAMESPACE=${1}
-CANDIDATE_NAME=${2}
+
+# These are referenced within cloudbuild.yaml.in
+export CANDIDATE_NAME=${2}
+export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
 if [ -z "${DOCKER_NAMESPACE}" -o -z "${CANDIDATE_NAME}" ]; then
   echo "Usage: ${0} <docker namespace> <candidate name>"
   echo "Please provide release a docker namespace and candidate name."
   exit 1
 fi
-
-# This is referenced within cloudbuild.yaml.in
-export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
 # Generate the yaml file used to create the image
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml

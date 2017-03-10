@@ -1,3 +1,4 @@
+/*
 require('source-map-support').install();
 
 import * as assert from 'assert';
@@ -123,3 +124,4 @@ describe('Successful file generation', () => {
     assertAppDirContents(['server.js', 'app.yaml', 'Dockerfile', '.dockerignore']);
   });
 });
+*/

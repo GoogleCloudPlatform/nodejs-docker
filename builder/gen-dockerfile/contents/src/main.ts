@@ -5,10 +5,11 @@ import { detectSetup } from './detect-setup';
 import { genConfig } from './gen-files';
 
 export async function generateConfigs(appDirView: FsView,
+                                      candidateName: string,
                                       logger: Logger): Promise<Map<string, string>> {
   try {
     const setup = await detectSetup(logger, appDirView);
-    return await genConfig(setup, appDirView);
+    return await genConfig(setup, appDirView, candidateName);
   }
   catch (e) {
     logger.error(`Application detection failed: ${e}`);
@@ -28,5 +29,5 @@ if (require.main === module) {
       console.error(message);
     }
   };
-  generateConfigs(new FsView(process.argv[2]), logger);
+  generateConfigs(new FsView(process.argv[2]), process.argv[3], logger);
 }
