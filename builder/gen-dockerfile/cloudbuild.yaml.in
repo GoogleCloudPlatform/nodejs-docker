@@ -3,7 +3,7 @@
 
 steps:
 - name: gcr.io/cloud-builders/docker
-  args: ['build', '--tag=${IMAGE}', '--build-arg', 'CANDIDATE_NAME=${CANDIDATE_NAME}', '--no-cache=true', '.']
+  args: ['build', '--tag=${IMAGE}', '--build-arg', 'CANDIDATE_NAME=${CANDIDATE_NAME}', '--build-arg', 'DOCKER_NAMESPACE=${DOCKER_NAMESPACE}', '--no-cache=true', '.']
   id: BUILD
 
 images: ['${IMAGE}']

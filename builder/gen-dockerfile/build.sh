@@ -18,9 +18,9 @@
 set -e
 
 RUNTIME_NAME="nodejs-gen-dockerfile"
-DOCKER_NAMESPACE=${1}
 
 # These are referenced within cloudbuild.yaml.in
+export DOCKER_NAMESPACE=${1}
 export CANDIDATE_NAME=${2}
 export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 

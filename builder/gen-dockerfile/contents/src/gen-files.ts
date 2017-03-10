@@ -27,15 +27,17 @@ async function genFile(writer: Writer, genFiles: Map<string, string>,
   genFiles.set(name, contents);
 }
 
-export async function genConfig(config: Setup,
+export async function genConfig(dockerNamespace: string,
+                                candidateName: string,
                                 appDirWriter: Writer,
-                                candidateName: string): Promise<Map<string, string>> {
+                                config: Setup): Promise<Map<string, string>> {
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
   if (config.runtime !== 'custom') {
     // Customize the Dockerfile
     var dockerfile = util.format(await dataDirReader.read('Dockerfile'),
+                                 dockerNamespace,
                                  candidateName);
     if (config.nodeVersion) {
       // Let node check to see if it satisfies the version constraint and
