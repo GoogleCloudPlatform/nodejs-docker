@@ -17,7 +17,7 @@ ENV PATH $PATH:/nodejs/bin
 RUN npm install --unsafe-perm semver
 
 # Add the node version install script
-ADD install_node /usr/local/bin/install_node
+ADD contents/install_node /usr/local/bin/install_node
 
 # Set common env vars
 ENV NODE_ENV production
