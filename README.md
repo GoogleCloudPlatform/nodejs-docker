@@ -4,7 +4,7 @@
 
 This repository contains the source for the Google-maintained Node.js [docker](https://docker.com) image.
 This image can be found at `launcher.gcr.io/google/nodejs` or `gcr.io/google-appengine/nodejs`, and this image can be used as the base image
-for running applications on [Google App Engine Managed VMs](https://cloud.google.com/appengine),
+for running applications on [Google App Engine Flexible](https://cloud.google.com/appengine),
 [Google Container Engine](https://cloud.google.com/container-engine), or any other Docker host.
 
 This image is based on Debian Jessie and includes [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
