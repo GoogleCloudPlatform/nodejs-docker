@@ -6,7 +6,11 @@ gcloud docker -- version
 
 RUNTIME_NAME="nodejs"
 
-CANDIDATE_NAME=`date +%Y-%m-%d_%H_%M`
+if [ -z "${TAG}" ]; then
+  TAG=`date +%Y-%m-%d_%H_%M`
+fi
+
+CANDIDATE_NAME="${TAG}"
 echo "CANDIDATE_NAME:${CANDIDATE_NAME}"
 export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
