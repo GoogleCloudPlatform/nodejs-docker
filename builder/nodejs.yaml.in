@@ -1,5 +1,5 @@
 steps:
-  - name: '$DOCKER_NAMESPACE/nodejs-gen-dockerfile:$CANDIDATE_NAME'
+  - name: '$BUILDER_NAMESPACE/nodejs-gen-dockerfile:$BUILDER_TAG'
   - name: 'gcr.io/cloud_builders/docker'
     args: ['build', '-t', '$_OUTPUT_IMAGE', '.']
 

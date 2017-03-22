@@ -19,23 +19,24 @@ set -e
 
 RUNTIME_NAME="nodejs-gen-dockerfile"
 
-# These are referenced within cloudbuild.yaml.in
-export DOCKER_NAMESPACE=${1}
-export CANDIDATE_NAME=${2}
-export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
+BASE_NAMESPACE=${1}
+BASE_TAG=${2}
 
-if [ -z "${DOCKER_NAMESPACE}" -o -z "${CANDIDATE_NAME}" ]; then
-  echo "Usage: ${0} <docker namespace> <candidate name>"
-  echo "Please provide release a docker namespace and candidate name."
+BUILDER_NAMESPACE=${3}
+BUILDER_TAG=${4}
+
+if [ -z "${BASE_NAMESPACE}" -o -z "${BASE_TAG}" -o -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
+  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag>"
   exit 1
 fi
+
+# These are exported so that they can be used in cloudbuild.yaml.in
+export BASE_TAG=${BASE_TAG}
+export BASE_NAMESPACE=${BASE_NAMESPACE}
+export IMAGE="${BUILDER_NAMESPACE}/${RUNTIME_NAME}:${BUILDER_TAG}"
 
 # Generate the yaml file used to create the image
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 
 # Build the image
 gcloud container builds submit --config=cloudbuild.yaml .
-
-if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
-  gcloud beta container images add-tag ${IMAGE} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:staging -q
-fi

@@ -27,8 +27,8 @@ async function generateSingleFile(writer: Writer, genFiles: Map<string, string>,
   genFiles.set(name, contents);
 }
 
-export async function generateFiles(dockerNamespace: string,
-                                    candidateName: string,
+export async function generateFiles(baseNamespace: string,
+                                    baseTag: string,
                                     appDirWriter: Writer,
                                     config: Setup): Promise<Map<string, string>> {
   const genFiles = new Map();
@@ -36,8 +36,8 @@ export async function generateFiles(dockerNamespace: string,
 
   // Customize the Dockerfile
   var dockerfile = util.format(await dataDirReader.read('Dockerfile'),
-                               dockerNamespace,
-                               candidateName);
+                               baseNamespace,
+                               baseTag);
   if (config.nodeVersion) {
     // Let node check to see if it satisfies the version constraint and
     // try to install the correct version if not.

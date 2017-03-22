@@ -1,10 +1,10 @@
 FROM gcr.io/google_appengine/nodejs
 
-ARG CANDIDATE_NAME
-ENV CANDIDATE_NAME ${CANDIDATE_NAME}
+ARG BASE_TAG
+ENV BASE_TAG ${BASE_TAG}
 
-ARG DOCKER_NAMESPACE
-ENV DOCKER_NAMESPACE ${DOCKER_NAMESPACE}
+ARG BASE_NAMESPACE
+ENV BASE_NAMESPACE ${BASE_NAMESPACE}
 
 # Install necessary dependencies
 RUN apt-get update -y && apt-get install --no-install-recommends -y -q rsync
@@ -16,4 +16,4 @@ ADD contents/ /opt/nodejs-runtime-builder
 # Setup the runtime builder code
 RUN cd /opt/nodejs-runtime-builder && npm install && npm run transpile
 
-ENTRYPOINT node /opt/nodejs-runtime-builder/dist/src/main.js ${DOCKER_NAMESPACE} ${CANDIDATE_NAME} /workspace
+ENTRYPOINT node /opt/nodejs-runtime-builder/dist/src/main.js ${BASE_NAMESPACE} ${BASE_TAG} /workspace

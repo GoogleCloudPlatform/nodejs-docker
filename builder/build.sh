@@ -19,21 +19,23 @@ set -e
 
 BUILDS_DIR="../builds"
 
-DOCKER_NAMESPACE=${1}
-CANDIDATE_NAME=${2}
+BASE_NAMESPACE=${1}
+BASE_TAG=${2}
 
-if [ -z "${DOCKER_NAMESPACE}" -o -z "${CANDIDATE_NAME}" ]; then
-  echo "Usage: ${0} <docker namespace> <candidate name>"
-  echo "Please provide release a docker namespace and candidate name."
+BUILDER_NAMESPACE=${3}
+BUILDER_TAG=${4}
+
+if [ -z "${BASE_NAMESPACE}" -o -z "${BASE_TAG}" -o -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
+  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag>"
   exit 1
 fi
 
 cd gen-dockerfile
-./build.sh "${DOCKER_NAMESPACE}" "${CANDIDATE_NAME}"
+./build.sh "${BASE_NAMESPACE}" "${BASE_TAG}" "${BUILDER_NAMESPACE}" "${BUILDER_TAG}"
 cd ..
 
 mkdir -p ${BUILDS_DIR}
-sed -e "s|\$DOCKER_NAMESPACE|${DOCKER_NAMESPACE}|g; s|\$CANDIDATE_NAME|${CANDIDATE_NAME}|g" \
+sed -e "s|\$BUILDER_NAMESPACE|${BUILDER_NAMESPACE}|g; s|\$BUILDER_TAG|${BUILDER_TAG}|g" \
   < nodejs.yaml.in > ${BUILDS_DIR}/nodejs-${2}.yaml
 
 echo ${2} > ${BUILDS_DIR}/nodejs.version
