@@ -6,4 +6,8 @@ steps:
     args: ['--image', '${IMAGE}',
     '-v', '--config', '/workspace/test/test_config.yaml']
     id: STRUCTURE_TEST
+  - name: gcr.io/gcp-runtimes/integration_test
+    args: [
+      '-i', '${IMAGE}',
+      '-d', 'test/integration']
 images: ['${IMAGE}']
