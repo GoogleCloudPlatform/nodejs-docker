@@ -18,61 +18,8 @@ require('source-map-support').install();
 
 import * as assert from 'assert';
 
-import { Reader, Locator } from '../src/fsview';
-import { Logger } from '../src/logger';
 import { Setup, detectSetup } from '../src/detect-setup';
-
-class RecordedLogger implements Logger {
-  logs: Array<string> = [];
-  errors: Array<string> = [];
-
-  log(message: string): void {
-    this.logs.push(message);
-  }
-
-  error(message: string): void {
-    this.errors.push(message);
-  }
-}
-
-interface FakeReadViewConfig {
-  path: string,
-  /**
-   * Specifies the contents of the file at the specified path or 
-   * `null` if the file should be treated as if it doesn't exist.
-   */
-  contents: string | null
-}
-
-class FakeReadView implements Reader, Locator {
-  constructor(private configs: Array<FakeReadViewConfig>) {
-  }
-
-  private findConfig(path: string) {
-    return this.configs.find((value: FakeReadViewConfig): boolean => {
-      return value.path === path;
-    });
-  }
-
-  async read(path: string): Promise<string> {
-    const contents: string | null = this.findConfig(path).contents;
-    if (contents != null) {
-      return contents;
-    }
-
-    throw new Error(`Path not found ${path}`);
-  }
-
-  async exists(path: string): Promise<boolean> {
-    const config = this.findConfig(path);
-    if (!config) {
-      throw new Error('Existence of unknown path "' + path + '" requested.  ' +
-                      'Unit tests must explicitly list which paths exist ' +
-                      'and don\'t exist');
-    }
-    return config.contents != null;
-  }
-}
+import { Location, MockView, MockLogger } from './common';
 
 const VALID_APP_YAML_CONTENTS = '' + 
 `# A comment
@@ -88,14 +35,14 @@ const VALID_APP_YAML_CONTENTS_SKIP_YARN = VALID_APP_YAML_CONTENTS +
 
 describe('detect setup', () => {
   function performTest(title: string,
-                       fsviewConfig: Array<FakeReadViewConfig>,
+                       locations: Array<Location>,
                        expectedLogs: Array<string>,
                        expectedErrors: Array<string>,
                        expectedResult: Setup,
                        expectedThrownErrMessage?: RegExp) {
     it(title, async () => {
-      const logger = new RecordedLogger();
-      const fsview = new FakeReadView(fsviewConfig);
+      const logger = new MockLogger();
+      const fsview = new MockView(locations);
 
       var setup;
       try {
@@ -122,7 +69,7 @@ describe('detect setup', () => {
     performTest('should fail without app.yaml',
                 [{
                   path: 'app.yaml',
-                  contents: null
+                  exists: false
                 }],
                 [],
                 [],
@@ -132,6 +79,7 @@ describe('detect setup', () => {
     performTest('should fail with an invalid app.yaml',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: 'runtime: \'nodejs'
                   //                  ^
                   //                  +-- This is intentionally unclosed
@@ -145,13 +93,14 @@ describe('detect setup', () => {
                 'but wihtout package.json or server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
-                  contents: null
+                  exists: false
                 }, {
                   path: 'server.js',
-                  contents: null
+                  exists: false
                 }],
                 [ 'Checking for Node.js.',
                   'node.js checker: No package.json file.' ],
@@ -166,12 +115,14 @@ describe('detect setup', () => {
     performTest('should detect without package.json and with server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
-                  contents: null
+                  exists: false
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }],
                 [
@@ -191,16 +142,19 @@ describe('detect setup', () => {
                 'without yarn.lock, and with server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
+                  exists: true,
                   contents: '{}'
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }, {
                   path: 'yarn.lock',
-                  contents: null
+                  exists: false
                 }],
                 [
                   'Checking for Node.js.'
@@ -223,15 +177,19 @@ describe('detect setup', () => {
                 'with yarn.lock, with yarn.lock skipped, and with server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
                 }, {
                   path: 'package.json',
+                  exists: true,
                   contents: '{}'
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }, {
                   path: 'yarn.lock',
+                  exists: true,
                   contents: 'some contents'
                 }],
                 [
@@ -255,15 +213,19 @@ describe('detect setup', () => {
                 'with yarn.lock, and with server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
+                  exists: true,
                   contents: '{}'
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }, {
                   path: 'yarn.lock',
+                  exists: true,
                   contents: 'some content'
                 }],
                 [
@@ -287,9 +249,11 @@ describe('detect setup', () => {
                 'without yarn.lock, and without server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
+                  exists: true,
                   contents: JSON.stringify({
                     scripts: {
                       start: 'npm start'
@@ -297,10 +261,11 @@ describe('detect setup', () => {
                   })
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }, {
                   path: 'yarn.lock',
-                  contents: null
+                  exists: false
                 }],
                 [
                   'Checking for Node.js.'
@@ -323,9 +288,11 @@ describe('detect setup', () => {
                 'with yarn.lock, with yarn.lock skipped, and without server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
                 }, {
                   path: 'package.json',
+                  exists: true,
                   contents: JSON.stringify({
                     scripts: {
                       start: 'npm start'
@@ -333,9 +300,11 @@ describe('detect setup', () => {
                   })
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }, {
                   path: 'yarn.lock',
+                  exists: true,
                   contents: 'some contents'
                 }],
                 [
@@ -359,9 +328,11 @@ describe('detect setup', () => {
                 'with yarn.lock, and without server.js',
                 [{
                   path: 'app.yaml',
+                  exists: true,
                   contents: VALID_APP_YAML_CONTENTS
                 }, {
                   path: 'package.json',
+                  exists: true,
                   contents: JSON.stringify({
                     scripts: {
                       start: 'npm start'
@@ -369,9 +340,11 @@ describe('detect setup', () => {
                   })
                 }, {
                   path: 'server.js',
+                  exists: true,
                   contents: 'some content'
                 }, {
                   path: 'yarn.lock',
+                  exists: true,
                   contents: 'some content'
                 }],
                 [
