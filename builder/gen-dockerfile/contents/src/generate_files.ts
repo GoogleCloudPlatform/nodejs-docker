@@ -18,7 +18,7 @@ import * as fs from 'fs';
 import * as util from 'util';
 import * as path from 'path';
 
-import { Setup } from './detect-setup';
+import { Setup } from './detect_setup';
 import { Reader, Writer, FsView } from './fsview';
 
 async function genFile(writer: Writer, genFiles: Map<string, string>,

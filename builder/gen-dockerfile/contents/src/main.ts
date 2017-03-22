@@ -16,8 +16,8 @@
 
 import { Logger } from './logger';
 import { FsView } from './fsview';
-import { detectSetup } from './detect-setup';
-import { genConfig } from './gen-files';
+import { detectSetup } from './detect_setup';
+import { genConfig } from './generate_files';
 
 export async function generateConfigs(dockerNamespace: string,
                                       candidateName: string,

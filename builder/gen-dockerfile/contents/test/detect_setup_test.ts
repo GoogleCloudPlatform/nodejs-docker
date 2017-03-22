@@ -18,7 +18,7 @@ require('source-map-support').install();
 
 import * as assert from 'assert';
 
-import { Setup, detectSetup } from '../src/detect-setup';
+import { Setup, detectSetup } from '../src/detect_setup';
 import { Location, MockView, MockLogger } from './common';
 
 const VALID_APP_YAML_CONTENTS = '' + 
