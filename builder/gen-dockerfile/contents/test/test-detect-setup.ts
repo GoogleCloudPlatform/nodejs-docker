@@ -134,8 +134,7 @@ describe('detect setup', () => {
                   gotPackageJson: false,
                   gotScriptsStart: false,
                   nodeVersion: null,
-                  useYarn: false,
-                  runtime: 'nodejs'
+                  useYarn: false
                 });
 
     performTest('should detect with package.json, without a start script, ' +
@@ -169,8 +168,7 @@ describe('detect setup', () => {
                   gotPackageJson: true,
                   gotScriptsStart: false,
                   nodeVersion: null,
-                  useYarn: false,
-                  runtime: 'nodejs'
+                  useYarn: false
                 });
 
     performTest('should detect with package.json, without a start script, ' +
@@ -205,8 +203,7 @@ describe('detect setup', () => {
                   gotPackageJson: true,
                   gotScriptsStart: false,
                   nodeVersion: null,
-                  useYarn: false,
-                  runtime: 'nodejs'
+                  useYarn: false
                 });
 
     performTest('should detect with package.json, without a start script, ' +
@@ -241,8 +238,7 @@ describe('detect setup', () => {
                   gotPackageJson: true,
                   gotScriptsStart: false,
                   nodeVersion: null,
-                  useYarn: true,
-                  runtime: 'nodejs'
+                  useYarn: true
                 });
 
     performTest('should detect with package.json, with start script, ' +
@@ -280,8 +276,7 @@ describe('detect setup', () => {
                   gotPackageJson: true,
                   gotScriptsStart: true,
                   nodeVersion: null,
-                  useYarn: false,
-                  runtime: 'nodejs'
+                  useYarn: false
                 });
 
     performTest('should detect with package.json, with start script, ' +
@@ -320,8 +315,7 @@ describe('detect setup', () => {
                   gotPackageJson: true,
                   gotScriptsStart: true,
                   nodeVersion: null,
-                  useYarn: false,
-                  runtime: 'nodejs'
+                  useYarn: false
                 });
 
     performTest('should detect with package.json, with start script, ' +
@@ -360,8 +354,7 @@ describe('detect setup', () => {
                   gotPackageJson: true,
                   gotScriptsStart: true,
                   nodeVersion: null,
-                  useYarn: true,
-                  runtime: 'nodejs'
+                  useYarn: true
                 });
   });
 });

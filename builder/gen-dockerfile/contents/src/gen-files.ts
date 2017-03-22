@@ -34,49 +34,47 @@ export async function genConfig(dockerNamespace: string,
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
-  if (config.runtime !== 'custom') {
-    // Customize the Dockerfile
-    var dockerfile = util.format(await dataDirReader.read('Dockerfile'),
-                                 dockerNamespace,
-                                 candidateName);
-    if (config.nodeVersion) {
-      // Let node check to see if it satisfies the version constraint and
-      // try to install the correct version if not.
+  // Customize the Dockerfile
+  var dockerfile = util.format(await dataDirReader.read('Dockerfile'),
+                                dockerNamespace,
+                                candidateName);
+  if (config.nodeVersion) {
+    // Let node check to see if it satisfies the version constraint and
+    // try to install the correct version if not.
 
-      // TODO: Add proper shell escaping here.  The 'shell-escape' module
-      // appears to have a bug.
-      var versionSpec = config.nodeVersion;
-      var installContents = await dataDirReader.read('install-node-version');
-      dockerfile += util.format(installContents, versionSpec, versionSpec);
-    }
-
-    // If the directory structure indicates that yarn is being used
-    // then install yarn since (unlike npm) Node.js doesn't include it
-    if (config.useYarn) {
-      dockerfile += await dataDirReader.read('install-yarn');
-    }
-    
-    dockerfile += 'COPY . /app/\n';
-    var tool = config.useYarn ? 'yarn' : 'npm';
-
-    // Generate npm or yarn install if there is a package.json.
-    if (config.gotPackageJson) {
-      dockerfile += await dataDirReader.read(`${tool}-package-json-install`);
-    }
-
-    // Generate the appropriate start command.
-    if (config.gotScriptsStart) {
-        dockerfile += `CMD ${tool} start\n`;
-    }
-    else {
-        dockerfile += 'CMD node server.js\n';
-    }
-
-    // Generate the Dockerfile and .dockerignore files
-    genFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
-    genFile(appDirWriter, genFiles,
-            '.dockerignore', await dataDirReader.read('dockerignore'));
+    // TODO: Add proper shell escaping here.  The 'shell-escape' module
+    // appears to have a bug.
+    var versionSpec = config.nodeVersion;
+    var installContents = await dataDirReader.read('install-node-version');
+    dockerfile += util.format(installContents, versionSpec, versionSpec);
   }
+
+  // If the directory structure indicates that yarn is being used
+  // then install yarn since (unlike npm) Node.js doesn't include it
+  if (config.useYarn) {
+    dockerfile += await dataDirReader.read('install-yarn');
+  }
+  
+  dockerfile += 'COPY . /app/\n';
+  var tool = config.useYarn ? 'yarn' : 'npm';
+
+  // Generate npm or yarn install if there is a package.json.
+  if (config.gotPackageJson) {
+    dockerfile += await dataDirReader.read(`${tool}-package-json-install`);
+  }
+
+  // Generate the appropriate start command.
+  if (config.gotScriptsStart) {
+      dockerfile += `CMD ${tool} start\n`;
+  }
+  else {
+      dockerfile += 'CMD node server.js\n';
+  }
+
+  // Generate the Dockerfile and .dockerignore files
+  genFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
+  genFile(appDirWriter, genFiles,
+          '.dockerignore', await dataDirReader.read('dockerignore'));
 
   return genFiles;
 }

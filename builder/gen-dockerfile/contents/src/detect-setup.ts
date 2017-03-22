@@ -23,12 +23,28 @@ const APP_YAML = 'app.yaml';
 const PACKAGE_JSON = 'package.json';
 const YARN_LOCK = 'yarn.lock';
 
+/**
+ * Encapsulates the information about the Node.js application detected by
+ * the {@link detectSetup} method.
+ */
 export interface Setup {
+  /** Specifies whether the app directory contains a package.json fie */
   gotPackageJson: boolean;
+  /**
+   * Specifies whether the app directory's package.json file contains a
+   * "scripts" section that contains a "start" command
+   */
   gotScriptsStart: boolean;
+  /**
+   * Specifies the version of Node.js used to run the application as specified
+   * by the application's package.json file
+   */
   nodeVersion: string;
+  /**
+   * Specifies whether or not Yarn should be used to install the application's
+   * dependencies and launch the app.
+   */
   useYarn: boolean;
-  runtime: string;
 }
 
 export async function detectSetup(logger: Logger,
@@ -120,7 +136,6 @@ export async function detectSetup(logger: Logger,
     gotPackageJson: gotPackageJson,
     gotScriptsStart: gotScriptsStart,
     nodeVersion: nodeVersion,
-    useYarn: useYarn,
-    runtime: config && config.runtime === 'custom' ? 'custom' : 'nodejs'
+    useYarn: useYarn
   };
 }
