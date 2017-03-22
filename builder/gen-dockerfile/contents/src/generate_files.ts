@@ -21,23 +21,23 @@ import * as path from 'path';
 import { Setup } from './detect_setup';
 import { Reader, Writer, FsView } from './fsview';
 
-async function genFile(writer: Writer, genFiles: Map<string, string>,
-                       name: string, contents: string) {
+async function generateSingleFile(writer: Writer, genFiles: Map<string, string>,
+                                  name: string, contents: string) {
   await writer.write(name, contents);
   genFiles.set(name, contents);
 }
 
-export async function genConfig(dockerNamespace: string,
-                                candidateName: string,
-                                appDirWriter: Writer,
-                                config: Setup): Promise<Map<string, string>> {
+export async function generateFiles(dockerNamespace: string,
+                                    candidateName: string,
+                                    appDirWriter: Writer,
+                                    config: Setup): Promise<Map<string, string>> {
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
   // Customize the Dockerfile
   var dockerfile = util.format(await dataDirReader.read('Dockerfile'),
-                                dockerNamespace,
-                                candidateName);
+                               dockerNamespace,
+                               candidateName);
   if (config.nodeVersion) {
     // Let node check to see if it satisfies the version constraint and
     // try to install the correct version if not.
@@ -72,9 +72,9 @@ export async function genConfig(dockerNamespace: string,
   }
 
   // Generate the Dockerfile and .dockerignore files
-  genFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
-  genFile(appDirWriter, genFiles,
-          '.dockerignore', await dataDirReader.read('dockerignore'));
+  generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
+  generateSingleFile(appDirWriter, genFiles,
+                     '.dockerignore', await dataDirReader.read('dockerignore'));
 
   return genFiles;
 }

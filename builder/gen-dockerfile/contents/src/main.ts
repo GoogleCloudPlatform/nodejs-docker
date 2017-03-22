@@ -17,7 +17,7 @@
 import { Logger } from './logger';
 import { FsView } from './fsview';
 import { detectSetup } from './detect_setup';
-import { genConfig } from './generate_files';
+import { generateFiles } from './generate_files';
 
 export async function generateConfigs(dockerNamespace: string,
                                       candidateName: string,
@@ -25,7 +25,7 @@ export async function generateConfigs(dockerNamespace: string,
                                       logger: Logger): Promise<Map<string, string>> {
   try {
     const setup = await detectSetup(logger, appDirView);
-    return await genConfig(dockerNamespace, candidateName, appDirView, setup);
+    return await generateFiles(dockerNamespace, candidateName, appDirView, setup);
   }
   catch (e) {
     logger.error(`Application detection failed: ${e}`);
