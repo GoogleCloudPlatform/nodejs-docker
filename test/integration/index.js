@@ -18,7 +18,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const http = require('http');
-const logging = require('@google-cloud/logging');
+const logging = require('@google-cloud/logging')();
 
 // Application implementing the integration test spec at
 // https://github.com/GoogleCloudPlatform/runtimes-common/blob/master/integration_tests/README.md
@@ -31,10 +31,19 @@ app.get('/', (req, res) => {
 
 app.post('/logging', (req, res) => {
   console.log('/logging', req.body);
-  // TODO(ofrobots): implement the logging test.
-  // req.body.log_name: the name of the log to write to.
-  // req.body.token: int64 the token to write.
-  res.status(501).send(http.STATUS_CODES[501]);
+  const log = logging.log(req.body.log_name);
+  const entry = log.entry({}, {
+    token: req.body.token
+  });
+  log.error(entry, function(err) {
+    if (err) {
+      console.log('error writing log entry', err);
+      res.status(500).send(err);
+    } else {
+      console.log('wrote log entry', entry);
+      res.status(200).send('OK!');
+    }
+  });
 });
 
 app.post('/monitoring', (req, res) => {
