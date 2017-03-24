@@ -94,9 +94,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE = await dataView.read('./src/data/dockerignore');
   });
 
-  it('should generate correctly without package.json, without start script, without Node.version, and using npm', async () => {
+  it('should generate correctly without installing dependencies, without start script, without Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: false,
       nodeVersion: undefined,
       useYarn: false
@@ -105,9 +105,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, without start script, without Node.version, and using yarn', async () => {
+  it('should generate correctly without installing dependencies, without start script, without Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: false,
       nodeVersion: undefined,
       useYarn: true
@@ -116,9 +116,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, without start script, with Node.version, and using npm', async () => {
+  it('should generate correctly without installing dependencies, without start script, with Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: false,
       nodeVersion: NODE_VERSION,
       useYarn: false,
@@ -127,9 +127,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, without start script, with Node.version, and using yarn', async () => {
+  it('should generate correctly without installing dependencies, without start script, with Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: false,
       nodeVersion: NODE_VERSION,
       useYarn: true
@@ -138,9 +138,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, with start script, without Node.version, and using npm', async () => {
+  it('should generate correctly without installing dependencies, with start script, without Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: true,
       nodeVersion: undefined,
       useYarn: false
@@ -149,9 +149,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, with start script, without Node.version, and using yarn', async () => {
+  it('should generate correctly without installing dependencies, with start script, without Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: true,
       nodeVersion: undefined,
       useYarn: true
@@ -160,9 +160,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, with start script, with Node.version, and using npm', async () => {
+  it('should generate correctly without installing dependencies, with start script, with Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: true,
       nodeVersion: NODE_VERSION,
       useYarn: false
@@ -171,9 +171,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly without package.json, with start script, with Node.version, and using yarn', async () => {
+  it('should generate correctly without installing dependencies, with start script, with Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: false,
+      canInstallDeps: false,
       gotScriptsStart: true,
       nodeVersion: NODE_VERSION,
       useYarn: true
@@ -182,9 +182,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, without start script, without Node.version, and using npm', async () => {
+  it('should generate correctly with installing dependencies, without start script, without Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: false,
       nodeVersion: undefined,
       useYarn: false
@@ -193,9 +193,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, without start script, without Node.version, and using yarn', async () => {
+  it('should generate correctly with installing dependencies, without start script, without Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: false,
       nodeVersion: undefined,
       useYarn: true
@@ -204,9 +204,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, without start script, with Node.version, and using npm', async () => {
+  it('should generate correctly with installing dependencies, without start script, with Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: false,
       nodeVersion: NODE_VERSION,
       useYarn: false
@@ -215,9 +215,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, without start script, with Node.version, and using yarn', async () => {
+  it('should generate correctly with installing dependencies, without start script, with Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: false,
       nodeVersion: NODE_VERSION,
       useYarn: true
@@ -226,9 +226,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, with start script, without Node.version, and using npm', async () => {
+  it('should generate correctly with installing dependencies, with start script, without Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: true,
       nodeVersion: undefined,
       useYarn: false
@@ -237,9 +237,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, with start script, without Node.version, and using yarn', async () => {
+  it('should generate correctly with installing dependencies, with start script, without Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: true,
       nodeVersion: undefined,
       useYarn: true
@@ -248,9 +248,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, with start script, with Node.version, and using npm', async () => {
+  it('should generate correctly with installing dependencies, with start script, with Node.version, and using npm', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: true,
       nodeVersion: NODE_VERSION,
       useYarn: false
@@ -259,9 +259,9 @@ describe('generateFiles', async () => {
     DOCKERIGNORE);
   });
 
-  it('should generate correctly with package.json, with start script, with Node.version, and using yarn', async () => {
+  it('should generate correctly with installing dependencies, with start script, with Node.version, and using yarn', async () => {
     await runTest({
-      gotPackageJson: true,
+      canInstallDeps: true,
       gotScriptsStart: true,
       nodeVersion: NODE_VERSION,
       useYarn: true

@@ -59,7 +59,7 @@ export async function generateFiles(baseNamespace: string,
   var tool = config.useYarn ? 'yarn' : 'npm';
 
   // Generate npm or yarn install if there is a package.json.
-  if (config.gotPackageJson) {
+  if (config.canInstallDeps) {
     dockerfile += await dataDirReader.read(`${tool}-package-json-install`);
   }
 

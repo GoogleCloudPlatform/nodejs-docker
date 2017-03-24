@@ -33,7 +33,7 @@ const VALID_APP_YAML_CONTENTS_SKIP_YARN = VALID_APP_YAML_CONTENTS +
 - ^yarn\.lock$
 `;
 
-describe('detect setup', () => {
+describe('detectSetup', () => {
   function performTest(title: string,
                        locations: Array<Location>,
                        expectedLogs: Array<string>,
@@ -90,7 +90,7 @@ describe('detect setup', () => {
                 /unexpected end of the stream within a single quoted scalar.*/);
 
     performTest('should fail with app.yaml ' +
-                'but wihtout package.json or server.js',
+                'but without package.json or server.js',
                 [{
                   path: 'app.yaml',
                   exists: true,
@@ -131,7 +131,7 @@ describe('detect setup', () => {
                 ],
                 [],
                 {
-                  gotPackageJson: false,
+                  canInstallDeps: false,
                   gotScriptsStart: false,
                   nodeVersion: null,
                   useYarn: false
@@ -165,7 +165,7 @@ describe('detect setup', () => {
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
-                  gotPackageJson: true,
+                  canInstallDeps: true,
                   gotScriptsStart: false,
                   nodeVersion: null,
                   useYarn: false
@@ -200,7 +200,7 @@ describe('detect setup', () => {
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
-                  gotPackageJson: true,
+                  canInstallDeps: true,
                   gotScriptsStart: false,
                   nodeVersion: null,
                   useYarn: false
@@ -235,7 +235,7 @@ describe('detect setup', () => {
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
-                  gotPackageJson: true,
+                  canInstallDeps: true,
                   gotScriptsStart: false,
                   nodeVersion: null,
                   useYarn: true
@@ -273,7 +273,7 @@ describe('detect setup', () => {
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
-                  gotPackageJson: true,
+                  canInstallDeps: true,
                   gotScriptsStart: true,
                   nodeVersion: null,
                   useYarn: false
@@ -312,7 +312,7 @@ describe('detect setup', () => {
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
-                  gotPackageJson: true,
+                  canInstallDeps: true,
                   gotScriptsStart: true,
                   nodeVersion: null,
                   useYarn: false
@@ -351,7 +351,7 @@ describe('detect setup', () => {
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
-                  gotPackageJson: true,
+                  canInstallDeps: true,
                   gotScriptsStart: true,
                   nodeVersion: null,
                   useYarn: true

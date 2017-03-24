@@ -28,8 +28,11 @@ const YARN_LOCK = 'yarn.lock';
  * the {@link detectSetup} method.
  */
 export interface Setup {
-  /** Specifies whether the app directory contains a package.json fie */
-  gotPackageJson: boolean;
+  /**
+   * Specifies whether the app directory contains the files necessary to
+   * install dependencies using either `npm install` or `yarn install`
+   */
+  canInstallDeps: boolean;
   /**
    * Specifies whether the app directory's package.json file contains a
    * "scripts" section that contains a "start" command
@@ -60,20 +63,20 @@ export async function detectSetup(logger: Logger,
 
   logger.log('Checking for Node.js.');
 
-  var gotPackageJson: boolean;
+  var canInstallDeps: boolean;
   var gotScriptsStart: boolean;
   var nodeVersion: string;
   var useYarn: boolean;
 
   if (!(await fsview.exists(PACKAGE_JSON))){
     logger.log('node.js checker: No package.json file.');
-    gotPackageJson = false;
+    canInstallDeps = false;
     gotScriptsStart = false;
     nodeVersion = null;
     useYarn = false;
   }
   else {
-    gotPackageJson = true;
+    canInstallDeps = true;
 
     // Consider the yarn.lock file as present if and only if the yarn.lock
     // file exists and is not specified as being skipped in app.yaml.
@@ -133,7 +136,7 @@ export async function detectSetup(logger: Logger,
   }
 
   return {
-    gotPackageJson: gotPackageJson,
+    canInstallDeps: canInstallDeps,
     gotScriptsStart: gotScriptsStart,
     nodeVersion: nodeVersion,
     useYarn: useYarn
