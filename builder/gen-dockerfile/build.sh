@@ -30,13 +30,18 @@ if [ -z "${BASE_NAMESPACE}" -o -z "${BASE_TAG}" -o -z "${BUILDER_NAMESPACE}" -o 
   exit 1
 fi
 
+UNTAGGED_BUILDER_NAME=${BUILDER_NAMESPACE}/${RUNTIME_NAME}
+
 # These are exported so that they can be used in cloudbuild.yaml.in
 export BASE_TAG=${BASE_TAG}
 export BASE_NAMESPACE=${BASE_NAMESPACE}
-export IMAGE="${BUILDER_NAMESPACE}/${RUNTIME_NAME}:${BUILDER_TAG}"
+export IMAGE="${UNTAGGED_BUILDER_NAME}:${BUILDER_TAG}"
 
 # Generate the yaml file used to create the image
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 
 # Build the image
 gcloud container builds submit --config=cloudbuild.yaml .
+
+# Tag the built image with 'latest' so that it is used by nodejs.yaml
+gcloud --quiet beta container images add-tag ${IMAGE} ${UNTAGGED_BUILDER_NAME}:latest

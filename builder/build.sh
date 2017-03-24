@@ -17,8 +17,6 @@
 # fail-fast
 set -e
 
-BUILDS_DIR="../builds"
-
 BASE_NAMESPACE=${1}
 BASE_TAG=${2}
 
@@ -33,9 +31,3 @@ fi
 cd gen-dockerfile
 ./build.sh "${BASE_NAMESPACE}" "${BASE_TAG}" "${BUILDER_NAMESPACE}" "${BUILDER_TAG}"
 cd ..
-
-mkdir -p ${BUILDS_DIR}
-sed -e "s|\$BUILDER_NAMESPACE|${BUILDER_NAMESPACE}|g; s|\$BUILDER_TAG|${BUILDER_TAG}|g" \
-  < nodejs.yaml.in > ${BUILDS_DIR}/nodejs-${2}.yaml
-
-echo ${2} > ${BUILDS_DIR}/nodejs.version
