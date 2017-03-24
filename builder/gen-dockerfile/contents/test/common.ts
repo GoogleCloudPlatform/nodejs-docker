@@ -73,5 +73,10 @@ export class MockView implements Reader, Writer, Locator {
   }
 
   async write(path: string, contents: string): Promise<any> {
+    this.pathsWritten.push({
+      path: path,
+      exists: true,
+      contents: contents
+    });
   }
 }
