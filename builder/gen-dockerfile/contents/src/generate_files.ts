@@ -72,9 +72,10 @@ export async function generateFiles(baseNamespace: string,
   }
 
   // Generate the Dockerfile and .dockerignore files
-  generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
-  generateSingleFile(appDirWriter, genFiles,
-                     '.dockerignore', await dataDirReader.read('dockerignore'));
+  await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
+  await generateSingleFile(appDirWriter, genFiles,
+                           '.dockerignore',
+                           await dataDirReader.read('dockerignore'));
 
   return genFiles;
 }
