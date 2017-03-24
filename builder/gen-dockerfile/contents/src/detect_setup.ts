@@ -42,7 +42,7 @@ export interface Setup {
    * Specifies the version of Node.js used to run the application as specified
    * by the application's package.json file
    */
-  nodeVersion: string;
+  nodeVersion?: string;
   /**
    * Specifies whether or not Yarn should be used to install the application's
    * dependencies and launch the app.

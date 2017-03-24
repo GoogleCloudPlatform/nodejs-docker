@@ -98,7 +98,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: false,
       gotScriptsStart: false,
-      nodeVersion: undefined,
       useYarn: false
     },
     BASE + COPY_CONTENTS + SERVER_START,
@@ -109,7 +108,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: false,
       gotScriptsStart: false,
-      nodeVersion: undefined,
       useYarn: true
     },
     BASE + INSTALL_YARN + COPY_CONTENTS + SERVER_START,
@@ -142,7 +140,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: false,
       gotScriptsStart: true,
-      nodeVersion: undefined,
       useYarn: false
     },
     BASE + COPY_CONTENTS + NPM_START,
@@ -153,7 +150,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: false,
       gotScriptsStart: true,
-      nodeVersion: undefined,
       useYarn: true
     },
     BASE + INSTALL_YARN + COPY_CONTENTS + YARN_START,
@@ -186,7 +182,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: true,
       gotScriptsStart: false,
-      nodeVersion: undefined,
       useYarn: false
     },
     BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + SERVER_START,
@@ -197,7 +192,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: true,
       gotScriptsStart: false,
-      nodeVersion: undefined,
       useYarn: true
     },
     BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + SERVER_START,
@@ -230,7 +224,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: true,
       gotScriptsStart: true,
-      nodeVersion: undefined,
       useYarn: false
     },
     BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START,
@@ -241,7 +234,6 @@ describe('generateFiles', async () => {
     await runTest({
       canInstallDeps: true,
       gotScriptsStart: true,
-      nodeVersion: undefined,
       useYarn: true
     },
     BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
