@@ -51,7 +51,7 @@ export class MockView implements Reader, Writer, Locator {
   }
 
   async read(path: string): Promise<string> {
-    var location = this.findLocation(path);
+    let location = this.findLocation(path);
     if (!location.exists) {
       throw new Error(`Path not found ${path}`);
     }

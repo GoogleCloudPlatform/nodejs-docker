@@ -35,7 +35,7 @@ export async function generateFiles(baseNamespace: string,
   const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
   // Customize the Dockerfile
-  var dockerfile = util.format(await dataDirReader.read('Dockerfile'),
+  let dockerfile = util.format(await dataDirReader.read('Dockerfile'),
                                baseNamespace,
                                baseTag);
   if (config.nodeVersion) {
@@ -44,8 +44,8 @@ export async function generateFiles(baseNamespace: string,
 
     // TODO: Add proper shell escaping here.  The 'shell-escape' module
     // appears to have a bug.
-    var versionSpec = config.nodeVersion;
-    var installContents = await dataDirReader.read('install-node-version');
+    let versionSpec = config.nodeVersion;
+    let installContents = await dataDirReader.read('install-node-version');
     dockerfile += util.format(installContents, versionSpec, versionSpec);
   }
 
@@ -56,7 +56,7 @@ export async function generateFiles(baseNamespace: string,
   }
   
   dockerfile += 'COPY . /app/\n';
-  var tool = config.useYarn ? 'yarn' : 'npm';
+  let tool = config.useYarn ? 'yarn' : 'npm';
 
   // Generate npm or yarn install if there is a package.json.
   if (config.canInstallDeps) {

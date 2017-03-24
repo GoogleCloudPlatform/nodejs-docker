@@ -44,7 +44,7 @@ describe('detectSetup', () => {
       const logger = new MockLogger();
       const fsview = new MockView(locations);
 
-      var setup;
+      let setup;
       try {
         setup = await detectSetup(logger, fsview);
       }

@@ -58,15 +58,15 @@ export async function detectSetup(logger: Logger,
   const config = yaml.safeLoad(await fsview.read(APP_YAML));
 
   // If nodejs has been explicitly specified then treat warnings as errors.
-  var warn: (m: string) => void = config.runtime ? logger.error.bind(logger)
+  let warn: (m: string) => void = config.runtime ? logger.error.bind(logger)
                                                  : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
-  var canInstallDeps: boolean;
-  var gotScriptsStart: boolean;
-  var nodeVersion: string;
-  var useYarn: boolean;
+  let canInstallDeps: boolean;
+  let gotScriptsStart: boolean;
+  let nodeVersion: string;
+  let useYarn: boolean;
 
   if (!(await fsview.exists(PACKAGE_JSON))){
     logger.log('node.js checker: No package.json file.');
@@ -80,13 +80,13 @@ export async function detectSetup(logger: Logger,
 
     // Consider the yarn.lock file as present if and only if the yarn.lock
     // file exists and is not specified as being skipped in app.yaml.
-    var skipFiles = config.skip_files || [];
+    let skipFiles = config.skip_files || [];
     if (!Array.isArray(skipFiles)) {
       skipFiles = [ skipFiles ];
     }
 
     const yarnLockExists: boolean = await fsview.exists(YARN_LOCK);
-    var yarnLockSkipped = false;
+    let yarnLockSkipped = false;
     skipFiles.forEach((pattern: string) => {
       yarnLockSkipped = yarnLockSkipped || new RegExp(pattern).test(YARN_LOCK);
     });
@@ -94,9 +94,9 @@ export async function detectSetup(logger: Logger,
     useYarn = yarnLockExists && !yarnLockSkipped;
 
     // Try to read the package.json file.
-    var packageJson;
-    var packageJsonError;
-    var contents = await fsview.read(PACKAGE_JSON);
+    let packageJson;
+    let packageJsonError;
+    let contents = await fsview.read(PACKAGE_JSON);
 
     try {
       packageJson = JSON.parse(contents);
