@@ -19,6 +19,8 @@ require('source-map-support').install();
 import * as assert from 'assert';
 import * as util from 'util';
 
+const shellEscape: (args: Array<string>) => string = require('shell-escape');
+
 import { generateFiles } from '../src/generate_files';
 import { Setup } from '../src/detect_setup';
 import { Location, MockView } from './common';
@@ -78,7 +80,8 @@ describe('generateFiles', async () => {
     BASE = util.format(await dataView.read('./src/data/Dockerfile'), BASE_NAMESPACE, BASE_TAG);
 
     UPGRADE_NODE = util.format(await dataView.read('./src/data/install-node-version'),
-                                                   NODE_VERSION, NODE_VERSION);
+                                                   shellEscape([ NODE_VERSION ]),
+                                                   shellEscape([ NODE_VERSION ]));
 
     COPY_CONTENTS = `COPY . /app/\n`;
 

@@ -18,6 +18,8 @@ import * as fs from 'fs';
 import * as util from 'util';
 import * as path from 'path';
 
+const shellEscape: (args: Array<string>) => string = require('shell-escape');
+
 import { Setup } from './detect_setup';
 import { Reader, Writer, FsView } from './fsview';
 
@@ -41,10 +43,7 @@ export async function generateFiles(baseNamespace: string,
   if (config.nodeVersion) {
     // Let node check to see if it satisfies the version constraint and
     // try to install the correct version if not.
-
-    // TODO: Add proper shell escaping here.  The 'shell-escape' module
-    // appears to have a bug.
-    let versionSpec = config.nodeVersion;
+    let versionSpec = shellEscape([ config.nodeVersion ]);
     let installContents = await dataDirReader.read('install-node-version');
     dockerfile += util.format(installContents, versionSpec, versionSpec);
   }
