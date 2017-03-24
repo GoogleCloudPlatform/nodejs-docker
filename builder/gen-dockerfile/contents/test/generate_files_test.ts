@@ -48,7 +48,7 @@ async function runTest(config: Setup,
   assert.strictEqual(files.get(DOCKERFILE_NAME), expectedDockerfile);
   assert.strictEqual(files.get(DOCKERIGNORE_NAME), expectedDockerignore);
 
-  let expectedFilesWritten: Array<Location> = [{
+  const expectedFilesWritten: Array<Location> = [{
     path: 'Dockerfile',
     exists: true,
     contents: expectedDockerfile

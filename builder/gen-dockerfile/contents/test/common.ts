@@ -18,8 +18,8 @@ import { Logger } from '../src/logger';
 import { Reader, Writer, Locator } from '../src/fsview';
 
 export class MockLogger implements Logger {
-  logs: Array<string> = [];
-  errors: Array<string> = [];
+  readonly logs: Array<string> = [];
+  readonly errors: Array<string> = [];
 
   log(message: string): void {
     this.logs.push(message);
@@ -37,9 +37,9 @@ export interface Location {
 }
 
 export class MockView implements Reader, Writer, Locator {
-  public pathsRead: Array<Location> = [];
-  public pathsLocated: Array<Location> = [];
-  public pathsWritten: Array<Location> = [];
+  readonly pathsRead: Array<Location> = [];
+  readonly pathsLocated: Array<Location> = [];
+  readonly pathsWritten: Array<Location> = [];
 
   constructor(private configs: ReadonlyArray<Location>) {
   }
@@ -51,7 +51,7 @@ export class MockView implements Reader, Writer, Locator {
   }
 
   async read(path: string): Promise<string> {
-    let location = this.findLocation(path);
+    const location = this.findLocation(path);
     if (!location.exists) {
       throw new Error(`Path not found ${path}`);
     }

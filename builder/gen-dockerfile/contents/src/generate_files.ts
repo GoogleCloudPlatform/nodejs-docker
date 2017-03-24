@@ -43,8 +43,8 @@ export async function generateFiles(baseNamespace: string,
   if (config.nodeVersion) {
     // Let node check to see if it satisfies the version constraint and
     // try to install the correct version if not.
-    let versionSpec = shellEscape([ config.nodeVersion ]);
-    let installContents = await dataDirReader.read('install-node-version');
+    const versionSpec = shellEscape([ config.nodeVersion ]);
+    const installContents = await dataDirReader.read('install-node-version');
     dockerfile += util.format(installContents, versionSpec, versionSpec);
   }
 
@@ -55,7 +55,7 @@ export async function generateFiles(baseNamespace: string,
   }
   
   dockerfile += 'COPY . /app/\n';
-  let tool = config.useYarn ? 'yarn' : 'npm';
+  const tool = config.useYarn ? 'yarn' : 'npm';
 
   // Generate npm or yarn install if there is a package.json.
   if (config.canInstallDeps) {

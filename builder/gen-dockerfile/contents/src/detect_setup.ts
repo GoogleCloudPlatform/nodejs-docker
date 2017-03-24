@@ -58,8 +58,8 @@ export async function detectSetup(logger: Logger,
   const config = yaml.safeLoad(await fsview.read(APP_YAML));
 
   // If nodejs has been explicitly specified then treat warnings as errors.
-  let warn: (m: string) => void = config.runtime ? logger.error.bind(logger)
-                                                 : logger.log.bind(logger);
+  const warn: (m: string) => void = config.runtime ? logger.error.bind(logger)
+                                                   : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
@@ -95,8 +95,7 @@ export async function detectSetup(logger: Logger,
 
     // Try to read the package.json file.
     let packageJson;
-    let packageJsonError;
-    let contents = await fsview.read(PACKAGE_JSON);
+    const contents = await fsview.read(PACKAGE_JSON);
 
     try {
       packageJson = JSON.parse(contents);
