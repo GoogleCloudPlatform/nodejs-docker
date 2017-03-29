@@ -19,10 +19,21 @@ import { FsView } from './fsview';
 import { detectSetup } from './detect_setup';
 import { generateFiles } from './generate_files';
 
-export async function generateConfigs(baseNamespace: string,
-                                      baseTag: string,
-                                      appDirView: FsView,
-                                      logger: Logger): Promise<Map<string, string>> {
+/**
+ * Analyzes a Node.js application in the directory specified by the
+ * {@link appDirView} parameter and generates Dockerfile and .dockerignore
+ * files in that directory that are used to build a Docker image that starts
+ * the Node.js application when the image is Docker run.
+ *
+ * @param baseNamespace {@see generateFiles}
+ * @param baseTag {@see generateFiles}
+ * @param appDirView {@see detectSetup} and {@see generateFiles}
+ * @param logger {@see detectSetup}
+ */
+async function generateConfigs(baseNamespace: string,
+                               baseTag: string,
+                               appDirView: FsView,
+                               logger: Logger): Promise<Map<string, string>> {
   try {
     const setup = await detectSetup(logger, appDirView);
     return await generateFiles(baseNamespace, baseTag, appDirView, setup);

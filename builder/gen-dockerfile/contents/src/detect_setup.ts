@@ -50,6 +50,32 @@ export interface Setup {
   useYarn: boolean;
 }
 
+/**
+ * This function is used to detect information about a Node.js application.
+ * In particular, this function determines whether or not a `package.json`
+ * file is available to allow `npm` or `yarn` to do an install, whether
+ * the package.json file has a start script specified, whether the package.json
+ * has an engines field specified that specifies a Node.js version to use,
+ * and whether `yarn` or `npm` should be used to install dependencies and run
+ * the application.
+ *
+ * @param logger Used to print statements designed for user consumption.
+ * @param fsview Represents a view of the root directory of a Node.js
+ *               application.
+ *
+ * @throws If an `app.yaml` file does not exist in the directory desribed by
+ *         the given {@link Locator}.
+ * @throws If a `package.json` file exists but a problem occurred while
+ *         trying to parse the file.
+ * @throws If the directory described by the {@link Reader} and {@link Locator}
+ *         does not have a start script in the `package.json` file (or the
+ *         `package.json` file doesn't exist) and the directory does not
+ *         contain a `server.js` file.
+ *
+ * @return Information about the Node.js application in question that can
+ *         be used to determine how to install the application's dependencies
+ *         and run the application.
+ */
 export async function detectSetup(logger: Logger,
                                   fsview: Reader & Locator): Promise<Setup> {
   if (!(await fsview.exists(APP_YAML))) {

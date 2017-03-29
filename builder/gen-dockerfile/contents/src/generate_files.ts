@@ -18,17 +18,51 @@ import * as fs from 'fs';
 import * as util from 'util';
 import * as path from 'path';
 
+// Describe the signature of function exported by the `shell-escape` module
+// so the compiler knows what types to expect and return.  This is needed
+// since the `shell-escape` module does not have type definitions available.
 const shellEscape: (args: Array<string>) => string = require('shell-escape');
 
 import { Setup } from './detect_setup';
 import { Reader, Writer, FsView } from './fsview';
 
+/**
+ * Generates a single file and records that the file was generated as well as
+ * the contents of the file.
+ *
+ * @param writer   The {@link Writer} used to write the file
+ * @param genFiles The map that maps file paths to file contents that is used
+ *                 to record the files generated as well as their contents
+ * @param relPath  The path, relative to the directory encapsulated by the
+ *                 given {@link Writer}, of the file to write
+ * @param contents The contents to write to the specified file
+ */
 async function generateSingleFile(writer: Writer, genFiles: Map<string, string>,
-                                  name: string, contents: string) {
-  await writer.write(name, contents);
-  genFiles.set(name, contents);
+                                  relPath: string, contents: string): Promise<void> {
+  await writer.write(relPath, contents);
+  genFiles.set(relPath, contents);
 }
 
+/**
+ * Used to generate a Dockerfile and .dockerignore file that can be Docker run
+ * to run the Node.js application described by the {@link config} parameter.
+ *
+ * @param baseNamespace The namespace of the base Node.js Docker image to use
+ *                      in the 'FROM' section of the generated Dockerfile
+ * @param baseTag       The tag of the base Node.js Docker image to use in
+ *                      the 'FROM' section of the generated Dockerfile
+ * @param appDirWriter  The writer that is capable of writing to the directory
+ *                      where the Dockerfile and .dockerignore files should
+ *                      be generated
+ * @param config        The {@link Setup} that contains information about the
+ *                      Node.js application that is used to generate the
+ *                      Dockerfile and .dockerignore files.
+ *
+ * @return A {@link Promise} so that this method can be used with async/await.
+ *         The resolved value of the {@link Promise} is a map that maps
+ *         relative paths of the files written to the contents written for
+ *         each corresponding file.
+ */
 export async function generateFiles(baseNamespace: string,
                                     baseTag: string,
                                     appDirWriter: Writer,

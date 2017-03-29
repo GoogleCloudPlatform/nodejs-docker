@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
+/**
+ * Represents an entity that is capable of reporting messages.
+ */
 export interface Logger {
+  /**
+   * Used to specify an informational message intended for end-user
+   * consumption.
+   *
+   * @param message The message to record
+   */
   log(message: string): void;
+
+  /**
+   * Used to specify an error message intended for end-user consumption.
+   *
+   * @param message The message to record
+   */
   error(messag: string): void;
 }
