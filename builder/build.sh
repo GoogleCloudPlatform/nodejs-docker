@@ -25,9 +25,8 @@ if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
   exit 1
 fi
 
-# Enter the directory that contains this script so that all paths can be
-# relative to that directory
-pushd `dirname $0`
+# Enter the steps directory so that all paths can be relative to that directory
+pushd `dirname $0`/steps
 
 pushd gen-dockerfile
 ./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}"
