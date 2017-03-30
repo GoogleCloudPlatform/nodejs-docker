@@ -37,11 +37,10 @@ async function runTest(config: Setup,
                        expectedDockerfile: string,
                        expectedDockerignore: string) {
   const appView = new MockView([]);
-  const files = await generateFiles(BASE_NAMESPACE, BASE_TAG,
-                                    appView, config);
+  const files = await generateFiles(appView, config, BASE_NAMESPACE, BASE_TAG);
   assert.ok(files);
   assert.strictEqual(files.size, 2);
-  
+
   assert.strictEqual(files.has(DOCKERFILE_NAME), true);
   assert.strictEqual(files.has(DOCKERIGNORE_NAME), true);
 

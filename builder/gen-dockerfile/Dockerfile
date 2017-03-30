@@ -16,4 +16,4 @@ ADD contents/ /opt/nodejs-runtime-builder
 # Setup the runtime builder code
 RUN cd /opt/nodejs-runtime-builder && npm install && npm run transpile
 
-ENTRYPOINT node /opt/nodejs-runtime-builder/dist/src/main.js ${BASE_NAMESPACE} ${BASE_TAG} /workspace
+ENTRYPOINT node /opt/nodejs-runtime-builder/dist/src/main.js /workspace ${BASE_NAMESPACE} ${BASE_TAG}

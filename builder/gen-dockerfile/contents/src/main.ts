@@ -25,18 +25,18 @@ import { generateFiles } from './generate_files';
  * files in that directory that are used to build a Docker image that starts
  * the Node.js application when the image is Docker run.
  *
+ * @param logger {@see detectSetup}
+ * @param appDirView {@see detectSetup} and {@see generateFiles}
  * @param baseNamespace {@see generateFiles}
  * @param baseTag {@see generateFiles}
- * @param appDirView {@see detectSetup} and {@see generateFiles}
- * @param logger {@see detectSetup}
  */
-async function generateConfigs(baseNamespace: string,
-                               baseTag: string,
+async function generateConfigs(logger: Logger,
                                appDirView: FsView,
-                               logger: Logger): Promise<Map<string, string>> {
+                               baseNamespace: string,
+                               baseTag: string): Promise<Map<string, string>> {
   try {
     const setup = await detectSetup(logger, appDirView);
-    return await generateFiles(baseNamespace, baseTag, appDirView, setup);
+    return await generateFiles(appDirView, setup, baseNamespace, baseTag);
   }
   catch (e) {
     logger.error(`Application detection failed: ${e}`);
@@ -56,14 +56,15 @@ if (require.main === module) {
       console.error(message);
     }
   };
+
   if (process.argv.length !== 5) {
     logger.error(`Usage: ${process.argv[0]} ${process.argv[1]} ` +
-                 '<docker namespace> <candidate name> <app directory>');
+                 '<app directory> <docker namespace> <candidate name>');
     process.exit(1);
   }
 
-  const baseNamespace = process.argv[2];
-  const baseTag = process.argv[3];
-  const appDir = process.argv[4];
-  generateConfigs(baseNamespace, baseTag, new FsView(appDir), logger);
+  const appDir = process.argv[2];
+  const baseNamespace = process.argv[3];
+  const baseTag = process.argv[4];
+  generateConfigs(logger, new FsView(appDir), baseNamespace, baseTag);
 }

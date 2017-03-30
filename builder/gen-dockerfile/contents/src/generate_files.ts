@@ -47,26 +47,26 @@ async function generateSingleFile(writer: Writer, genFiles: Map<string, string>,
  * Used to generate a Dockerfile and .dockerignore file that can be Docker run
  * to run the Node.js application described by the {@link config} parameter.
  *
- * @param baseNamespace The namespace of the base Node.js Docker image to use
- *                      in the 'FROM' section of the generated Dockerfile
- * @param baseTag       The tag of the base Node.js Docker image to use in
- *                      the 'FROM' section of the generated Dockerfile
  * @param appDirWriter  The writer that is capable of writing to the directory
  *                      where the Dockerfile and .dockerignore files should
  *                      be generated
  * @param config        The {@link Setup} that contains information about the
  *                      Node.js application that is used to generate the
  *                      Dockerfile and .dockerignore files.
+ * @param baseNamespace The namespace of the base Node.js Docker image to use
+ *                      in the 'FROM' section of the generated Dockerfile
+ * @param baseTag       The tag of the base Node.js Docker image to use in
+ *                      the 'FROM' section of the generated Dockerfile
  *
  * @return A {@link Promise} so that this method can be used with async/await.
  *         The resolved value of the {@link Promise} is a map that maps
  *         relative paths of the files written to the contents written for
  *         each corresponding file.
  */
-export async function generateFiles(baseNamespace: string,
-                                    baseTag: string,
-                                    appDirWriter: Writer,
-                                    config: Setup): Promise<Map<string, string>> {
+export async function generateFiles(appDirWriter: Writer,
+                                    config: Setup,
+                                    baseNamespace: string,
+                                    baseTag: string): Promise<Map<string, string>> {
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
@@ -87,7 +87,7 @@ export async function generateFiles(baseNamespace: string,
   if (config.useYarn) {
     dockerfile += await dataDirReader.read('install-yarn');
   }
-  
+
   dockerfile += 'COPY . /app/\n';
   const tool = config.useYarn ? 'yarn' : 'npm';
 

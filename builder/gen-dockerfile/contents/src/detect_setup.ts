@@ -149,8 +149,7 @@ export async function detectSetup(logger: Logger,
 
     if (!nodeVersion) {
       warn('No node version specified.  Please add your node ' +
-          'version, see ' + 
-          'https://docs.npmjs.com/files/package.json#engines');
+          'version, see https://docs.npmjs.com/files/package.json#engines');
     }
   }
 

@@ -21,7 +21,7 @@ import * as assert from 'assert';
 import { Setup, detectSetup } from '../src/detect_setup';
 import { Location, MockView, MockLogger } from './common';
 
-const VALID_APP_YAML_CONTENTS = '' + 
+const VALID_APP_YAML_CONTENTS = '' +
 `# A comment
 runtime: node.js
 env: flex
@@ -162,7 +162,7 @@ describe('detectSetup', () => {
                 [
                   'node.js checker: ignoring invalid "engines" field in package.json',
                   'No node version specified.  Please add your node ' +
-                  'version, see ' + 
+                  'version, see ' +
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
@@ -197,7 +197,7 @@ describe('detectSetup', () => {
                 [
                   'node.js checker: ignoring invalid "engines" field in package.json',
                   'No node version specified.  Please add your node ' +
-                  'version, see ' + 
+                  'version, see ' +
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
@@ -232,7 +232,7 @@ describe('detectSetup', () => {
                 [
                   'node.js checker: ignoring invalid "engines" field in package.json',
                   'No node version specified.  Please add your node ' +
-                  'version, see ' + 
+                  'version, see ' +
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
@@ -270,7 +270,7 @@ describe('detectSetup', () => {
                 [
                   'node.js checker: ignoring invalid "engines" field in package.json',
                   'No node version specified.  Please add your node ' +
-                  'version, see ' + 
+                  'version, see ' +
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
@@ -309,7 +309,7 @@ describe('detectSetup', () => {
                 [
                   'node.js checker: ignoring invalid "engines" field in package.json',
                   'No node version specified.  Please add your node ' +
-                  'version, see ' + 
+                  'version, see ' +
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
@@ -348,7 +348,7 @@ describe('detectSetup', () => {
                 [
                   'node.js checker: ignoring invalid "engines" field in package.json',
                   'No node version specified.  Please add your node ' +
-                  'version, see ' + 
+                  'version, see ' +
                   'https://docs.npmjs.com/files/package.json#engines'
                 ],
                 {
