@@ -27,16 +27,14 @@ import { generateFiles } from './generate_files';
  *
  * @param logger {@see detectSetup}
  * @param appDirView {@see detectSetup} and {@see generateFiles}
- * @param baseNamespace {@see generateFiles}
- * @param baseTag {@see generateFiles}
+ * @param baseImage {@see generateFiles}
  */
 async function generateConfigs(logger: Logger,
                                appDirView: FsView,
-                               baseNamespace: string,
-                               baseTag: string): Promise<Map<string, string>> {
+                               baseImage: string): Promise<Map<string, string>> {
   try {
     const setup = await detectSetup(logger, appDirView);
-    return await generateFiles(appDirView, setup, baseNamespace, baseTag);
+    return await generateFiles(appDirView, setup, baseImage);
   }
   catch (e) {
     logger.error(`Application detection failed: ${e}`);
@@ -57,14 +55,13 @@ if (require.main === module) {
     }
   };
 
-  if (process.argv.length !== 5) {
+  if (process.argv.length !== 4) {
     logger.error(`Usage: ${process.argv[0]} ${process.argv[1]} ` +
-                 '<app directory> <docker namespace> <candidate name>');
+                 '<app directory> <base image>');
     process.exit(1);
   }
 
   const appDir = process.argv[2];
-  const baseNamespace = process.argv[3];
-  const baseTag = process.argv[4];
-  generateConfigs(logger, new FsView(appDir), baseNamespace, baseTag);
+  const baseImage = process.argv[3];
+  generateConfigs(logger, new FsView(appDir), baseImage);
 }

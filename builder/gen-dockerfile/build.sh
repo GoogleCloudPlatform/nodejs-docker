@@ -19,22 +19,17 @@ set -e
 
 RUNTIME_NAME="nodejs-gen-dockerfile"
 
-BASE_NAMESPACE=${1}
-BASE_TAG=${2}
+BUILDER_NAMESPACE=${1}
+BUILDER_TAG=${2}
 
-BUILDER_NAMESPACE=${3}
-BUILDER_TAG=${4}
-
-if [ -z "${BASE_NAMESPACE}" -o -z "${BASE_TAG}" -o -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
-  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag>"
+if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
+  echo "Usage: ${0} <builder image namespace> <builder image tag>"
   exit 1
 fi
 
 UNTAGGED_BUILDER_NAME=${BUILDER_NAMESPACE}/${RUNTIME_NAME}
 
-# These are exported so that they can be used in cloudbuild.yaml.in
-export BASE_TAG=${BASE_TAG}
-export BASE_NAMESPACE=${BASE_NAMESPACE}
+# This is exported so that they can be used in cloudbuild.yaml.in
 export IMAGE="${UNTAGGED_BUILDER_NAME}:${BUILDER_TAG}"
 
 # Generate the yaml file used to create the image

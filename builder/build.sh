@@ -17,17 +17,21 @@
 # fail-fast
 set -e
 
-BASE_NAMESPACE=${1}
-BASE_TAG=${2}
+BUILDER_NAMESPACE=${1}
+BUILDER_TAG=${2}
 
-BUILDER_NAMESPACE=${3}
-BUILDER_TAG=${4}
-
-if [ -z "${BASE_NAMESPACE}" -o -z "${BASE_TAG}" -o -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
+if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
   echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag>"
   exit 1
 fi
 
-cd gen-dockerfile
-./build.sh "${BASE_NAMESPACE}" "${BASE_TAG}" "${BUILDER_NAMESPACE}" "${BUILDER_TAG}"
-cd ..
+# Enter the directory that contains this script so that all paths can be
+# relative to that directory
+pushd `dirname $0`
+
+pushd gen-dockerfile
+./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}"
+popd
+
+# Return to the original directory
+popd

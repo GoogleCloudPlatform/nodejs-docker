@@ -53,10 +53,8 @@ async function generateSingleFile(writer: Writer, genFiles: Map<string, string>,
  * @param config        The {@link Setup} that contains information about the
  *                      Node.js application that is used to generate the
  *                      Dockerfile and .dockerignore files.
- * @param baseNamespace The namespace of the base Node.js Docker image to use
- *                      in the 'FROM' section of the generated Dockerfile
- * @param baseTag       The tag of the base Node.js Docker image to use in
- *                      the 'FROM' section of the generated Dockerfile
+ * @param baseNamespace The full Docker name of the Node.js base image to use
+ *                      in the FROM line of the generated Dockerfile.
  *
  * @return A {@link Promise} so that this method can be used with async/await.
  *         The resolved value of the {@link Promise} is a map that maps
@@ -65,15 +63,13 @@ async function generateSingleFile(writer: Writer, genFiles: Map<string, string>,
  */
 export async function generateFiles(appDirWriter: Writer,
                                     config: Setup,
-                                    baseNamespace: string,
-                                    baseTag: string): Promise<Map<string, string>> {
+                                    baseImage: string): Promise<Map<string, string>> {
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
   // Customize the Dockerfile
   let dockerfile = util.format(await dataDirReader.read('Dockerfile'),
-                               baseNamespace,
-                               baseTag);
+                               baseImage);
   if (config.nodeVersion) {
     // Let node check to see if it satisfies the version constraint and
     // try to install the correct version if not.

@@ -29,15 +29,14 @@ import { FsView } from '../src/fsview';
 const DOCKERFILE_NAME = 'Dockerfile';
 const DOCKERIGNORE_NAME = '.dockerignore';
 
-const BASE_NAMESPACE = 'some-namespace';
-const BASE_TAG = 'some-tag';
+const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
 
 async function runTest(config: Setup,
                        expectedDockerfile: string,
                        expectedDockerignore: string) {
   const appView = new MockView([]);
-  const files = await generateFiles(appView, config, BASE_NAMESPACE, BASE_TAG);
+  const files = await generateFiles(appView, config, BASE_IMAGE);
   assert.ok(files);
   assert.strictEqual(files.size, 2);
 
@@ -76,7 +75,7 @@ describe('generateFiles', async () => {
   before(async () => {
     const dataView = new FsView('.');
 
-    BASE = util.format(await dataView.read('./src/data/Dockerfile'), BASE_NAMESPACE, BASE_TAG);
+    BASE = util.format(await dataView.read('./src/data/Dockerfile'), BASE_IMAGE);
 
     UPGRADE_NODE = util.format(await dataView.read('./src/data/install-node-version'),
                                                    shellEscape([ NODE_VERSION ]),
