@@ -24,7 +24,12 @@ gulp.task('clean', function() {
   return del('dist/**/*');
 });
 
-gulp.task('copy-data', ['clean'], function() {
+gulp.task('copy-package-json', ['clean'], function() {
+  return gulp.src('package.json')
+             .pipe(gulp.dest('dist'));
+});
+
+gulp.task('copy-data', ['copy-package-json'], function() {
   return gulp.src('src/data/**/*')
              .pipe(gulp.dest('dist/src/data'));
 });

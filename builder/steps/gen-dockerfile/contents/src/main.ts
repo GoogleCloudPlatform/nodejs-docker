@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ArgumentParser } from 'argparse';
+
 import { Logger } from './logger';
 import { FsView } from './fsview';
 import { detectSetup } from './detect_setup';
@@ -45,6 +47,29 @@ async function generateConfigs(logger: Logger,
 // Only run the code if this file was invoked from the command line
 // (i.e. not required).
 if (require.main === module) {
+  let parser = new ArgumentParser({
+    version: require('../package.json').version,
+    addHelp: true,
+    description: 'Generates Dockerfile and .dockerignore files that can be' +
+                 'used to build a Docker image that runs an application' +
+                 'when Docker run.'
+  });
+  parser.addArgument(['--app-dir'], {
+    help: 'The root directory of the application code',
+    required: true,
+    nargs: 1
+  });
+  parser.addArgument(['--base-image'], {
+    help: 'The full Docker image name of the base image to use when ' +
+          'constructing the Dockerfile',
+    required: true,
+    nargs: 1
+  });
+
+  let args = parser.parseArgs();
+  let appDir = args.app_dir[0];
+  let baseImage = args.base_image[0];
+
   const logger = {
     log: (message: string) => {
       console.log(message);
@@ -55,13 +80,5 @@ if (require.main === module) {
     }
   };
 
-  if (process.argv.length !== 4) {
-    logger.error(`Usage: ${process.argv[0]} ${process.argv[1]} ` +
-                 '<app directory> <base image>');
-    process.exit(1);
-  }
-
-  const appDir = process.argv[2];
-  const baseImage = process.argv[3];
   generateConfigs(logger, new FsView(appDir), baseImage);
 }

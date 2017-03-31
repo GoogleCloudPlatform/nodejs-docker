@@ -10,4 +10,4 @@ ADD contents/ /opt/nodejs-runtime-builder
 # Setup the runtime builder code
 RUN cd /opt/nodejs-runtime-builder && npm install && npm run transpile
 
-ENTRYPOINT ["node", "/opt/nodejs-runtime-builder/dist/src/main.js", "/workspace"]
+ENTRYPOINT ["node", "/opt/nodejs-runtime-builder/dist/src/main.js", "--app-dir", "/workspace"]

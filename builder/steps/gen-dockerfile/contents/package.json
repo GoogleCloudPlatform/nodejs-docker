@@ -10,6 +10,7 @@
   },
   "version": "0.0.1",
   "devDependencies": {
+    "@types/argparse": "^1.0.30",
     "@types/js-yaml": "^3.5.29",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
@@ -23,6 +24,7 @@
     "typescript": "^2.2.1"
   },
   "dependencies": {
+    "argparse": "^1.0.9",
     "dedent-js": "^1.0.1",
     "js-yaml": "^3.8.1",
     "pify": "^2.3.0",
