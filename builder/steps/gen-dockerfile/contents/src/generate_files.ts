@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
 import * as util from 'util';
 import * as path from 'path';
 
@@ -24,7 +23,7 @@ import * as path from 'path';
 const shellEscape: (args: Array<string>) => string = require('shell-escape');
 
 import { Setup } from './detect_setup';
-import { Reader, Writer, FsView } from './fsview';
+import { Writer, FsView } from './fsview';
 
 /**
  * Generates a single file and records that the file was generated as well as

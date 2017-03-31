@@ -21,8 +21,6 @@ var gulp = require('gulp');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 
-var tsFiles = ["src/**/*.ts", "test/**/*.ts"];
-
 gulp.task('clean', function() {
   return del('dist/**/*');
 });
@@ -37,10 +35,22 @@ gulp.task('copy-data', ['copy-package-json'], function() {
              .pipe(gulp.dest('dist/src/data'));
 });
 
-gulp.task('default', ['copy-data'], function() {
-  return gulp.src(tsFiles)
+gulp.task('compile-test', ['copy-data'], function() {
+  return gulp.src(["test/**/*.ts"])
              .pipe(sourcemaps.init())
              .pipe(ts.createProject('tsconfig.json')())
              .pipe(sourcemaps.write())
-             .pipe(gulp.dest('dist'));
+             .pipe(gulp.dest('dist/test'));
 });
+
+gulp.task('compile-src', ['compile-test'], function() {
+  return gulp.src(["src/**/*.ts"])
+             .pipe(sourcemaps.init())
+             .pipe(ts.createProject('tsconfig.json')())
+             .pipe(sourcemaps.write())
+             .pipe(gulp.dest('dist/src'));
+});
+
+gulp.task('compile', [ 'compile-src' ]);
+
+gulp.task('default', ['compile']);

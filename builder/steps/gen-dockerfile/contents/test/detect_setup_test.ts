@@ -37,7 +37,7 @@ describe('detectSetup', () => {
                        locations: Array<Location>,
                        expectedLogs: Array<string>,
                        expectedErrors: Array<string>,
-                       expectedResult: Setup,
+                       expectedResult: Setup | undefined,
                        expectedThrownErrMessage?: RegExp) {
     it(title, async () => {
       const logger = new MockLogger();
@@ -132,7 +132,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: false,
                   gotScriptsStart: false,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: false
                 });
 
@@ -166,7 +166,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: true,
                   gotScriptsStart: false,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: false
                 });
 
@@ -201,7 +201,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: true,
                   gotScriptsStart: false,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: false
                 });
 
@@ -236,7 +236,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: true,
                   gotScriptsStart: false,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: true
                 });
 
@@ -274,7 +274,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: true,
                   gotScriptsStart: true,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: false
                 });
 
@@ -313,7 +313,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: true,
                   gotScriptsStart: true,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: false
                 });
 
@@ -352,7 +352,7 @@ describe('detectSetup', () => {
                 {
                   canInstallDeps: true,
                   gotScriptsStart: true,
-                  nodeVersion: null,
+                  nodeVersion: undefined,
                   useYarn: true
                 });
   });

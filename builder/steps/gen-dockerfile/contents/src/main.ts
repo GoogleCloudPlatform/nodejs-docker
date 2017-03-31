@@ -41,6 +41,7 @@ async function generateConfigs(logger: Logger,
   catch (e) {
     logger.error(`Application detection failed: ${e}`);
     process.exit(1);
+    return Promise.reject(new Map<string, string>());
   }
 }
 

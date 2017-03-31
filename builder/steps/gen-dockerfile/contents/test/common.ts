@@ -44,15 +44,15 @@ export class MockView implements Reader, Writer, Locator {
   constructor(private configs: ReadonlyArray<Location>) {
   }
 
-  private findLocation(path: string): Location {
+  private findLocation(path: string): Location | undefined {
     return this.configs.find((value: Location): boolean => {
       return value.path === path;
     });
   }
 
-  async read(path: string): Promise<string> {
+  async read(path: string): Promise<string | undefined> {
     const location = this.findLocation(path);
-    if (!location.exists) {
+    if (!location || !location.exists) {
       throw new Error(`Path not found ${path}`);
     }
 

@@ -42,7 +42,7 @@ export interface Setup {
    * Specifies the version of Node.js used to run the application as specified
    * by the application's package.json file
    */
-  nodeVersion?: string;
+  nodeVersion: string | undefined;
   /**
    * Specifies whether or not Yarn should be used to install the application's
    * dependencies and launch the app.
@@ -91,14 +91,14 @@ export async function detectSetup(logger: Logger,
 
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
-  let nodeVersion: string;
+  let nodeVersion: string | undefined;
   let useYarn: boolean;
 
   if (!(await fsview.exists(PACKAGE_JSON))){
     logger.log('node.js checker: No package.json file.');
     canInstallDeps = false;
     gotScriptsStart = false;
-    nodeVersion = null;
+    nodeVersion = undefined;
     useYarn = false;
   }
   else {
@@ -142,7 +142,7 @@ export async function detectSetup(logger: Logger,
       nodeVersion = packageJson.engines.node;
     }
     else {
-      nodeVersion = null;
+      nodeVersion = undefined;
       warn('node.js checker: ignoring invalid "engines" field in ' +
           'package.json');
     }
