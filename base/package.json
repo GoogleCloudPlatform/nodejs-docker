@@ -4,7 +4,7 @@
   "scripts": {
     "test": "mocha --timeout 25000",
     "prepare-test": "find test/* -type d -maxdepth 0 -exec docker build -t {} {} \\;",
-    "build": "docker build -t test/nodejs base"
+    "build": "docker build -t test/nodejs ."
   },
   "devDependencies": {
     "mocha": "^2.4.5",
