@@ -21,9 +21,10 @@ RUNTIME_NAME="nodejs-gen-dockerfile"
 
 BUILDER_NAMESPACE=${1}
 BUILDER_TAG=${2}
+UPLOAD_TO_STAGING=${3}
 
-if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
-  echo "Usage: ${0} <builder image namespace> <builder image tag>"
+if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING}" ]; then
+  echo "Usage: ${0} <builder image namespace> <builder image tag> <upload to staging (true|false)>"
   exit 1
 fi
 
@@ -38,5 +39,6 @@ envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 # Build the image
 gcloud container builds submit --config=cloudbuild.yaml .
 
-# Tag the built image with 'latest' so that it is used by nodejs.yaml
-gcloud --quiet beta container images add-tag ${IMAGE} ${UNTAGGED_BUILDER_NAME}:latest
+if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
+  gcloud --quiet beta container images add-tag ${IMAGE} ${UNTAGGED_BUILDER_NAME}:staging
+fi

@@ -19,9 +19,10 @@ set -e
 
 BUILDER_NAMESPACE=${1}
 BUILDER_TAG=${2}
+UPLOAD_TO_STAGING=${3}
 
-if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" ]; then
-  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag>"
+if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING}" ]; then
+  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag> <upload to staging (true|false)>"
   exit 1
 fi
 
@@ -29,7 +30,7 @@ fi
 pushd `dirname $0`/steps
 
 pushd gen-dockerfile
-./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}"
+./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}" "${UPLOAD_TO_STAGING}"
 popd
 
 # Return to the original directory
