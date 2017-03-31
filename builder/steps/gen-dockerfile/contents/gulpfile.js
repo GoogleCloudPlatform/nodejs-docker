@@ -18,8 +18,26 @@ require('source-map-support').install();
 
 var del = require('del');
 var gulp = require('gulp');
+var format = require('gulp-clang-format');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
+
+var allFiles = ['src/**/*.ts', 'test/**/*.ts', '*.js'];
+
+gulp.task('check-format', function() {
+  return gulp.src(allFiles)
+             .pipe(format.checkFormat('file'))
+             .on('warning', function(w) {
+               process.stderr.write(w.message);
+               process.exit(1);
+             });
+});
+
+gulp.task('format', function() {
+  return gulp.src(allFiles, { base: '.' })
+             .pipe(format.format())
+             .pipe(gulp.dest('.'));
+});
 
 gulp.task('clean', function() {
   return del('dist/**/*');
@@ -36,7 +54,7 @@ gulp.task('copy-data', ['copy-package-json'], function() {
 });
 
 gulp.task('compile-test', ['copy-data'], function() {
-  return gulp.src(["test/**/*.ts"])
+  return gulp.src(['test/**/*.ts'])
              .pipe(sourcemaps.init())
              .pipe(ts.createProject('tsconfig.json')())
              .pipe(sourcemaps.write())
@@ -44,7 +62,7 @@ gulp.task('compile-test', ['copy-data'], function() {
 });
 
 gulp.task('compile-src', ['compile-test'], function() {
-  return gulp.src(["src/**/*.ts"])
+  return gulp.src(['src/**/*.ts'])
              .pipe(sourcemaps.init())
              .pipe(ts.createProject('tsconfig.json')())
              .pipe(sourcemaps.write())
