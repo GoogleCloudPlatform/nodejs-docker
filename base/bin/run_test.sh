@@ -14,24 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# fail-fast
+# Fail fast
 set -e
 
-BUILDER_NAMESPACE=${1}
-BUILDER_TAG=${2}
-UPLOAD_TO_STAGING=${3}
+# Change the current working directory to the `base` directory instead of
+# the `base/bin` directory
+pushd `dirname $0`/.. > /dev/null
 
-if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING}" ]; then
-  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag> <upload to staging (true|false)>"
-  exit 1
-fi
+npm run build
+npm run prepare-test
 
-# Enter the steps directory so that all paths can be relative to that directory
-pushd `dirname $0`/steps
+npm install
 
-pushd gen-dockerfile
-./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}" "${UPLOAD_TO_STAGING}"
-popd
+npm test
 
-# Return to the original directory
-popd
+EXT_RUN_SH=./bin/ext_run.sh
+curl https://raw.githubusercontent.com/GoogleCloudPlatform/runtimes-common/master/structure_tests/ext_run.sh > ${EXT_RUN_SH}
+chmod +x ${EXT_RUN_SH}
+${EXT_RUN_SH} -i test/nodejs -v --config test/test_config.yaml

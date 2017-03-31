@@ -1,4 +1,8 @@
 
+# Change the current working directory to the `base` directory instead of
+# the `base/bin` directory
+pushd `dirname $0`/.. > /dev/null
+
 RUNTIME_NAME="nodejs"
 DOCKER_NAMESPACE=${1}
 CANDIDATE_NAME=${2}

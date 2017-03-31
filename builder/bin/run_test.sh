@@ -17,9 +17,10 @@
 # Fail fast
 set -e
 
-pushd `dirname $0` > /dev/null
+# Enter the steps directory so that all paths can be relative to that directory
+pushd `dirname $0`/../steps > /dev/null
 
-pushd steps/gen-dockerfile/contents/ > /dev/null
+pushd gen-dockerfile/contents/ > /dev/null
 yarn install
 yarn test
 popd > /dev/null

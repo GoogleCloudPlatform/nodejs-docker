@@ -14,16 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fail fast
+# fail-fast
 set -e
 
-npm run build
-npm run prepare-test
+BUILDER_NAMESPACE=${1}
+BUILDER_TAG=${2}
+UPLOAD_TO_STAGING=${3}
 
-npm install
+if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING}" ]; then
+  echo "Usage: ${0} <base image namespace> <base image tag> <builder image namespace> <builder image tag> <upload to staging (true|false)>"
+  exit 1
+fi
 
-npm test
+# Enter the steps directory so that all paths can be relative to that directory
+pushd `dirname $0`/../steps > /dev/null
 
-curl https://raw.githubusercontent.com/GoogleCloudPlatform/runtimes-common/master/structure_tests/ext_run.sh > ext_run.sh
-chmod +x ext_run.sh
-./ext_run.sh -i test/nodejs -v --config test/test_config.yaml
+pushd gen-dockerfile > /dev/null
+./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}" "${UPLOAD_TO_STAGING}"
+popd > /dev/null
+
+# Return to the original directory
+popd > /dev/null
