@@ -1,8 +1,4 @@
 {
-  "files": [
-    "src/**/*.ts",
-    "test/**/*.ts"
-  ],
   "compilerOptions": {
     "noImplicitAny": true,
     "module": "commonjs",

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+require('source-map-support').install();
+
 var del = require('del');
 var gulp = require('gulp');
-var ts = require('gulp-typescript');
 var sourcemaps = require('gulp-sourcemaps');
-var tsProject = ts.createProject('tsconfig.json');
+var ts = require('gulp-typescript');
+
+var tsFiles = ["src/**/*.ts", "test/**/*.ts"];
 
 gulp.task('clean', function() {
   return del('dist/**/*');
@@ -35,9 +38,9 @@ gulp.task('copy-data', ['copy-package-json'], function() {
 });
 
 gulp.task('default', ['copy-data'], function() {
-  return tsProject.src()
-                  .pipe(sourcemaps.init())
-                  .pipe(tsProject())
-                  .pipe(sourcemaps.write())
-                  .pipe(gulp.dest('dist'));
+  return gulp.src(tsFiles)
+             .pipe(sourcemaps.init())
+             .pipe(ts.createProject('tsconfig.json')())
+             .pipe(sourcemaps.write())
+             .pipe(gulp.dest('dist'));
 });

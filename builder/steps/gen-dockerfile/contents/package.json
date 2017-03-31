@@ -2,10 +2,9 @@
   "name": "nodejs-gen-dockerfile",
   "description": "",
   "scripts": {
-    "transpile": "gulp",
-    "pretest": "npm run transpile",
+    "pretest": "gulp",
     "test": "mocha dist/test/**/*.js",
-    "prestart": "npm run transpile",
+    "prestart": "gulp",
     "start": "node dist/src/main.js"
   },
   "version": "0.0.1",

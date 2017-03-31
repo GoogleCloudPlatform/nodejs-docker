@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-require('source-map-support').install();
-
 import * as assert from 'assert';
 import * as util from 'util';
 

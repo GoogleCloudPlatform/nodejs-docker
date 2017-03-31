@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-require('source-map-support').install();
-
 import * as assert from 'assert';
 
 import { Setup, detectSetup } from '../src/detect_setup';
