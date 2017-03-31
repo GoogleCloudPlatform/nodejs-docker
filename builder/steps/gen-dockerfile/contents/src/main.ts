@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ArgumentParser } from 'argparse';
+import {ArgumentParser} from 'argparse';
 
-import { Logger } from './logger';
-import { FsView } from './fsview';
-import { detectSetup } from './detect_setup';
-import { generateFiles } from './generate_files';
+import {detectSetup} from './detect_setup';
+import {FsView} from './fsview';
+import {generateFiles} from './generate_files';
+import {Logger} from './logger';
 
 /**
  * Analyzes a Node.js application in the directory specified by the
@@ -31,19 +31,17 @@ import { generateFiles } from './generate_files';
  * @param appDirView {@see detectSetup} and {@see generateFiles}
  * @param baseImage {@see generateFiles}
  */
-async function generateConfigs(logger: Logger,
-                               appDirView: FsView,
-                               baseImage: string): Promise<Map<string, string>> {
-  try {
-    const setup = await detectSetup(logger, appDirView);
-    return await generateFiles(appDirView, setup, baseImage);
-  }
-  catch (e) {
-    logger.error(`Application detection failed: ${e}`);
-    process.exit(1);
-    return Promise.reject(new Map<string, string>());
-  }
-}
+async function generateConfigs(logger: Logger, appDirView: FsView, baseImage: string):
+    Promise<Map<string, string>> {
+      try {
+        const setup = await detectSetup(logger, appDirView);
+        return await generateFiles(appDirView, setup, baseImage);
+      } catch (e) {
+        logger.error(`Application detection failed: ${e}`);
+        process.exit(1);
+        return Promise.reject(new Map<string, string>());
+      }
+    }
 
 // Only run the code if this file was invoked from the command line
 // (i.e. not required).
@@ -52,17 +50,15 @@ if (require.main === module) {
     version: require('../package.json').version,
     addHelp: true,
     description: 'Generates Dockerfile and .dockerignore files that can be' +
-                 'used to build a Docker image that runs an application' +
-                 'when Docker run.'
+        'used to build a Docker image that runs an application' +
+        'when Docker run.'
   });
-  parser.addArgument(['--app-dir'], {
-    help: 'The root directory of the application code',
-    required: true,
-    nargs: 1
-  });
+  parser.addArgument(
+      ['--app-dir'],
+      {help: 'The root directory of the application code', required: true, nargs: 1});
   parser.addArgument(['--base-image'], {
     help: 'The full Docker image name of the base image to use when ' +
-          'constructing the Dockerfile',
+        'constructing the Dockerfile',
     required: true,
     nargs: 1
   });

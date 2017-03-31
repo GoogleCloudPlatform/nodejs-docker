@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Logger } from '../src/logger';
-import { Reader, Writer, Locator } from '../src/fsview';
+import {Locator, Reader, Writer} from '../src/fsview';
+import {Logger} from '../src/logger';
 
 export class MockLogger implements Logger {
   readonly logs: Array<string> = [];
@@ -41,16 +41,15 @@ export class MockView implements Reader, Writer, Locator {
   readonly pathsLocated: Array<Location> = [];
   readonly pathsWritten: Array<Location> = [];
 
-  constructor(private configs: ReadonlyArray<Location>) {
-  }
+  constructor(private configs: ReadonlyArray<Location>) {}
 
-  private findLocation(path: string): Location | undefined {
+  private findLocation(path: string): Location|undefined {
     return this.configs.find((value: Location): boolean => {
       return value.path === path;
     });
   }
 
-  async read(path: string): Promise<string | undefined> {
+  async read(path: string): Promise<string|undefined> {
     const location = this.findLocation(path);
     if (!location || !location.exists) {
       throw new Error(`Path not found ${path}`);
@@ -63,9 +62,10 @@ export class MockView implements Reader, Writer, Locator {
   async exists(path: string): Promise<boolean> {
     const location = this.findLocation(path);
     if (!location) {
-      throw new Error('Existence of unknown path "' + path + '" requested.  ' +
-                      'Unit tests must explicitly list which paths exist ' +
-                      'and don\'t exist');
+      throw new Error(
+          'Existence of unknown path "' + path + '" requested.  ' +
+          'Unit tests must explicitly list which paths exist ' +
+          'and don\'t exist');
     }
 
     this.pathsLocated.push(location);
@@ -73,10 +73,6 @@ export class MockView implements Reader, Writer, Locator {
   }
 
   async write(path: string, contents: string): Promise<void> {
-    this.pathsWritten.push({
-      path: path,
-      exists: true,
-      contents: contents
-    });
+    this.pathsWritten.push({path: path, exists: true, contents: contents});
   }
 }

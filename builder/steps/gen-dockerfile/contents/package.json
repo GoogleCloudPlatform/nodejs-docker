@@ -3,7 +3,7 @@
   "description": "",
   "scripts": {
     "pretest": "gulp",
-    "test": "mocha dist/test/**/*.js",
+    "test": "gulp check-format && mocha dist/test/**/*.js",
     "prestart": "gulp",
     "start": "node dist/src/main.js"
   },
@@ -14,6 +14,7 @@
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
     "@types/pify": "0.0.28",
+    "clang-format": "^1.0.49",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-clang-format": "^1.0.23",

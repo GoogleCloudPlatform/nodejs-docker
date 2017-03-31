@@ -16,8 +16,8 @@
 
 import * as yaml from 'js-yaml';
 
-import { Logger } from './logger';
-import { Reader, Locator } from './fsview';
+import {Locator, Reader} from './fsview';
+import {Logger} from './logger';
 
 const APP_YAML = 'app.yaml';
 const PACKAGE_JSON = 'package.json';
@@ -42,7 +42,7 @@ export interface Setup {
    * Specifies the version of Node.js used to run the application as specified
    * by the application's package.json file
    */
-  nodeVersion: string | undefined;
+  nodeVersion: string|undefined;
   /**
    * Specifies whether or not Yarn should be used to install the application's
    * dependencies and launch the app.
@@ -76,39 +76,37 @@ export interface Setup {
  *         be used to determine how to install the application's dependencies
  *         and run the application.
  */
-export async function detectSetup(logger: Logger,
-                                  fsview: Reader & Locator): Promise<Setup> {
+export async function detectSetup(logger: Logger, fsview: Reader&Locator): Promise<Setup> {
   if (!(await fsview.exists(APP_YAML))) {
     throw new Error(`The file ${APP_YAML} does not exist`);
   }
   const config = yaml.safeLoad(await fsview.read(APP_YAML));
 
   // If nodejs has been explicitly specified then treat warnings as errors.
-  const warn: (m: string) => void = config.runtime ? logger.error.bind(logger)
-                                                   : logger.log.bind(logger);
+  const warn: (m: string) => void =
+      config.runtime ? logger.error.bind(logger) : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
-  let nodeVersion: string | undefined;
+  let nodeVersion: string|undefined;
   let useYarn: boolean;
 
-  if (!(await fsview.exists(PACKAGE_JSON))){
+  if (!(await fsview.exists(PACKAGE_JSON))) {
     logger.log('node.js checker: No package.json file.');
     canInstallDeps = false;
     gotScriptsStart = false;
     nodeVersion = undefined;
     useYarn = false;
-  }
-  else {
+  } else {
     canInstallDeps = true;
 
     // Consider the yarn.lock file as present if and only if the yarn.lock
     // file exists and is not specified as being skipped in app.yaml.
     let skipFiles = config.skip_files || [];
     if (!Array.isArray(skipFiles)) {
-      skipFiles = [ skipFiles ];
+      skipFiles = [skipFiles];
     }
 
     const yarnLockExists: boolean = await fsview.exists(YARN_LOCK);
@@ -125,8 +123,7 @@ export async function detectSetup(logger: Logger,
 
     try {
       packageJson = JSON.parse(contents);
-    }
-    catch (e) {
+    } catch (e) {
       // If we have an invalid or unreadable package.json file, there's
       // something funny going on here so fail recognition.
       // A package.json that exists is unusual enough that we want to warn
@@ -140,23 +137,25 @@ export async function detectSetup(logger: Logger,
     // See if a version of node is specified.
     if (packageJson.engines && packageJson.engines.node) {
       nodeVersion = packageJson.engines.node;
-    }
-    else {
+    } else {
       nodeVersion = undefined;
-      warn('node.js checker: ignoring invalid "engines" field in ' +
+      warn(
+          'node.js checker: ignoring invalid "engines" field in ' +
           'package.json');
     }
 
     if (!nodeVersion) {
-      warn('No node version specified.  Please add your node ' +
+      warn(
+          'No node version specified.  Please add your node ' +
           'version, see https://docs.npmjs.com/files/package.json#engines');
     }
   }
 
   if (!gotScriptsStart && !(await fsview.exists('server.js'))) {
-    throw new Error('node.js checker: Neither "start" in the '+
-                    '"scripts" section of "package.json" nor ' +
-                    'the "server.js" file were found.');
+    throw new Error(
+        'node.js checker: Neither "start" in the ' +
+        '"scripts" section of "package.json" nor ' +
+        'the "server.js" file were found.');
   }
 
   return {

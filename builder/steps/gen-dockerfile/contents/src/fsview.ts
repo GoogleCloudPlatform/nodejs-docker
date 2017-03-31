@@ -87,9 +87,8 @@ export interface Locator {
  */
 export class FsView implements Reader, Writer, Locator {
   constructor(
-    /** The path to the directory to process. */
-    private basePath: string) {
-  }
+      /** The path to the directory to process. */
+      private basePath: string) {}
 
   /**
    * Used to get the aboslute path relative to this view's base directory

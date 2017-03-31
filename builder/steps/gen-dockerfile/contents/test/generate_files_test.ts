@@ -19,10 +19,10 @@ import * as util from 'util';
 
 const shellEscape: (args: Array<string>) => string = require('shell-escape');
 
-import { generateFiles } from '../src/generate_files';
-import { Setup } from '../src/detect_setup';
-import { Location, MockView } from './common';
-import { FsView } from '../src/fsview';
+import {generateFiles} from '../src/generate_files';
+import {Setup} from '../src/detect_setup';
+import {Location, MockView} from './common';
+import {FsView} from '../src/fsview';
 
 const DOCKERFILE_NAME = 'Dockerfile';
 const DOCKERIGNORE_NAME = '.dockerignore';
@@ -30,9 +30,7 @@ const DOCKERIGNORE_NAME = '.dockerignore';
 const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
 
-async function runTest(config: Setup,
-                       expectedDockerfile: string,
-                       expectedDockerignore: string) {
+async function runTest(config: Setup, expectedDockerfile: string, expectedDockerignore: string) {
   const appView = new MockView([]);
   const files = await generateFiles(appView, config, BASE_IMAGE);
   assert.ok(files);
@@ -44,15 +42,10 @@ async function runTest(config: Setup,
   assert.strictEqual(files.get(DOCKERFILE_NAME), expectedDockerfile);
   assert.strictEqual(files.get(DOCKERIGNORE_NAME), expectedDockerignore);
 
-  const expectedFilesWritten: Array<Location> = [{
-    path: 'Dockerfile',
-    exists: true,
-    contents: expectedDockerfile
-  }, {
-    path: '.dockerignore',
-    exists: true,
-    contents: expectedDockerignore
-  }];
+  const expectedFilesWritten: Array<Location> = [
+    {path: 'Dockerfile', exists: true, contents: expectedDockerfile},
+    {path: '.dockerignore', exists: true, contents: expectedDockerignore}
+  ];
 
   assert.strictEqual(appView.pathsWritten.length, 2);
   assert.deepStrictEqual(appView.pathsWritten, expectedFilesWritten);
@@ -75,9 +68,9 @@ describe('generateFiles', async () => {
 
     BASE = util.format(await dataView.read('./src/data/Dockerfile'), BASE_IMAGE);
 
-    UPGRADE_NODE = util.format(await dataView.read('./src/data/install-node-version'),
-                                                   shellEscape([ NODE_VERSION ]),
-                                                   shellEscape([ NODE_VERSION ]));
+    UPGRADE_NODE = util.format(
+        await dataView.read('./src/data/install-node-version'), shellEscape([NODE_VERSION]),
+        shellEscape([NODE_VERSION]));
 
     COPY_CONTENTS = `COPY . /app/\n`;
 
@@ -93,179 +86,137 @@ describe('generateFiles', async () => {
     DOCKERIGNORE = await dataView.read('./src/data/dockerignore');
   });
 
-  it('should generate correctly without installing dependencies, without start script, without Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: false,
-      nodeVersion: undefined,
-      useYarn: false
-    },
-    BASE + COPY_CONTENTS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, without start script, without Node.version, and using npm',
+     async () => {
+       await runTest(
+           {canInstallDeps: false, gotScriptsStart: false, nodeVersion: undefined, useYarn: false},
+           BASE + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, without start script, without Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: false,
-      nodeVersion: undefined,
-      useYarn: true
-    },
-    BASE + INSTALL_YARN + COPY_CONTENTS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, without start script, without Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: false, gotScriptsStart: false, nodeVersion: undefined, useYarn: true},
+           BASE + INSTALL_YARN + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, without start script, with Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: false,
-      nodeVersion: NODE_VERSION,
-      useYarn: false,
-    },
-    BASE + UPGRADE_NODE + COPY_CONTENTS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, without start script, with Node.version, and using npm',
+     async () => {
+       await runTest(
+           {
+             canInstallDeps: false,
+             gotScriptsStart: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: false,
+           },
+           BASE + UPGRADE_NODE + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, without start script, with Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: false,
-      nodeVersion: NODE_VERSION,
-      useYarn: true
-    },
-    BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, without start script, with Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {
+             canInstallDeps: false,
+             gotScriptsStart: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: true
+           },
+           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, with start script, without Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: true,
-      nodeVersion: undefined,
-      useYarn: false
-    },
-    BASE + COPY_CONTENTS + NPM_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, with start script, without Node.version, and using npm',
+     async () => {
+       await runTest(
+           {canInstallDeps: false, gotScriptsStart: true, nodeVersion: undefined, useYarn: false},
+           BASE + COPY_CONTENTS + NPM_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, with start script, without Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: true,
-      nodeVersion: undefined,
-      useYarn: true
-    },
-    BASE + INSTALL_YARN + COPY_CONTENTS + YARN_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, with start script, without Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: false, gotScriptsStart: true, nodeVersion: undefined, useYarn: true},
+           BASE + INSTALL_YARN + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, with start script, with Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: true,
-      nodeVersion: NODE_VERSION,
-      useYarn: false
-    },
-    BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, with start script, with Node.version, and using npm',
+     async () => {
+       await runTest(
+           {
+             canInstallDeps: false,
+             gotScriptsStart: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: false
+           },
+           BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly without installing dependencies, with start script, with Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: false,
-      gotScriptsStart: true,
-      nodeVersion: NODE_VERSION,
-      useYarn: true
-    },
-    BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly without installing dependencies, with start script, with Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: false, gotScriptsStart: true, nodeVersion: NODE_VERSION, useYarn: true},
+           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, without start script, without Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: false,
-      nodeVersion: undefined,
-      useYarn: false
-    },
-    BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, without start script, without Node.version, and using npm',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: false, nodeVersion: undefined, useYarn: false},
+           BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, without start script, without Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: false,
-      nodeVersion: undefined,
-      useYarn: true
-    },
-    BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, without start script, without Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: false, nodeVersion: undefined, useYarn: true},
+           BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, without start script, with Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: false,
-      nodeVersion: NODE_VERSION,
-      useYarn: false
-    },
-    BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_INSTALL_DEPS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, without start script, with Node.version, and using npm',
+     async () => {
+       await runTest(
+           {
+             canInstallDeps: true,
+             gotScriptsStart: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: false
+           },
+           BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_INSTALL_DEPS + SERVER_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, without start script, with Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: false,
-      nodeVersion: NODE_VERSION,
-      useYarn: true
-    },
-    BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + SERVER_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, without start script, with Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: false, nodeVersion: NODE_VERSION, useYarn: true},
+           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + SERVER_START,
+           DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, with start script, without Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: true,
-      nodeVersion: undefined,
-      useYarn: false
-    },
-    BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, with start script, without Node.version, and using npm',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: true, nodeVersion: undefined, useYarn: false},
+           BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, with start script, without Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: true,
-      nodeVersion: undefined,
-      useYarn: true
-    },
-    BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, with start script, without Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: true, nodeVersion: undefined, useYarn: true},
+           BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, with start script, with Node.version, and using npm', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: true,
-      nodeVersion: NODE_VERSION,
-      useYarn: false
-    },
-    BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, with start script, with Node.version, and using npm',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: true, nodeVersion: NODE_VERSION, useYarn: false},
+           BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START, DOCKERIGNORE);
+     });
 
-  it('should generate correctly with installing dependencies, with start script, with Node.version, and using yarn', async () => {
-    await runTest({
-      canInstallDeps: true,
-      gotScriptsStart: true,
-      nodeVersion: NODE_VERSION,
-      useYarn: true
-    },
-    BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
-    DOCKERIGNORE);
-  });
+  it('should generate correctly with installing dependencies, with start script, with Node.version, and using yarn',
+     async () => {
+       await runTest(
+           {canInstallDeps: true, gotScriptsStart: true, nodeVersion: NODE_VERSION, useYarn: true},
+           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
+           DOCKERIGNORE);
+     });
 });
