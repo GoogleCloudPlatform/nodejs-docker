@@ -20,6 +20,7 @@ set -e
 pushd `dirname $0` > /dev/null
 
 pushd steps/gen-dockerfile/contents/ > /dev/null
+yarn install
 yarn test
 popd > /dev/null
 
