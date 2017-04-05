@@ -17,7 +17,7 @@
 import * as assert from 'assert';
 import * as util from 'util';
 
-const shellEscape: (args: Array<string>) => string = require('shell-escape');
+const shellEscape: (args: string[]) => string = require('shell-escape');
 
 import {generateFiles} from '../src/generate_files';
 import {Setup} from '../src/detect_setup';
@@ -42,7 +42,7 @@ async function runTest(config: Setup, expectedDockerfile: string, expectedDocker
   assert.strictEqual(files.get(DOCKERFILE_NAME), expectedDockerfile);
   assert.strictEqual(files.get(DOCKERIGNORE_NAME), expectedDockerignore);
 
-  const expectedFilesWritten: Array<Location> = [
+  const expectedFilesWritten: Location[] = [
     {path: 'Dockerfile', exists: true, contents: expectedDockerfile},
     {path: '.dockerignore', exists: true, contents: expectedDockerignore}
   ];

@@ -1,4 +1,4 @@
-FROM gcr.io/google_appengine/nodejs
+FROM gcr.io/google-appengine/nodejs
 
 # Install necessary dependencies
 RUN apt-get update -y && apt-get install --no-install-recommends -y -q rsync

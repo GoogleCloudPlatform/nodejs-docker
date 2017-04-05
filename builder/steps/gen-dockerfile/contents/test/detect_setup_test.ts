@@ -34,8 +34,8 @@ const VALID_APP_YAML_CONTENTS_SKIP_YARN = VALID_APP_YAML_CONTENTS + `skip_files:
 
 describe('detectSetup', () => {
   function performTest(
-      title: string, locations: Array<Location>, expectedLogs: Array<string>,
-      expectedErrors: Array<string>, expectedResult: Setup|undefined,
+      title: string, locations: Location[], expectedLogs: string[],
+      expectedErrors: string[], expectedResult: Setup|undefined,
       expectedThrownErrMessage?: RegExp) {
     it(title, async () => {
       const logger = new MockLogger();
@@ -50,7 +50,7 @@ describe('detectSetup', () => {
               expectedThrownErrMessage.test(e.message),
               '"' + e.message + '" does not match "' + expectedThrownErrMessage + '"');
         } else {
-          assert.ok(!e, `Unexpected error thrown ${e.message}`);
+          assert.ok(!e, `Unexpected error thrown: ${e.message}`);
         }
       }
       assert.deepStrictEqual(setup, expectedResult);
@@ -114,7 +114,7 @@ describe('detectSetup', () => {
           'node.js checker: ignoring invalid "engines" field in package.json',
           'No node version specified.  Please add your node ' +
               'version, see ' +
-              'https://docs.npmjs.com/files/package.json#engines'
+              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
         {canInstallDeps: true, gotScriptsStart: false, nodeVersion: undefined, useYarn: false});
 
@@ -132,7 +132,7 @@ describe('detectSetup', () => {
           'node.js checker: ignoring invalid "engines" field in package.json',
           'No node version specified.  Please add your node ' +
               'version, see ' +
-              'https://docs.npmjs.com/files/package.json#engines'
+              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
         {canInstallDeps: true, gotScriptsStart: false, nodeVersion: undefined, useYarn: false});
 
@@ -150,7 +150,7 @@ describe('detectSetup', () => {
           'node.js checker: ignoring invalid "engines" field in package.json',
           'No node version specified.  Please add your node ' +
               'version, see ' +
-              'https://docs.npmjs.com/files/package.json#engines'
+              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
         {canInstallDeps: true, gotScriptsStart: false, nodeVersion: undefined, useYarn: true});
 
@@ -171,7 +171,7 @@ describe('detectSetup', () => {
           'node.js checker: ignoring invalid "engines" field in package.json',
           'No node version specified.  Please add your node ' +
               'version, see ' +
-              'https://docs.npmjs.com/files/package.json#engines'
+              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
         {canInstallDeps: true, gotScriptsStart: true, nodeVersion: undefined, useYarn: false});
 
@@ -192,7 +192,7 @@ describe('detectSetup', () => {
           'node.js checker: ignoring invalid "engines" field in package.json',
           'No node version specified.  Please add your node ' +
               'version, see ' +
-              'https://docs.npmjs.com/files/package.json#engines'
+              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
         {canInstallDeps: true, gotScriptsStart: true, nodeVersion: undefined, useYarn: false});
 
@@ -213,7 +213,7 @@ describe('detectSetup', () => {
           'node.js checker: ignoring invalid "engines" field in package.json',
           'No node version specified.  Please add your node ' +
               'version, see ' +
-              'https://docs.npmjs.com/files/package.json#engines'
+              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
         {canInstallDeps: true, gotScriptsStart: true, nodeVersion: undefined, useYarn: true});
   });

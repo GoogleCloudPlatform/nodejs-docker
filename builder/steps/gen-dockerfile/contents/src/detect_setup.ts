@@ -20,7 +20,7 @@ import {Locator, Reader} from './fsview';
 import {Logger} from './logger';
 
 const APP_YAML = 'app.yaml';
-const PACKAGE_JSON = 'package.json';
+const PACKAGE_JSON = './package.json';
 const YARN_LOCK = 'yarn.lock';
 
 /**
@@ -39,8 +39,8 @@ export interface Setup {
    */
   gotScriptsStart: boolean;
   /**
-   * Specifies the version of Node.js used to run the application as specified
-   * by the application's package.json file
+   * Specifies the semver expression representing the version of Node.js used
+   * to run the application as specified by the application's package.json file
    */
   nodeVersion: string|undefined;
   /**
@@ -110,11 +110,7 @@ export async function detectSetup(logger: Logger, fsview: Reader&Locator): Promi
     }
 
     const yarnLockExists: boolean = await fsview.exists(YARN_LOCK);
-    let yarnLockSkipped = false;
-    skipFiles.forEach((pattern: string) => {
-      yarnLockSkipped = yarnLockSkipped || new RegExp(pattern).test(YARN_LOCK);
-    });
-
+    const yarnLockSkipped = skipFiles.some((pattern: string) => new RegExp(pattern).test(YARN_LOCK));
     useYarn = yarnLockExists && !yarnLockSkipped;
 
     // Try to read the package.json file.
@@ -146,8 +142,8 @@ export async function detectSetup(logger: Logger, fsview: Reader&Locator): Promi
 
     if (!nodeVersion) {
       warn(
-          'No node version specified.  Please add your node ' +
-          'version, see https://docs.npmjs.com/files/package.json#engines');
+          'No node version specified.  Please add your node version, see ' +
+          'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime');
     }
   }
 

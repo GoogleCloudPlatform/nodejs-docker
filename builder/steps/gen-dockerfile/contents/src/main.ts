@@ -49,8 +49,8 @@ if (require.main === module) {
   let parser = new ArgumentParser({
     version: require('../package.json').version,
     addHelp: true,
-    description: 'Generates Dockerfile and .dockerignore files that can be' +
-        'used to build a Docker image that runs an application' +
+    description: 'Generates Dockerfile and .dockerignore files that can be ' +
+        'used to build a Docker image that runs an application ' +
         'when Docker run.'
   });
   parser.addArgument(

@@ -20,7 +20,7 @@ import * as util from 'util';
 // Describe the signature of function exported by the `shell-escape` module
 // so the compiler knows what types to expect and return.  This is needed
 // since the `shell-escape` module does not have type definitions available.
-const shellEscape: (args: Array<string>) => string = require('shell-escape');
+const shellEscape: (args: string[]) => string = require('shell-escape');
 
 import {Setup} from './detect_setup';
 import {Writer, FsView} from './fsview';
