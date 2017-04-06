@@ -45,37 +45,39 @@ async function generateConfigs(logger: Logger, appDirView: FsView, baseImage: st
 
 // Only run the code if this file was invoked from the command line
 // (i.e. not required).
-if (require.main === module) {
-  let parser = new ArgumentParser({
-    version: require('../package.json').version,
-    addHelp: true,
-    description: 'Generates Dockerfile and .dockerignore files that can be ' +
-        'used to build a Docker image that runs an application ' +
-        'when Docker run.'
-  });
-  parser.addArgument(
-      ['--app-dir'],
-      {help: 'The root directory of the application code', required: true, nargs: 1});
-  parser.addArgument(['--base-image'], {
-    help: 'The full Docker image name of the base image to use when ' +
-        'constructing the Dockerfile',
-    required: true,
-    nargs: 1
-  });
-
-  let args = parser.parseArgs();
-  let appDir = args.app_dir[0];
-  let baseImage = args.base_image[0];
-
-  const logger = {
-    log: (message: string) => {
-      console.log(message);
-    },
-
-    error: (message: string) => {
-      console.error(message);
-    }
-  };
-
-  generateConfigs(logger, new FsView(appDir), baseImage);
+if (require.main !== module) {
+  throw new Error('This file is designed to be run, not loaded via require().');
 }
+
+let parser = new ArgumentParser({
+  version: require('../package.json').version,
+  addHelp: true,
+  description: 'Generates Dockerfile and .dockerignore files that can be ' +
+      'used to build a Docker image that runs an application ' +
+      'when Docker run.'
+});
+parser.addArgument(
+    ['--app-dir'],
+    {help: 'The root directory of the application code', required: true, nargs: 1});
+parser.addArgument(['--base-image'], {
+  help: 'The full Docker image name of the base image to use when ' +
+      'constructing the Dockerfile',
+  required: true,
+  nargs: 1
+});
+
+let args = parser.parseArgs();
+let appDir = args.app_dir[0];
+let baseImage = args.base_image[0];
+
+const logger = {
+  log: (message: string) => {
+    console.log(message);
+  },
+
+  error: (message: string) => {
+    console.error(message);
+  }
+};
+
+generateConfigs(logger, new FsView(appDir), baseImage);
