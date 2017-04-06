@@ -1,4 +1,3 @@
 # Check to see if the the version included in the base runtime satisfies
-# %s, if not then do an npm install of the latest available
-# version that satisfies it.
+# %s and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node %s
