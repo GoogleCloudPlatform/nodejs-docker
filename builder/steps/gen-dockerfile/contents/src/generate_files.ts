@@ -66,7 +66,7 @@ export async function generateFiles(
     appDirWriter: Writer, config: Setup,
     baseImage: string): Promise<Map<string, string>> {
   const genFiles = new Map();
-  const dataDirReader = new FsView(path.join(__dirname, 'data'));
+  const dataDirReader = new FsView(path.join(__dirname, '../data'));
 
   // Customize the Dockerfile
   let dockerfile =

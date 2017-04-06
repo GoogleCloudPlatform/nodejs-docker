@@ -67,27 +67,24 @@ describe('generateFiles', async () => {
   before(async () => {
     const dataView = new FsView('.');
 
-    BASE =
-        util.format(await dataView.read('./src/data/Dockerfile'), BASE_IMAGE);
+    BASE = util.format(await dataView.read('./data/Dockerfile'), BASE_IMAGE);
 
     UPGRADE_NODE = util.format(
-        await dataView.read('./src/data/install-node-version'),
+        await dataView.read('./data/install-node-version'),
         shellEscape([NODE_VERSION]), shellEscape([NODE_VERSION]));
 
     COPY_CONTENTS = `COPY . /app/\n`;
 
-    INSTALL_YARN = await dataView.read('./src/data/install-yarn');
+    INSTALL_YARN = await dataView.read('./data/install-yarn');
 
-    NPM_INSTALL_DEPS =
-        await dataView.read('./src/data/npm-package-json-install');
-    YARN_INSTALL_DEPS =
-        await dataView.read('./src/data/yarn-package-json-install');
+    NPM_INSTALL_DEPS = await dataView.read('./data/npm-package-json-install');
+    YARN_INSTALL_DEPS = await dataView.read('./data/yarn-package-json-install');
 
     YARN_START = `CMD yarn start\n`;
     NPM_START = `CMD npm start\n`;
     SERVER_START = `CMD node server.js\n`;
 
-    DOCKERIGNORE = await dataView.read('./src/data/dockerignore');
+    DOCKERIGNORE = await dataView.read('./data/dockerignore');
   });
 
   it('should generate correctly without installing dependencies, without start script, without Node.version, and using npm',

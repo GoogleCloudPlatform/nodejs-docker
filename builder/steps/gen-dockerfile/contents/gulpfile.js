@@ -49,7 +49,7 @@ gulp.task('copy-package-json', ['clean'], function() {
 });
 
 gulp.task('copy-data', ['copy-package-json'], function() {
-  return gulp.src('src/data/**/*').pipe(gulp.dest('dist/src/data'));
+  return gulp.src('data/**/*').pipe(gulp.dest('dist/data'));
 });
 
 gulp.task('compile-test', ['copy-data'], function() {
