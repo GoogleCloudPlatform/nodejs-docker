@@ -76,7 +76,8 @@ export interface Setup {
  *         be used to determine how to install the application's dependencies
  *         and run the application.
  */
-export async function detectSetup(logger: Logger, fsview: Reader&Locator): Promise<Setup> {
+export async function detectSetup(
+    logger: Logger, fsview: Reader&Locator): Promise<Setup> {
   if (!(await fsview.exists(APP_YAML))) {
     throw new Error(`The file ${APP_YAML} does not exist`);
   }
@@ -110,7 +111,8 @@ export async function detectSetup(logger: Logger, fsview: Reader&Locator): Promi
     }
 
     const yarnLockExists: boolean = await fsview.exists(YARN_LOCK);
-    const yarnLockSkipped = skipFiles.some((pattern: string) => new RegExp(pattern).test(YARN_LOCK));
+    const yarnLockSkipped = skipFiles.some(
+        (pattern: string) => new RegExp(pattern).test(YARN_LOCK));
     useYarn = yarnLockExists && !yarnLockSkipped;
 
     // Try to read the package.json file.

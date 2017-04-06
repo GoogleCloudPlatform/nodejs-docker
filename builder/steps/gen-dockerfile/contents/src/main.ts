@@ -31,7 +31,8 @@ import {Logger} from './logger';
  * @param appDirView {@see detectSetup} and {@see generateFiles}
  * @param baseImage {@see generateFiles}
  */
-async function generateConfigs(logger: Logger, appDirView: FsView, baseImage: string):
+async function generateConfigs(
+    logger: Logger, appDirView: FsView, baseImage: string):
     Promise<Map<string, string>> {
       try {
         const setup = await detectSetup(logger, appDirView);
@@ -56,9 +57,11 @@ let parser = new ArgumentParser({
       'used to build a Docker image that runs an application ' +
       'when Docker run.'
 });
-parser.addArgument(
-    ['--app-dir'],
-    {help: 'The root directory of the application code', required: true, nargs: 1});
+parser.addArgument(['--app-dir'], {
+  help: 'The root directory of the application code',
+  required: true,
+  nargs: 1
+});
 parser.addArgument(['--base-image'], {
   help: 'The full Docker image name of the base image to use when ' +
       'constructing the Dockerfile',

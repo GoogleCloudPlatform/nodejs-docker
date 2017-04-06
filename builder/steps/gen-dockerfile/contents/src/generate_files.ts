@@ -37,7 +37,8 @@ import {Writer, FsView} from './fsview';
  * @param contents The contents to write to the specified file
  */
 async function generateSingleFile(
-    writer: Writer, genFiles: Map<string, string>, relPath: string, contents: string):
+    writer: Writer, genFiles: Map<string, string>, relPath: string,
+    contents: string):
     Promise<void> {
       await writer.write(relPath, contents);
       genFiles.set(relPath, contents);
@@ -61,46 +62,49 @@ async function generateSingleFile(
  *         relative paths of the files written to the contents written for
  *         each corresponding file.
  */
-export async function generateFiles(appDirWriter: Writer, config: Setup, baseImage: string):
-    Promise<Map<string, string>> {
-      const genFiles = new Map();
-      const dataDirReader = new FsView(path.join(__dirname, 'data'));
+export async function generateFiles(
+    appDirWriter: Writer, config: Setup,
+    baseImage: string): Promise<Map<string, string>> {
+  const genFiles = new Map();
+  const dataDirReader = new FsView(path.join(__dirname, 'data'));
 
-      // Customize the Dockerfile
-      let dockerfile = util.format(await dataDirReader.read('Dockerfile'), baseImage);
-      if (config.nodeVersion) {
-        // Let node check to see if it satisfies the version constraint and
-        // try to install the correct version if not.
-        const versionSpec = shellEscape([config.nodeVersion]);
-        const installContents = await dataDirReader.read('install-node-version');
-        dockerfile += util.format(installContents, versionSpec, versionSpec);
-      }
+  // Customize the Dockerfile
+  let dockerfile =
+      util.format(await dataDirReader.read('Dockerfile'), baseImage);
+  if (config.nodeVersion) {
+    // Let node check to see if it satisfies the version constraint and
+    // try to install the correct version if not.
+    const versionSpec = shellEscape([config.nodeVersion]);
+    const installContents = await dataDirReader.read('install-node-version');
+    dockerfile += util.format(installContents, versionSpec, versionSpec);
+  }
 
-      // If the directory structure indicates that yarn is being used
-      // then install yarn since (unlike npm) Node.js doesn't include it
-      if (config.useYarn) {
-        dockerfile += await dataDirReader.read('install-yarn');
-      }
+  // If the directory structure indicates that yarn is being used
+  // then install yarn since (unlike npm) Node.js doesn't include it
+  if (config.useYarn) {
+    dockerfile += await dataDirReader.read('install-yarn');
+  }
 
-      dockerfile += 'COPY . /app/\n';
-      const tool = config.useYarn ? 'yarn' : 'npm';
+  dockerfile += 'COPY . /app/\n';
+  const tool = config.useYarn ? 'yarn' : 'npm';
 
-      // Generate npm or yarn install if there is a package.json.
-      if (config.canInstallDeps) {
-        dockerfile += await dataDirReader.read(`${tool}-package-json-install`);
-      }
+  // Generate npm or yarn install if there is a package.json.
+  if (config.canInstallDeps) {
+    dockerfile += await dataDirReader.read(`${tool}-package-json-install`);
+  }
 
-      // Generate the appropriate start command.
-      if (config.gotScriptsStart) {
-        dockerfile += `CMD ${tool} start\n`;
-      } else {
-        dockerfile += 'CMD node server.js\n';
-      }
+  // Generate the appropriate start command.
+  if (config.gotScriptsStart) {
+    dockerfile += `CMD ${tool} start\n`;
+  } else {
+    dockerfile += 'CMD node server.js\n';
+  }
 
-      // Generate the Dockerfile and .dockerignore files
-      await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
-      await generateSingleFile(
-          appDirWriter, genFiles, '.dockerignore', await dataDirReader.read('dockerignore'));
+  // Generate the Dockerfile and .dockerignore files
+  await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
+  await generateSingleFile(
+      appDirWriter, genFiles, '.dockerignore',
+      await dataDirReader.read('dockerignore'));
 
-      return genFiles;
-    }
+  return genFiles;
+}
