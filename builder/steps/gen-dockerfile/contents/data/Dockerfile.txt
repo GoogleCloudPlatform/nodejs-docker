@@ -1,0 +1,43 @@
+# Dockerfile extending the generic Node image with application files for a
+# single application.
+FROM {{= it.baseImage }}
+{{? it.config.nodeVersion }}
+# Check to see if the the version included in the base runtime satisfies
+# '{{= it.config.nodeVersion }}' and, if not, install a version of Node.js that does satisfy it.
+RUN /usr/local/bin/install_node '{{= it.config.nodeVersion }}'
+{{??}}
+{{?}}
+{{? it.config.useYarn }}
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+RUN npm install --unsafe-perm --global yarn
+{{?}}
+COPY . /app/
+{{? it.config.canInstallDeps }}
+{{? it.config.useYarn }}
+RUN yarn install --production || \
+  ((if [ -f yarn-error.log ]; then \
+      cat yarn-error.log; \
+    fi) && false)
+{{??}}
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN npm install --unsafe-perm || \
+  ((if [ -f npm-debug.log ]; then \
+      cat npm-debug.log; \
+    fi) && false)
+{{?}}
+{{?}}
+{{? it.config.gotScriptsStart }}
+CMD {{= it.tool }} start
+{{??}}
+CMD node server.js
+{{?}}
