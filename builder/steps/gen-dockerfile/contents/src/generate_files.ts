@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import * as dot from 'dot';
-dot.templateSettings.strip = false;
-
+import * as ejs from 'ejs';
 import * as path from 'path';
 
 import {Setup} from './detect_setup';
@@ -65,11 +63,9 @@ export async function generateFiles(
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, '../data'));
 
-  const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
-  const generateDockerfile = dot.template(dockerfileTemplate);
-
   // Generate the Dockerfile and remove any empty lines
-  const dockerfile = generateDockerfile({
+  const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
+  const dockerfile = ejs.render(dockerfileTemplate, {
                        baseImage: baseImage,
                        tool: config.useYarn ? 'yarn' : 'npm',
                        config: config

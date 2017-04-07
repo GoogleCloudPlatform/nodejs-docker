@@ -10,7 +10,7 @@
   "version": "0.0.1",
   "devDependencies": {
     "@types/argparse": "^1.0.30",
-    "@types/dot": "^1.1.0",
+    "@types/ejs": "^2.3.33",
     "@types/js-yaml": "^3.5.29",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
@@ -28,7 +28,7 @@
   "dependencies": {
     "argparse": "^1.0.9",
     "dedent-js": "^1.0.1",
-    "dot": "^1.1.1",
+    "ejs": "^2.5.6",
     "js-yaml": "^3.8.1",
     "pify": "^2.3.0",
     "shell-escape": "^0.2.0"
