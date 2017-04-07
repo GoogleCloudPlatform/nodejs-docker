@@ -15,9 +15,6 @@
  */
 
 import * as assert from 'assert';
-import * as util from 'util';
-
-const shellEscape: (args: string[]) => string = require('shell-escape');
 
 import {generateFiles} from '../src/generate_files';
 import {Setup} from '../src/detect_setup';
@@ -67,18 +64,44 @@ describe('generateFiles', async () => {
   before(async () => {
     const dataView = new FsView('.');
 
-    BASE = util.format(await dataView.read('./data/Dockerfile'), BASE_IMAGE);
+    BASE = `# Dockerfile extending the generic Node image with application files for a
+# single application.
+FROM ${BASE_IMAGE}
+`;
 
-    UPGRADE_NODE = util.format(
-        await dataView.read('./data/install-node-version'),
-        shellEscape([NODE_VERSION]), shellEscape([NODE_VERSION]));
+    UPGRADE_NODE = `# Check to see if the the version included in the base runtime satisfies
+# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
+RUN /usr/local/bin/install_node '${NODE_VERSION}'
+`;
 
     COPY_CONTENTS = `COPY . /app/\n`;
 
-    INSTALL_YARN = await dataView.read('./data/install-yarn');
+    INSTALL_YARN = `# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+RUN npm install --unsafe-perm --global yarn
+`;
 
-    NPM_INSTALL_DEPS = await dataView.read('./data/npm-package-json-install');
-    YARN_INSTALL_DEPS = await dataView.read('./data/yarn-package-json-install');
+    NPM_INSTALL_DEPS = `# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN npm install --unsafe-perm || \\
+  ((if [ -f npm-debug.log ]; then \\
+      cat npm-debug.log; \\
+    fi) && false)
+`;
+
+    YARN_INSTALL_DEPS = `RUN yarn install --production || \\
+  ((if [ -f yarn-error.log ]; then \\
+      cat yarn-error.log; \\
+    fi) && false)
+`;
 
     YARN_START = `CMD yarn start\n`;
     NPM_START = `CMD npm start\n`;
