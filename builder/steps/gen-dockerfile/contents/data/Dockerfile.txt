@@ -1,11 +1,13 @@
 # Dockerfile extending the generic Node image with application files for a
 # single application.
 FROM <%- baseImage %>
+
 <% if (config.nodeVersion) { %>
 # Check to see if the the version included in the base runtime satisfies
 # '<%- config.nodeVersion %>' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
+
 <% if (config.useYarn) { %>
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
@@ -14,14 +16,16 @@ RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 # as well.
 RUN npm install --unsafe-perm --global yarn
 <% } %>
+
 COPY . /app/
+
 <% if (config.canInstallDeps) { %>
-<% if (config.useYarn) { %>
+  <% if (config.useYarn) { %>
 RUN yarn install --production || \
   ((if [ -f yarn-error.log ]; then \
       cat yarn-error.log; \
     fi) && false)
-<% } else { %>
+  <% } else { %>
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
 # install to appear to succeed even if a preinstall
@@ -33,8 +37,9 @@ RUN npm install --unsafe-perm || \
   ((if [ -f npm-debug.log ]; then \
       cat npm-debug.log; \
     fi) && false)
+  <% } %>
 <% } %>
-<% } %>
+
 <% if (config.gotScriptsStart) { %>
 CMD <%- tool %> start
 <% } else { %>
