@@ -27,6 +27,49 @@ const DOCKERIGNORE_NAME = '.dockerignore';
 const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
 
+const BASE = `# Dockerfile extending the generic Node image with application files for a
+# single application.
+FROM ${BASE_IMAGE}
+`;
+
+const UPGRADE_NODE = `# Check to see if the the version included in the base runtime satisfies
+# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
+RUN /usr/local/bin/install_node '${NODE_VERSION}'
+`;
+
+const COPY_CONTENTS = `COPY . /app/\n`;
+
+const INSTALL_YARN = `# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+RUN npm install --unsafe-perm --global yarn
+`;
+
+const NPM_INSTALL_DEPS = `# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN npm install --unsafe-perm || \\
+  ((if [ -f npm-debug.log ]; then \\
+      cat npm-debug.log; \\
+    fi) && false)
+`;
+
+const YARN_INSTALL_DEPS = `RUN yarn install --production || \\
+  ((if [ -f yarn-error.log ]; then \\
+      cat yarn-error.log; \\
+    fi) && false)
+`;
+
+const YARN_START = `CMD yarn start\n`;
+const NPM_START = `CMD npm start\n`;
+const SERVER_START = `CMD node server.js\n`;
+
 async function runTest(
     config: Setup, expectedDockerfile: string, expectedDockerignore: string) {
   const appView = new MockView([]);
@@ -50,63 +93,9 @@ async function runTest(
 }
 
 describe('generateFiles', async () => {
-
-  let BASE: string;
-  let UPGRADE_NODE: string;
-  let COPY_CONTENTS: string;
-  let INSTALL_YARN: string;
-  let NPM_INSTALL_DEPS: string;
-  let YARN_INSTALL_DEPS: string;
-  let YARN_START: string;
-  let NPM_START: string;
-  let SERVER_START: string;
   let DOCKERIGNORE: string;
   before(async () => {
     const dataView = new FsView('.');
-
-    BASE = `# Dockerfile extending the generic Node image with application files for a
-# single application.
-FROM ${BASE_IMAGE}
-`;
-
-    UPGRADE_NODE = `# Check to see if the the version included in the base runtime satisfies
-# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
-RUN /usr/local/bin/install_node '${NODE_VERSION}'
-`;
-
-    COPY_CONTENTS = `COPY . /app/\n`;
-
-    INSTALL_YARN = `# You have to specify "--unsafe-perm" with npm install
-# when running as root.  Failing to do this can cause
-# install to appear to succeed even if a preinstall
-# script fails, and may have other adverse consequences
-# as well.
-RUN npm install --unsafe-perm --global yarn
-`;
-
-    NPM_INSTALL_DEPS = `# You have to specify "--unsafe-perm" with npm install
-# when running as root.  Failing to do this can cause
-# install to appear to succeed even if a preinstall
-# script fails, and may have other adverse consequences
-# as well.
-# This command will also cat the npm-debug.log file after the
-# build, if it exists.
-RUN npm install --unsafe-perm || \\
-  ((if [ -f npm-debug.log ]; then \\
-      cat npm-debug.log; \\
-    fi) && false)
-`;
-
-    YARN_INSTALL_DEPS = `RUN yarn install --production || \\
-  ((if [ -f yarn-error.log ]; then \\
-      cat yarn-error.log; \\
-    fi) && false)
-`;
-
-    YARN_START = `CMD yarn start\n`;
-    NPM_START = `CMD npm start\n`;
-    SERVER_START = `CMD node server.js\n`;
-
     DOCKERIGNORE = await dataView.read('./data/dockerignore');
   });
 
