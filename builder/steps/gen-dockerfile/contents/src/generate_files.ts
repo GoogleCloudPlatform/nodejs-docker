@@ -18,7 +18,7 @@ import * as ejs from 'ejs';
 import * as path from 'path';
 
 import {Setup} from './detect_setup';
-import {Writer, FsView} from './fsview';
+import {FsView, Writer} from './fsview';
 
 /**
  * Generates a single file and records that the file was generated as well as
@@ -66,10 +66,11 @@ export async function generateFiles(
   // Generate the Dockerfile and remove any empty lines
   const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
   const dockerfile = ejs.render(dockerfileTemplate, {
-                       baseImage: baseImage,
-                       tool: config.useYarn ? 'yarn' : 'npm',
-                       config: config
-                     }).replace(/^\s*\n/gm, '');
+                          baseImage: baseImage,
+                          tool: config.useYarn ? 'yarn' : 'npm',
+                          config: config
+                        })
+                         .replace(/^\s*\n/gm, '');
 
   const dockerignore = await dataDirReader.read('dockerignore');
 
