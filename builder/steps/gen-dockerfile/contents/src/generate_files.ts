@@ -14,16 +14,82 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
-import * as util from 'util';
-
-// Describe the signature of function exported by the `shell-escape` module
-// so the compiler knows what types to expect and return.  This is needed
-// since the `shell-escape` module does not have type definitions available.
-const shellEscape: (args: string[]) => string = require('shell-escape');
+import * as dot from 'dot';
+dot.templateSettings.strip = false;
 
 import {Setup} from './detect_setup';
-import {Writer, FsView} from './fsview';
+import {Writer} from './fsview';
+
+const DOCKERIGNORE_TEXT =
+`# Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+node_modules
+.dockerignore
+Dockerfile
+npm-debug.log
+yarn-error.log
+.git
+.hg
+.svn
+`;
+
+const DOCKERFILE_TEMPLATE = dot.template(
+`# Dockerfile extending the generic Node image with application files for a
+# single application.
+FROM {{= it.baseImage }}
+{{? it.config.nodeVersion }}
+# Check to see if the the version included in the base runtime satisfies
+# '{{= it.config.nodeVersion }}' and, if not, install a version of Node.js that does satisfy it.
+RUN /usr/local/bin/install_node '{{= it.config.nodeVersion }}'
+{{??}}
+{{?}}
+{{? it.config.useYarn }}
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+RUN npm install --unsafe-perm --global yarn
+{{?}}
+COPY . /app/
+{{? it.config.canInstallDeps }}
+{{? it.config.useYarn }}
+RUN yarn install --production || \\
+  ((if [ -f yarn-error.log ]; then \\
+      cat yarn-error.log; \\
+    fi) && false)
+{{??}}
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN npm install --unsafe-perm || \\
+  ((if [ -f npm-debug.log ]; then \\
+      cat npm-debug.log; \\
+    fi) && false)
+{{?}}
+{{?}}
+{{? it.config.gotScriptsStart }}
+CMD {{= it.tool }} start
+{{??}}
+CMD node server.js
+{{?}}
+`);
 
 /**
  * Generates a single file and records that the file was generated as well as
@@ -66,45 +132,15 @@ export async function generateFiles(
     appDirWriter: Writer, config: Setup,
     baseImage: string): Promise<Map<string, string>> {
   const genFiles = new Map();
-  const dataDirReader = new FsView(path.join(__dirname, '../data'));
-
-  // Customize the Dockerfile
-  let dockerfile =
-      util.format(await dataDirReader.read('Dockerfile'), baseImage);
-  if (config.nodeVersion) {
-    // Let node check to see if it satisfies the version constraint and
-    // try to install the correct version if not.
-    const versionSpec = shellEscape([config.nodeVersion]);
-    const installContents = await dataDirReader.read('install-node-version');
-    dockerfile += util.format(installContents, versionSpec, versionSpec);
-  }
-
-  // If the directory structure indicates that yarn is being used
-  // then install yarn since (unlike npm) Node.js doesn't include it
-  if (config.useYarn) {
-    dockerfile += await dataDirReader.read('install-yarn');
-  }
-
-  dockerfile += 'COPY . /app/\n';
-  const tool = config.useYarn ? 'yarn' : 'npm';
-
-  // Generate npm or yarn install if there is a package.json.
-  if (config.canInstallDeps) {
-    dockerfile += await dataDirReader.read(`${tool}-package-json-install`);
-  }
-
-  // Generate the appropriate start command.
-  if (config.gotScriptsStart) {
-    dockerfile += `CMD ${tool} start\n`;
-  } else {
-    dockerfile += 'CMD node server.js\n';
-  }
 
   // Generate the Dockerfile and .dockerignore files
-  await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
-  await generateSingleFile(
-      appDirWriter, genFiles, '.dockerignore',
-      await dataDirReader.read('dockerignore'));
+  await generateSingleFile(appDirWriter, genFiles, 'Dockerfile',
+                           DOCKERFILE_TEMPLATE({
+                             baseImage: baseImage,
+                             tool: config.useYarn ? 'yarn' : 'npm',
+                             config: config
+                           }).replace(/^\s*\n/gm, ''));
+  await generateSingleFile(appDirWriter, genFiles, '.dockerignore', DOCKERIGNORE_TEXT);
 
   return genFiles;
 }

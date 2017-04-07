@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// Describe the signature of function exported by the `shell-escape` module
+// so the compiler knows what types to expect and return.  This is needed
+// since the `shell-escape` module does not have type definitions available.
+const shellEscape: (args: string[]) => string = require('shell-escape');
+
 import * as yaml from 'js-yaml';
 
 import {Locator, Reader} from './fsview';
@@ -159,7 +164,7 @@ export async function detectSetup(
   return {
     canInstallDeps: canInstallDeps,
     gotScriptsStart: gotScriptsStart,
-    nodeVersion: nodeVersion,
+    nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
     useYarn: useYarn
   };
 }
