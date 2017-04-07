@@ -60,29 +60,27 @@ async function generateSingleFile(
  *         each corresponding file.
  */
 export async function generateFiles(
-    appDirWriter: Writer, config: Setup, baseImage: string):
-    Promise<Map<string, string>> {
-      const genFiles = new Map();
-      const dataDirReader = new FsView(path.join(__dirname, '../data'));
+    appDirWriter: Writer, config: Setup,
+    baseImage: string): Promise<Map<string, string>> {
+  const genFiles = new Map();
+  const dataDirReader = new FsView(path.join(__dirname, '../data'));
 
-      const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
-      const generateDockerfile = dot.template(dockerfileTemplate);
+  const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
+  const generateDockerfile = dot.template(dockerfileTemplate);
 
-      // Generate the Dockerfile and remove any empty lines
-      const dockerfile = generateDockerfile({
-            baseImage: baseImage,
-            tool: config.useYarn ? 'yarn' : 'npm',
-            config: config
-          }).replace(/^\s*\n/gm, '');
+  // Generate the Dockerfile and remove any empty lines
+  const dockerfile = generateDockerfile({
+                       baseImage: baseImage,
+                       tool: config.useYarn ? 'yarn' : 'npm',
+                       config: config
+                     }).replace(/^\s*\n/gm, '');
 
-      const dockerignore = await dataDirReader.read('dockerignore');
+  const dockerignore = await dataDirReader.read('dockerignore');
 
-      // Generate the Dockerfile and .dockerignore files
-      await generateSingleFile(
-          appDirWriter, genFiles, 'Dockerfile',
-          dockerfile);
-      await generateSingleFile(
-          appDirWriter, genFiles, '.dockerignore', dockerignore);
+  // Generate the Dockerfile and .dockerignore files
+  await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
+  await generateSingleFile(
+      appDirWriter, genFiles, '.dockerignore', dockerignore);
 
-      return genFiles;
-    }
+  return genFiles;
+}
