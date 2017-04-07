@@ -16,10 +16,11 @@
 
 import * as assert from 'assert';
 
-import {generateFiles} from '../src/generate_files';
 import {Setup} from '../src/detect_setup';
-import {Location, MockView} from './common';
 import {FsView} from '../src/fsview';
+import {generateFiles} from '../src/generate_files';
+
+import {Location, MockView} from './common';
 
 const DOCKERFILE_NAME = 'Dockerfile';
 const DOCKERIGNORE_NAME = '.dockerignore';
@@ -27,13 +28,17 @@ const DOCKERIGNORE_NAME = '.dockerignore';
 const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
 
-const BASE = `# Dockerfile extending the generic Node image with application files for a
+const BASE =
+    `# Dockerfile extending the generic Node image with application files for a
 # single application.
 FROM ${BASE_IMAGE}
 `;
 
-const UPGRADE_NODE = `# Check to see if the the version included in the base runtime satisfies
-# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
+const UPGRADE_NODE =
+    `# Check to see if the the version included in the base runtime satisfies
+# '${
+     NODE_VERSION
+   }' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '${NODE_VERSION}'
 `;
 

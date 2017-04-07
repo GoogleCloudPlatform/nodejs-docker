@@ -20,8 +20,7 @@ dot.templateSettings.strip = false;
 import {Setup} from './detect_setup';
 import {Writer} from './fsview';
 
-const DOCKERIGNORE_TEXT =
-`# Copyright 2015 Google Inc. All Rights Reserved.
+const DOCKERIGNORE_TEXT = `# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +45,7 @@ yarn-error.log
 `;
 
 const DOCKERFILE_TEMPLATE = dot.template(
-`# Dockerfile extending the generic Node image with application files for a
+    `# Dockerfile extending the generic Node image with application files for a
 # single application.
 FROM {{= it.baseImage }}
 {{? it.config.nodeVersion }}
@@ -129,18 +128,20 @@ async function generateSingleFile(
  *         each corresponding file.
  */
 export async function generateFiles(
-    appDirWriter: Writer, config: Setup,
-    baseImage: string): Promise<Map<string, string>> {
-  const genFiles = new Map();
+    appDirWriter: Writer, config: Setup, baseImage: string):
+    Promise<Map<string, string>> {
+      const genFiles = new Map();
 
-  // Generate the Dockerfile and .dockerignore files
-  await generateSingleFile(appDirWriter, genFiles, 'Dockerfile',
-                           DOCKERFILE_TEMPLATE({
-                             baseImage: baseImage,
-                             tool: config.useYarn ? 'yarn' : 'npm',
-                             config: config
-                           }).replace(/^\s*\n/gm, ''));
-  await generateSingleFile(appDirWriter, genFiles, '.dockerignore', DOCKERIGNORE_TEXT);
+      // Generate the Dockerfile and .dockerignore files
+      await generateSingleFile(
+          appDirWriter, genFiles, 'Dockerfile',
+          DOCKERFILE_TEMPLATE({
+            baseImage: baseImage,
+            tool: config.useYarn ? 'yarn' : 'npm',
+            config: config
+          }).replace(/^\s*\n/gm, ''));
+      await generateSingleFile(
+          appDirWriter, genFiles, '.dockerignore', DOCKERIGNORE_TEXT);
 
-  return genFiles;
-}
+      return genFiles;
+    }
