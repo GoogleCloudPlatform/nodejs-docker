@@ -2,7 +2,10 @@
 
 [![Build Status](https://travis-ci.org/GoogleCloudPlatform/nodejs-docker.svg?branch=master)](https://travis-ci.org/GoogleCloudPlatform/nodejs-docker)
 
-This repository contains the source for the `gcr.io/google_appengine/nodejs` [docker](https://docker.com) image. This image can be used as the base image for running applications on [Google App Engine Managed VMs](https://cloud.google.com/appengine), [Google Container Engine](https://cloud.google.com/container-engine), or any other Docker host.
+This repository contains the source for the Google-maintained Node.js [docker](https://docker.com) image.
+This image can be found at `launcher.gcr.io/google/nodejs` or `gcr.io/google-appengine/nodejs`, and this image can be used as the base image
+for running applications on [Google App Engine Flexible](https://cloud.google.com/appengine),
+[Google Container Engine](https://cloud.google.com/container-engine), or any other Docker host.
 
 This image is based on Debian Jessie and includes [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
 
@@ -20,7 +23,7 @@ You can then modify the `Dockerfile` and `.dockerignore` as needed for you appli
 
 For other docker hosts, you'll need to create a `Dockerfile` based on this image that copies your application code and installs dependencies. For example:
 
-        FROM gcr.io/google_appengine/nodejs
+        FROM launcher.gcr.io/google/nodejs
 
         # Copy application code.
         COPY . /app/
@@ -36,7 +39,7 @@ For a full example on deploying an application to Google Container Engine, see [
 
 The image includes the `install_node` script that can be used to install a particular Node.js version. For example:
 
-        FROM gcr.io/google_appengine/nodejs
+        FROM launcher.gcr.io/google/nodejs
 
         # Install node.js 4.6.1
         RUN install_node v4.6.1
