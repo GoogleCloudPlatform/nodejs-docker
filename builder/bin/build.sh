@@ -27,11 +27,11 @@ if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING
 fi
 
 if [ "${BUILDER_TAG}" = "new" ]; then
-  BUILDER_TAG=`date +%Y-%m-%d_%H_%M`
+  BUILDER_TAG=$(date +%Y-%m-%d_%H_%M)
 fi
 
 # Enter the steps directory so that all paths can be relative to that directory
-pushd `dirname $0`/../steps > /dev/null
+pushd $(dirname $0)/../steps > /dev/null
 
 pushd gen-dockerfile > /dev/null
 ./build.sh "${BUILDER_NAMESPACE}" "${BUILDER_TAG}" "${UPLOAD_TO_STAGING}"

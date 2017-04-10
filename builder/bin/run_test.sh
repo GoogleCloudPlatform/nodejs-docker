@@ -18,7 +18,7 @@
 set -e
 
 # Enter the steps directory so that all paths can be relative to that directory
-pushd `dirname $0`/../steps > /dev/null
+pushd $(dirname $0)/../steps > /dev/null
 
 pushd gen-dockerfile/contents/ > /dev/null
 yarn install

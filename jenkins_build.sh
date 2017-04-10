@@ -7,7 +7,7 @@ gcloud docker -- version
 RUNTIME_NAME="nodejs"
 
 if [ -z "${TAG}" ]; then
-  TAG=`date +%Y-%m-%d_%H_%M`
+  TAG=$(date +%Y-%m-%d_%H_%M)
 fi
 
 CANDIDATE_NAME="${TAG}"

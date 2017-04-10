@@ -18,7 +18,7 @@
 set -e
 
 # Change the current working directory to the directory containing this script
-pushd `dirname $0` > /dev/null
+pushd $(dirname $0) > /dev/null
 
 pushd base/bin > /dev/null
 ./run_test.sh

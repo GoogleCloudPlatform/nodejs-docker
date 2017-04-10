@@ -20,8 +20,7 @@ import {detectSetup, Setup} from '../src/detect_setup';
 
 import {Location, MockLogger, MockView} from './common';
 
-const VALID_APP_YAML_CONTENTS = '' +
-    `# A comment
+const VALID_APP_YAML_CONTENTS = `# A comment
 runtime: node.js
 env: flex
 service: some-service
@@ -79,8 +78,7 @@ describe('detectSetup', () => {
         /unexpected end of the stream within a single quoted scalar.*/);
 
     performTest(
-        'should fail with app.yaml ' +
-            'but without package.json or server.js',
+        'should fail with app.yaml but without package.json or server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
           {path: 'package.json', exists: false},
@@ -185,7 +183,7 @@ describe('detectSetup', () => {
 
     performTest(
         'should detect with package.json, with start script, ' +
-            'without yarn.lock, and without server.js',
+            'without yarn.lock, and with server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
             path: 'package.json',

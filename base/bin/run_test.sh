@@ -19,7 +19,7 @@ set -e
 
 # Change the current working directory to the `base` directory instead of
 # the `base/bin` directory
-pushd `dirname $0`/.. > /dev/null
+pushd $(dirname $0)/.. > /dev/null
 
 npm run build
 npm run prepare-test
