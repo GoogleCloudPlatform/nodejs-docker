@@ -1,7 +1,6 @@
 FROM gcr.io/google-appengine/nodejs
 
 # Install necessary dependencies
-RUN apt-get update -y && apt-get install --no-install-recommends -y -q rsync
 RUN npm install -g gulp-cli
 
 # Add the runtime builder code
