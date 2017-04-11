@@ -1,5 +1,5 @@
 # Use the base App Engine Docker image, based on debian jessie.
-FROM gcr.io/google_appengine/debian8
+FROM gcr.io/google-appengine/debian8
 
 # Install updates and dependencies
 RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl python build-essential git ca-certificates libkrb5-dev imagemagick netbase && \
@@ -17,7 +17,7 @@ ENV PATH $PATH:/nodejs/bin
 RUN npm install --unsafe-perm semver
 
 # Add the node version install script
-ADD install_node /usr/local/bin/install_node
+ADD contents/install_node /usr/local/bin/install_node
 
 # Set common env vars
 ENV NODE_ENV production
