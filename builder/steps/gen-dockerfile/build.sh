@@ -17,7 +17,7 @@
 # Fail fast
 set -e
 
-RUNTIME_NAME="nodejs-gen-dockerfile"
+RUNTIME_NAME="gen-dockerfile"
 
 BUILDER_NAMESPACE=${1}
 BUILDER_TAG=${2}
@@ -28,7 +28,7 @@ if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING
   exit 1
 fi
 
-UNTAGGED_BUILDER_NAME=${BUILDER_NAMESPACE}/${RUNTIME_NAME}
+UNTAGGED_BUILDER_NAME=${BUILDER_NAMESPACE}/nodejs/${RUNTIME_NAME}
 
 # This is exported so that they can be used in cloudbuild.yaml.in
 export IMAGE="${UNTAGGED_BUILDER_NAME}:${BUILDER_TAG}"
