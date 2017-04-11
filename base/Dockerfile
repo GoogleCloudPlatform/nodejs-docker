@@ -9,12 +9,16 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
 RUN mkdir /nodejs && curl https://nodejs.org/dist/v6.10.2/node-v6.10.2-linux-x64.tar.gz | tar xvzf - -C /nodejs --strip-components=1
 ENV PATH $PATH:/nodejs/bin
 
-# Install semver, as required by the node version install script.
 # The use of --unsafe-perm is used here so that the installation is done
 # as the current (root) user.  Otherwise, a failure in running 'npm install'
 # (for example through a failure in a pre-or-post install hook) won't cause
 # npm install to have a non-zero exit code.
+
+# Install semver as required by the node version install script.
 RUN npm install --unsafe-perm semver
+
+# Install yarn here so users don't have to manually install it.
+RUN npm install --unsafe-perm --global yarn
 
 # Add the node version install script
 ADD contents/install_node /usr/local/bin/install_node

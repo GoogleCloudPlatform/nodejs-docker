@@ -8,15 +8,6 @@ FROM <%- baseImage %>
 RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
 
-<% if (config.useYarn) { %>
-# You have to specify "--unsafe-perm" with npm install
-# when running as root.  Failing to do this can cause
-# install to appear to succeed even if a preinstall
-# script fails, and may have other adverse consequences
-# as well.
-RUN npm install --unsafe-perm --global yarn
-<% } %>
-
 COPY . /app/
 
 <% if (config.canInstallDeps) { %>
