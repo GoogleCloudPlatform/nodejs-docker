@@ -24,36 +24,36 @@ describe('nodejs-docker', () => {
   }
 
   verifyOutput('serves traffic on 8080',
-               'test/express',
+               'test/definitions/express',
                'Hello World!');
 
   verifyOutput('install_node installs and verifies deprecated verifiable ' +
                'Node versions',
-               'test/old-verifiable-node',
+               'test/definitions/old-verifiable-node',
                'v0.8.10');
-  
+
   verifyOutput('install_node still installs deprecated versions of ' +
                'Node even if they cannot be verified ',
-               'test/old-unverifiable-node',
+               'test/definitions/old-unverifiable-node',
                'v0.8.7');
 
   verifyOutput('install_node installs and verifies verifiable Node versions',
-               'test/verifiable-node',
+               'test/definitions/verifiable-node',
                'v6.0.0');
 
   verifyOutput('install_node still installs Node even if it cannot ' +
                'be verified',
-               'test/unverifiable-node',
+               'test/definitions/unverifiable-node',
                'v0.10.7');
 
   verifyOutput('verify_node has a non-zero exit code if it is not supplied ' +
                'the files it need for verification',
-               'test/verify-fail-without-files',
+               'test/definitions/verify-fail-without-files',
                'Correctly failed verification');
 
   verifyOutput('verify_node has a non-zero exit code if the checksum ' +
                'check fails',
-               'test/verify-fail-on-invalid-data',
+               'test/definitions/verify-fail-on-invalid-data',
                'Correctly failed verification');
 });
 
@@ -74,8 +74,8 @@ function runDocker(tag, port, callback) {
     console.error(`stderr: ${data}`);
   });
 
-  d.on('error', (err) => { 
-    console.error(`Error spawning docker process: ${util.inspect(err)}`); 
+  d.on('error', (err) => {
+    console.error(`Error spawning docker process: ${util.inspect(err)}`);
     throw err;
   });
 
@@ -97,5 +97,5 @@ function runDocker(tag, port, callback) {
       }
       callback();
     });
-  });  
+  });
 }

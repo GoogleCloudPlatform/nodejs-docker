@@ -33,7 +33,7 @@ function request(method, host, path, cb) {
 
 function getAvailableVersions(cb) {
   request(
-    'GET', 'storage.googleapis.com', '/gcp-node-packages/node_versions',
+    'GET', 'storage.googleapis.com', '/gae_node_packages/node_versions',
     function(err, body) {
       if (err) {
         return cb(err);
@@ -67,7 +67,7 @@ function verifyBinaryExists(version, cb) {
   request(
     'HEAD',
     'storage.googleapis.com',
-    '/gcp-node-packages/node-' + version + '-linux-x64.tar.gz',
+    '/gae_node_packages/node-' + version + '-linux-x64.tar.gz',
     function(err) {
       if (err) {
         return cb(new Error(
@@ -89,6 +89,23 @@ function downloadAndInstallVersion(version, cb) {
 
   proc.stdout.pipe(process.stdout);
   proc.stderr.pipe(process.stderr);
+
+  // wrap the callback to use state to ensure the callback
+  // is not called more than once
+  var invoked = false;
+  function guardedCallback(err) {
+    if (invoked) {
+      return;
+    }
+
+    invoked = true;
+    return cb(err);
+  }
+
+  proc.on('error', guardedCallback);
+  proc.on('exit', function(code) {
+    return guardedCallback(null);
+  });
 }
 
 

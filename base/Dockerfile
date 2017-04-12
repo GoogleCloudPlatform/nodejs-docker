@@ -10,7 +10,7 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
 # they will remain even if the /nodejs directory is removed.
 # Further, the PATH is is not updated, because these scripts should
 # only be called using an absolute path.
-ADD support/ /opt/google_appengine/runtime/
+ADD contents/ /opt/google_appengine/runtime/
 RUN ln -s /opt/google_appengine/runtime/install_node /usr/local/bin/install_node
 
 # Install the latest LTS release of nodejs

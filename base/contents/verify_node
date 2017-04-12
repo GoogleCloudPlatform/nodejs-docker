@@ -38,7 +38,7 @@ function cleanUp {
   ${RM} -Rf "${keys_gpg_file}"
 }
 
-# The KEYS file needs to be dearmored so that it can be used as a 
+# The KEYS file needs to be dearmored so that it can be used as a
 # keyring with gpg
 (${CAT} ${keys_file} | ${GPG} --dearmor > ${keys_gpg_file}) \
   || (cleanUp; exit 1)
