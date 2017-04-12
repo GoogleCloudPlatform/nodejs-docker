@@ -15,13 +15,6 @@ if [ $# != 2 -o "${1}" == "help" ]; then
   exit 1
 fi
 
-# Use absolute paths for safety
-GREP='/bin/grep'
-CAT='/bin/cat'
-GPG='/usr/bin/gpg'
-RM='/bin/rm'
-SHASUM='/usr/bin/shasum'
-
 nodejs_file=${1}
 shasums_file=${2}
 
@@ -35,12 +28,12 @@ keys_gpg_file=`mktemp /tmp/${script_name}.XXXXXX.keys.gpg`
 
 # Clean up any temporary files created by this script
 function cleanUp {
-  ${RM} -Rf "${keys_gpg_file}"
+  rm -Rf "${keys_gpg_file}"
 }
 
 # The KEYS file needs to be dearmored so that it can be used as a
 # keyring with gpg
-(${CAT} ${keys_file} | ${GPG} --dearmor > ${keys_gpg_file}) \
+(cat ${keys_file} | gpg --dearmor > ${keys_gpg_file}) \
   || (cleanUp; exit 1)
 
 # Verify the SHASUMS256.txt.asc file using only the keys in the specified
@@ -48,11 +41,11 @@ function cleanUp {
 # in the default keyring are *not* used.  Otherwise, a key already existing in
 # the default keyring could verify the file, but no keys in the KEYS file
 # verify the file, which would incorrectly report that the file is verified.
-(${GPG} --no-default-keyring --keyring ${keys_gpg_file} --verify ${shasums_file}) \
+(gpg --no-default-keyring --keyring ${keys_gpg_file} --verify ${shasums_file}) \
   || (cleanUp; exit 1)
 
 # Verify the Node.js binary
-(${GREP} ${nodejs_file} ${shasums_file} | ${SHASUM} --algorithm 256 -c -) \
+(grep ${nodejs_file} ${shasums_file} | shasum --algorithm 256 -c -) \
   || (cleanUp; exit 1)
 
 cleanUp
