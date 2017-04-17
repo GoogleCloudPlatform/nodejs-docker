@@ -44,14 +44,6 @@ RUN /usr/local/bin/install_node '${NODE_VERSION}'
 
 const COPY_CONTENTS = `COPY . /app/\n`;
 
-const INSTALL_YARN = `# You have to specify "--unsafe-perm" with npm install
-# when running as root.  Failing to do this can cause
-# install to appear to succeed even if a preinstall
-# script fails, and may have other adverse consequences
-# as well.
-RUN npm install --unsafe-perm --global yarn
-`;
-
 const NPM_INSTALL_DEPS = `# You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
 # install to appear to succeed even if a preinstall
@@ -125,7 +117,7 @@ describe('generateFiles', async () => {
              nodeVersion: undefined,
              useYarn: true
            },
-           BASE + INSTALL_YARN + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
+           BASE + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
      });
 
   it('should generate correctly without installing dependencies, without start script, with Node.version, and using npm',
@@ -149,8 +141,7 @@ describe('generateFiles', async () => {
              nodeVersion: NODE_VERSION,
              useYarn: true
            },
-           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + SERVER_START,
-           DOCKERIGNORE);
+           BASE + UPGRADE_NODE + COPY_CONTENTS + SERVER_START, DOCKERIGNORE);
      });
 
   it('should generate correctly without installing dependencies, with start script, without Node.version, and using npm',
@@ -174,7 +165,7 @@ describe('generateFiles', async () => {
              nodeVersion: undefined,
              useYarn: true
            },
-           BASE + INSTALL_YARN + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
+           BASE + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
      });
 
   it('should generate correctly without installing dependencies, with start script, with Node.version, and using npm',
@@ -198,8 +189,7 @@ describe('generateFiles', async () => {
              nodeVersion: NODE_VERSION,
              useYarn: true
            },
-           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS + YARN_START,
-           DOCKERIGNORE);
+           BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
      });
 
   it('should generate correctly with installing dependencies, without start script, without Node.version, and using npm',
@@ -224,8 +214,7 @@ describe('generateFiles', async () => {
              nodeVersion: undefined,
              useYarn: true
            },
-           BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS +
-               SERVER_START,
+           BASE + COPY_CONTENTS + YARN_INSTALL_DEPS + SERVER_START,
            DOCKERIGNORE);
      });
 
@@ -252,8 +241,8 @@ describe('generateFiles', async () => {
              nodeVersion: NODE_VERSION,
              useYarn: true
            },
-           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
-               YARN_INSTALL_DEPS + SERVER_START,
+           BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_INSTALL_DEPS +
+               SERVER_START,
            DOCKERIGNORE);
      });
 
@@ -278,8 +267,7 @@ describe('generateFiles', async () => {
              nodeVersion: undefined,
              useYarn: true
            },
-           BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
-           DOCKERIGNORE);
+           BASE + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START, DOCKERIGNORE);
      });
 
   it('should generate correctly with installing dependencies, with start script, with Node.version, and using npm',
@@ -304,8 +292,7 @@ describe('generateFiles', async () => {
              nodeVersion: NODE_VERSION,
              useYarn: true
            },
-           BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
-               YARN_INSTALL_DEPS + YARN_START,
+           BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
            DOCKERIGNORE);
      });
 });

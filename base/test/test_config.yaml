@@ -24,6 +24,11 @@ fileExistenceTests:
   isDirectory: true
   shouldExist: true
 
+- name: 'yarn'
+  path: '/nodejs/bin'
+  isDirectory: false
+  shouldExist: true
+
 licenseTests:
 - debian: true
   files: [
