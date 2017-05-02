@@ -16,7 +16,7 @@ export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
 
 envsubst < base/cloudbuild.yaml.in > base/cloudbuild.yaml
 
-gcloud beta container builds submit --config base/cloudbuild.yaml .
+gcloud beta container builds submit --config base/cloudbuild.yaml base
 
 if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
   gcloud beta container images add-tag ${IMAGE} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:staging -q
