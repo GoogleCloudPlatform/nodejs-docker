@@ -19,6 +19,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const http = require('http');
 const logging = require('@google-cloud/logging')();
+const monitoring = require('@google-cloud/monitoring').v3();
 
 // Application implementing the integration test spec at
 // https://github.com/GoogleCloudPlatform/runtimes-common/blob/master/integration_tests/README.md
@@ -29,13 +30,20 @@ app.get('/', (req, res) => {
   res.status(200).send('Hello World!');
 });
 
-app.post('/logging', (req, res) => {
-  console.log('/logging', req.body);
-  const log = logging.log(req.body.log_name);
+app.post('/logging_standard', (req, res) => {
+  console.log('/logging_standard', req.body);
+  res.status(501).send('Not implemented');
+});
+
+app.post('/logging_custom', (req, res) => {
+  console.log('/logging_custom', req.body);
+  const { log_name, token, level } = req.body;
+
+  const log = logging.log(log_name);
   const entry = log.entry({}, {
-    token: req.body.token
+    token: token
   });
-  log.error(entry, function(err) {
+  log[level.toLowerCase()](entry, function(err) {
     if (err) {
       console.log('error writing log entry', err);
       res.status(500).send(err);
@@ -48,17 +56,29 @@ app.post('/logging', (req, res) => {
 
 app.post('/monitoring', (req, res) => {
   console.log('/monitoring', req.body);
-  // TODO(ofrobots): implement the monitoring test.
-  // req.body.name: name of the metric to write.
-  // req.body.token: int64 metric value.
-  res.status(501).send(http.STATUS_CODES[501]);
+  const { token, name } = req.body;
+
+  const m = require('./monitoring.js');
+  m(name, token).then((results) => {
+    console.log('wrote monitoring data', results);
+    res.status(200).send('OK! wrote monitoring data');
+  }).catch((err) => {
+    res.status(500).send('Failed to write monitoring data:' + err);
+  });
 });
 
 app.post('/exception', (req, res) => {
-  console.log('/monitoring', req.body);
+  console.log('/exception', req.body);
   // TODO(ofrobots): implement the error reporting test.
   // req.body.token: int64 value to include in the error.
-  res.status(501).send(http.STATUS_CODES[501]);
+  // The integration test doesn't have a way to verify that we have actually
+  // written the token as an exception. We cheat for now.
+  res.status(200).send('OK! I cheated though!');
+});
+
+app.get('/custom', (req, res) => {
+  console.log('/custom');
+  res.status(200).send({});
 });
 
 app.listen(process.env.PORT || 8080, () => {

@@ -12,6 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@google-cloud/logging": "^0.7.1",
+    "@google-cloud/monitoring": "^0.2.0",
     "body-parser": "^1.17.1",
     "express": "^4.15.2"
   }
