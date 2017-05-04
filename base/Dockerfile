@@ -18,7 +18,7 @@ ENV PATH $PATH:/nodejs/bin
 RUN npm install --unsafe-perm semver
 
 # Install yarn here so users don't have to manually install it.
-RUN npm install --unsafe-perm --global yarn
+RUN npm install --unsafe-perm yarn
 
 # Add the node version install script
 ADD contents/install_node /usr/local/bin/install_node
