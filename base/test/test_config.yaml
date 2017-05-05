@@ -25,14 +25,14 @@ fileExistenceTests:
   shouldExist: true
 
 - name: 'yarn'
-  path: '/nodejs/bin'
+  path: '/nodejs/bin/yarn'
   isDirectory: false
-  shouldExist: true
+  shouldExist: false
 
 licenseTests:
 - debian: true
   files: [
           '/nodejs/lib/node_modules/npm/LICENSE',
           '/nodejs/LICENSE',
-          '/nodejs/lib/node_modules/npm/node_modules/semver/LICENSE' 
+          '/nodejs/lib/node_modules/npm/node_modules/semver/LICENSE'
   ]
