@@ -1,7 +1,7 @@
 {
   "name": "integration",
   "version": "1.0.0",
-  "description": "integration test sample application for ",
+  "description": "integration test sample application for node.js runtime",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
