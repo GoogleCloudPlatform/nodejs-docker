@@ -35,27 +35,44 @@ _DOCKER_NAMESPACE_OPTION="--docker-namespace"
 _VERBOSE_OPTION="--verbose"
 _HELP_OPTION="--help"
 
+_DEFAULT="default"
+
 function usage() {
   echo "Usage: $(basename $0) [options...]"
   echo ""
   echo "Build the Node.js runtime image"
   echo ""
   echo "Options:"
-  echo "  ${_DOCKER_NAMESPACE_OPTION}   Specifies the namespace to use for the build image."
-  echo "                       For example \"gcr.io/my-project\".  If not specified,"
-  echo "                       \"gcr.io/<project id>\" will be used."
+  echo "  ${_DOCKER_NAMESPACE_OPTION}   Specifies the namespace to use for the build image, "
+  echo "                       (For example \"gcr.io/my-project\")."
+  echo ""
+  echo "                       If not specified, or if the value \"${_DEFAULT}\" is specified, then"
+  echo "                       \"gcr.io/<current gcloud project>\" will be used."
   echo "  ${_CANDIDATE_NAME_OPTION}     Specifies a candiate name to use for the image.  This will be"
-  echo "                       used to tag the image.  If unspecified, a timestamp will be used."
-  echo "  ${_NODE_VERSION_OPTION}       Specify the Node.js version in the runtime image.  If specified,"
-  echo "                       the image will be tagged with the specified version string."
+  echo "                       used to tag the image."
+  echo ""
+  echo "                       If unspecified, or if the value \"${_DEFAULT}\" is specified, the current"
+  echo "                       timestamp will be used."
+  echo "  ${_NODE_VERSION_OPTION}       Specify the Node.js version in the runtime image that will be"
+  echo "                       used as a tag for the built image."
+  echo ""
+  echo "                       If not specified, or if the value \"${_DEFAULT}\" is specified, the"
+  echo "                       built image will not be tagged with a version."
   echo "  ${_UPLOAD_TO_STAGING_OPTION}  Specifies whether to mark the built image with the 'staging' tag."
-  echo "                       Must be followed by either \"true\" or \"false\"."
+  echo "                       Must be followed by either \"true\", \"false\" or \"${_DEFAULT}\"."
+  echo ""
+  echo "                       If not specified or if the value \"${_DEFAULT}\" is specified, the image "
+  echo "                       will not be given the 'staging' tag."
   echo "  ${_VERBOSE_OPTION}            Causes details to be printed as this command is run"
   echo "  ${_HELP_OPTION}               Displays this help"
   exit 1
 }
 
-UPLOAD_TO_STAGING="false"
+DOCKER_NAMESPACE="${_DEFAULT}"
+CANDIDATE_NAME="${_DEFAULT}"
+NODE_VERSION_TAG="${_DEFAULT}"
+UPLOAD_TO_STAGING="${_DEFAULT}"
+
 VERBOSE="false"
 RUNTIME_NAME="nodejs"
 
@@ -111,16 +128,31 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ -z "${DOCKER_NAMESPACE}" ]; then
+if [ "${DOCKER_NAMESPACE}" = "${_DEFAULT}" ]; then
   DOCKER_NAMESPACE="gcr.io/$(gcloud config get-value project)"
-  print "A namespace was not specified with ${_DOCKER_NAMESPACE_OPTION}"
-  print "The value ${DOCKER_NAMESPACE} will be used"
+  print "A namespace was not specified with ${_DOCKER_NAMESPACE_OPTION}."
+  print "The value ${DOCKER_NAMESPACE} will be used."
+  print ""
 fi
 
-if [ -z "${CANDIDATE_NAME}" ]; then
+if [ "${CANDIDATE_NAME}" = "${_DEFAULT}" ]; then
   CANDIDATE_NAME=$(date +%Y-%m-%d_%H_%M)
-  print "A candidate name was not specified with ${_CANDIDATE_NAME_OPTION}"
-  print "The value ${CANDIDATE_NAME} will be used"
+  print "A candidate name was not specified with ${_CANDIDATE_NAME_OPTION}."
+  print "The value ${CANDIDATE_NAME} will be used."
+  print ""
+fi
+
+if [ "${NODE_VERSION_TAG}" = "${_DEFAULT}" ]; then
+  print "The Node.js version was not specified with the ${_NODE_VERSION_OPTION}."
+  print "The image will not be tagged with a Node.js version."
+  print ""
+fi
+
+if [ "${UPLOAD_TO_STAGING}" = "${_DEFAULT}" ]; then
+  UPLOAD_TO_STAGING="false"
+  print "Whether to specify the staging tag was not specified with ${_UPLOAD_TO_STAGING_OPTION}."
+  print "The image will not be tagged with the 'staging' tag."
+  print ""
 fi
 
 export IMAGE="${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${CANDIDATE_NAME}"
@@ -162,7 +194,7 @@ if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
   print ""
 fi
 
-if [ ! -z "${NODE_VERSION_TAG}" ]; then
+if [ "${NODE_VERSION_TAG}" != "${_DEFAULT}" ]; then
   print "Setting the version tag to \"${NODE_VERSION_TAG}\""
   gcloud beta container images add-tag ${IMAGE} ${DOCKER_NAMESPACE}/${RUNTIME_NAME}:${NODE_VERSION_TAG} -q
   print "Done"
