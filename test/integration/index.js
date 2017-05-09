@@ -19,7 +19,6 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const http = require('http');
 const logging = require('@google-cloud/logging')();
-const monitoring = require('@google-cloud/monitoring').v3();
 
 // Application implementing the integration test spec at
 // https://github.com/GoogleCloudPlatform/runtimes-common/blob/master/integration_tests/README.md
