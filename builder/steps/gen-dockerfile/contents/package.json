@@ -2,10 +2,10 @@
   "name": "nodejs-gen-dockerfile",
   "description": "",
   "scripts": {
-    "pretest": "gulp",
-    "test": "mocha dist/test/**/*.js && gulp check-format",
+    "test": "gulp test",
     "prestart": "gulp",
-    "start": "node dist/src/main.js"
+    "start": "node dist/src/main.js",
+    "prepublish": "gulp clean && gulp compile"
   },
   "version": "0.0.1",
   "devDependencies": {
@@ -19,10 +19,14 @@
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-clang-format": "^1.0.23",
+    "gulp-mocha": "^4.3.1",
     "gulp-sourcemaps": "^2.4.1",
+    "gulp-tslint": "^8.0.0",
     "gulp-typescript": "^3.1.5",
+    "merge2": "^1.0.3",
     "mocha": "^2.5.3",
     "source-map-support": "^0.4.11",
+    "tslint": "^5.2.0",
     "typescript": "^2.2.1"
   },
   "dependencies": {
