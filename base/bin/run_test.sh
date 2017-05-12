@@ -21,11 +21,7 @@ set -e
 # the `base/bin` directory
 pushd $(dirname $0)/.. > /dev/null
 
-npm run build
-npm run prepare-test
-
 npm install
-
 npm test
 
 EXT_RUN_SH=./bin/ext_run.sh
