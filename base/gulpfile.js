@@ -107,8 +107,12 @@ gulp.task('test.prepare',
                 const buildDirs =
                     items
                         .filter(pathname => {
-                          return fs.lstatSync(path.join(testDir, pathname))
-                              .isDirectory();
+                          // TODO: When the infrastructure is available, update
+                          //       the tests so that integration testing is
+                          //       also done.
+                          return pathname !== 'integration' &&
+                                 fs.lstatSync(path.join(testDir, pathname))
+                                     .isDirectory();
                         })
                         .map(pathname => {
                           return (cb) => {
