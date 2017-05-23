@@ -33,6 +33,34 @@ fileExistenceTests:
   isDirectory: false
   shouldExist: true
 
+- name: KEYS
+  path: '/opt/google_appengine/runtime/KEYS'
+  isDirectory: false
+  shouldExist: true
+  permissions: '-rw-r--r--'
+
+- name: install_node
+  path: '/opt/google_appengine/runtime/install_node'
+  isDirectory: false
+  shouldExist: true
+  permissions: '-rwxr-xr-x'
+
+- name: verify_install_node
+  path: '/opt/google_appengine/runtime/verify_install_node'
+  isDirectory: false
+  shouldExist: true
+  permissions: '-rwxr-xr-x'
+
+- name: verify_node
+  path: '/opt/google_appengine/runtime/verify_node'
+  isDirectory: false
+  shouldExist: true
+  permissions: '-rwxr-xr-x'
+
+- name: bootstrap_node
+  path: '/opt/nodejs/bootstrap_node'
+  shouldExist: false
+
 licenseTests:
 - debian: true
   files: [
