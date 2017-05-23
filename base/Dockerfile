@@ -2,8 +2,18 @@
 FROM gcr.io/google-appengine/debian8
 
 # Install updates and dependencies
-RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl python build-essential git ca-certificates libkrb5-dev imagemagick netbase && \
-    apt-get clean && rm /var/lib/apt/lists/*_*
+RUN apt-get update -y && \
+    apt-get install --no-install-recommends -y -q \
+    curl \
+    python \
+    build-essential \
+    git \
+    ca-certificates \
+    libkrb5-dev \
+    imagemagick \
+    netbase && \
+    apt-get clean && \
+    rm /var/lib/apt/lists/*_*
 
 # Add the files necessary for verifying and installing node
 # These files are placed in /opt/google_appengine/runtime so that
@@ -14,7 +24,12 @@ ADD contents/ /opt/google_appengine/runtime/
 RUN ln -s /opt/google_appengine/runtime/install_node /usr/local/bin/install_node
 
 # Install the latest LTS release of nodejs
-RUN /opt/google_appengine/runtime/verify_install_node https://nodejs.org/dist/v6.11.1 v6.11.1 SHASUMS256.txt.asc /nodejs FAIL_ON_ERROR
+RUN /opt/google_appengine/runtime/verify_install_node \
+    https://nodejs.org/dist/v6.11.1 \
+    v6.11.1 \
+    SHASUMS256.txt.asc \
+    /nodejs \
+    FAIL_ON_ERROR
 ENV PATH $PATH:/nodejs/bin
 
 # The bootstrapping script should not be used after an initial version
