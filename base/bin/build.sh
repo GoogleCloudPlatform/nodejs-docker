@@ -152,7 +152,7 @@ print "Image:             \"${IMAGE}\"\n"
 
 # Run from the parent directory, not the bin directory, since the
 # parent directory is the root of the contents being processed.
-cd `dirname $0`/..
+cd $(dirname $0)/..
 
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 

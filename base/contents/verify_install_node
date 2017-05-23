@@ -73,8 +73,8 @@ fi
 # The temporary location where the downloaded files are stored while being
 # verified.  The script will ensure that this directory is removed before
 # the script exits.
-script_name=`basename ${0}`
-tmp_dir=`mktemp -d /tmp/${script_name}.XXXXXX` || exit 1
+script_name=$(basename ${0})
+tmp_dir=$(mktemp -d /tmp/${script_name}.XXXXXX) || exit 1
 
 # Used to issue warnings to the user, directing the message to standard error
 function warn {

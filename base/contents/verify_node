@@ -23,8 +23,8 @@ keys_file='/opt/google_appengine/runtime/KEYS'
 
 # Use a temporary file for the keyring file created from the KEYS file
 # to avoid file access conflicts with concurrent invocations of this script
-script_name=`basename ${0}`
-keys_gpg_file=`mktemp /tmp/${script_name}.XXXXXX.keys.gpg`
+script_name=$(basename ${0})
+keys_gpg_file=$(mktemp /tmp/${script_name}.XXXXXX.keys.gpg)
 
 # Clean up any temporary files created by this script
 function cleanUp {
