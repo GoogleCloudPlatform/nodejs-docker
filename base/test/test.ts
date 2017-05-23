@@ -25,7 +25,7 @@ interface TestConfig {
 const CONFIGURATIONS: TestConfig[] = [
   {
     description : `serves traffic on port ${PORT}`,
-    tag : 'test/express',
+    tag : 'test/definitions/express',
     expectedOutput : 'Hello World!'
   },
   {
@@ -37,6 +37,41 @@ const CONFIGURATIONS: TestConfig[] = [
     description : 'can install yarn globally',
     tag : 'test/yarn-global',
     expectedOutput : '0.18.0\n'
+  },
+  {
+    description: 'install_node installs and verifies deprecated verifiable ' +
+                   'Node versions',
+    tag: 'test/definitions/old-verifiable-node',
+    expectedOutput: 'v0.8.10'
+  },
+  {
+    description: 'install_node still installs deprecated versions of ' +
+                   'Node even if they cannot be verified ',
+    tag: 'test/definitions/old-unverifiable-node',
+    expectedOutput: 'v0.8.7'
+  },
+  {
+    description: 'install_node installs and verifies verifiable Node versions',
+    tag: 'test/definitions/verifiable-node',
+    expectedOutput: 'v6.0.0'
+  },
+  {
+    description: 'install_node still installs Node even if it cannot ' +
+                   'be verified',
+    tag: 'test/definitions/unverifiable-node',
+    expectedOutput: 'v0.10.7'
+  },
+  {
+    description: 'verify_node has a non-zero exit code if it is not supplied ' +
+                   'the files it need for verification',
+    tag: 'test/definitions/verify-fail-without-files',
+    expectedOutput: 'Correctly failed verification'
+  },
+  {
+    description: 'verify_node has a non-zero exit code if the checksum ' +
+                   'check fails',
+    tag: 'test/definitions/verify-fail-on-invalid-data',
+    expectedOutput: 'Correctly failed verification'
   }
 ];
 
