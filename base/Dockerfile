@@ -32,10 +32,6 @@ RUN /opt/google_appengine/runtime/verify_install_node \
     FAIL_ON_ERROR
 ENV PATH $PATH:/nodejs/bin
 
-# The bootstrapping script should not be used after an initial version
-# of node has been installed
-RUN rm -f /opt/nodejs/bootstrap_node
-
 # Install yarn
 RUN mkdir -p /opt/yarn && curl -L https://yarnpkg.com/latest.tar.gz | tar xvzf - -C /opt/yarn --strip-components=1
 ENV PATH $PATH:/opt/yarn/bin

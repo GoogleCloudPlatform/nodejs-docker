@@ -57,10 +57,6 @@ fileExistenceTests:
   shouldExist: true
   permissions: '-rwxr-xr-x'
 
-- name: bootstrap_node
-  path: '/opt/nodejs/bootstrap_node'
-  shouldExist: false
-
 licenseTests:
 - debian: true
   files: [
