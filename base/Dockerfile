@@ -4,14 +4,14 @@ FROM gcr.io/google-appengine/debian8
 # Install updates and dependencies
 RUN apt-get update -y && \
     apt-get install --no-install-recommends -y -q \
-    curl \
-    python \
-    build-essential \
-    git \
-    ca-certificates \
-    libkrb5-dev \
-    imagemagick \
-    netbase && \
+      build-essential \
+      ca-certificates \
+      curl \
+      git \
+      imagemagick \
+      libkrb5-dev \
+      netbase \
+      python && \
     apt-get clean && \
     rm /var/lib/apt/lists/*_*
 
