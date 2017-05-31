@@ -15,21 +15,16 @@ RUN apt-get update -y && \
     apt-get clean && \
     rm /var/lib/apt/lists/*_*
 
-# Add the files necessary for verifying and installing node
-# These files are placed in /opt/google_appengine/runtime so that
-# they will remain even if the /nodejs directory is removed.
-# Further, the PATH is is not updated, because these scripts should
-# only be called using an absolute path.
+# Add the files necessary for verifying and installing node.
 ADD contents/ /opt/google_appengine/runtime/
 RUN ln -s /opt/google_appengine/runtime/install_node /usr/local/bin/install_node
 
-# Install the latest LTS release of nodejs
+# Install the latest LTS release of nodejs directly from nodejs.org
+# with the installation aborting if verification of the nodejs binaries fails.
 RUN /opt/google_appengine/runtime/verify_install_node \
-    https://nodejs.org/dist/v6.11.1 \
-    v6.11.1 \
-    SHASUMS256.txt.asc \
-    /nodejs \
-    FAIL_ON_ERROR
+    --direct \
+    --strict \
+    v6.11.1
 ENV PATH $PATH:/nodejs/bin
 
 # Install yarn

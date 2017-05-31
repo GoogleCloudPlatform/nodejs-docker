@@ -79,13 +79,7 @@ function verifyBinaryExists(version, cb) {
 
 
 function downloadAndInstallVersion(version, cb) {
-  var proc = spawn('/opt/google_appengine/runtime/verify_install_node', [
-    'https://storage.googleapis.com/gae_node_packages',
-    version,
-    version + '-SHASUMS256.txt.asc',
-    '/nodejs',
-    'WARN_ON_ERROR'
-  ]);
+  var proc = spawn('/opt/google_appengine/runtime/verify_install_node', [version]);
 
   proc.stdout.pipe(process.stdout);
   proc.stderr.pipe(process.stderr);

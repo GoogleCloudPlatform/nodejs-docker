@@ -3,72 +3,79 @@
 # fail fast
 set -e
 
-# Bail with a help message if the arguments look wrong
-if [ $# != 5 -o "${1}" == "help" ]; then
-  echo "Usage: ${0} <base url> <node version number> <checksum filename> <install dir> <FAIL_ON_ERROR | WARN_ON_ERROR>"
+function usage() {
+  echo "Usage: $(basename $0) --strict --direct --help version"
   echo ""
-  echo "Verifies and installs the specified version of Node.js to the"
-  echo "specified directory where the version number is expected to be"
-  echo "of the form 'v#.#.#'."
+  echo "Verifies and installs the specified version of Node.js."
   echo ""
-  echo "The Node.js binary with the specified version and the checksum"
-  echo "file with the specified name will be downloaded from the specified"
-  echo "base url."
+  echo "Options:"
+  echo "  --strict  Causes the script to abort with an error if the"
+  echo "            binary verification fails.  Without this option"
+  echo "            only a warning message is printed in this situation."
+  echo "  --direct  Download and install directly from nodejs.org instead"
+  echo "            of from https://storage.googleapis.com/gae_node_packages"
+  echo "  --help    Prints this help message"
   echo ""
-  echo "The last argument is used to specify the behavior to do if the"
-  echo "verification of the Node.js binary fails."
-  echo ""
-  echo "If the string FAIL_ON_ERROR is specified, this script will exit "
-  echo "with a nonzero exit code if Node.js verification fails.  "
-  echo ""
-  echo "If the string WARN_ON_ERROR is specified, this script will"
-  echo "print a warning message if the verification of the Node.js"
-  echo "binary fails, but will still continue with the installation.  "
-  echo "Note that this script could still return a non-zero exit code"
-  echo "if other aspects of the installation fail."
-  echo ""
-  echo "If neither FAIL_ON_ERROR nor WARN_ON_ERROR is specified, this script"
-  echo "will print an error message and will return with a non-zero exit code."
-  echo ""
-  echo "Note:  The installation directory will be deleted completely"
-  echo "       before the installation takes place."
-  echo ""
-  echo "An exit code of 0 indicates success and a non-zero exit code"
-  echo "indicates failure.  A failure will occur if the Node.js binary"
-  echo "file could not be downloaded, the checksum file could not be"
-  echo "downloaded, the installation directory could not be created "
-  echo "(if it doesn't already exist), or the verification of the "
-  echo "Node.js binary fails."
+  echo "  version   The version of Node.js to install.  The version number"
+  echo "            is expected to be of the form 'v#.#.#'."
   exit 1
-fi
+}
 
-# The URL of the location from which the specified Node.js file
-# and checksum file can be downloaded
-base_url="${1}"
+strict="false"
+direct="false"
 
 # The node version to install expected to be of the form 'v#.#.#'
-node_version="${2}"
+node_version=
 
-# The name of the checksum file found in ${base_url} that is used to
-# verify the Node.js binary
-checksum_file="${3}"
+# Parse the command line arguments
+while [ $# -gt 0 ]; do
+  case "${1}" in
+    --strict)
+      strict="true"
+      shift
+      ;;
+    --direct)
+      direct="true"
+      shift
+      ;;
+    --help)
+      shift
+      usage
+      ;;
+    *)
+      if [ -z "${node_version}" ]; then
+        node_version="${1}"
+      else
+        echo "Exactly one version must be specified."
+        usage
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [ -z "${node_version}" ]; then
+  echo "A version must be specified."
+  usage
+fi
+
+if [ "${direct}" == "true" ]; then
+  # The URL of the location from which the specified Node.js file
+  # and checksum file can be downloaded
+  base_url="https://nodejs.org/dist/${node_version}"
+  # The name of the checksum file found in ${base_url} that is used to
+  # verify the Node.js binary
+  checksum_file="SHASUMS256.txt.asc"
+else
+  base_url="https://storage.googleapis.com/gae_node_packages"
+  checksum_file="${node_version}-SHASUMS256.txt.asc"
+fi
 
 # The location where the Node will be installed
-install_dir="${4}"
+install_dir="/nodejs"
 
 # The name of the Node.js binary to install
 node_filename="node-${node_version}-linux-x64.tar.gz"
-
-# Determine whether to have the script fail or to issue a warning
-# if node verification fails
-if [ "${5}" == "FAIL_ON_ERROR" ]; then
-  verify_failure_action="fail"
-elif [ "${5}" == "WARN_ON_ERROR" ]; then
-  verify_failure_action="warn"
-else
-  echo "Either FAIL_ON_ERROR or WARN_ON_ERROR must be specified."
-  exit 1
-fi
 
 # The temporary location where the downloaded files are stored while being
 # verified.  The script will ensure that this directory is removed before
@@ -101,19 +108,13 @@ function handleFailedChecksumDownload {
   warn "downloaded."
   warn ""
 
-  if [ "${verify_failure_action}" == "fail" ]; then
+  if [ "${strict}" == "true" ]; then
     warn "Aborting the installation."
     warn ""
     exitAsFailure
-  elif [ "${verify_failure_action}" == "warn" ]; then
+  else
     warn "The installation will continue, but it is strongly recommended"
     warn "that you install a version of Node.js that can been verified."
-    warn ""
-  else
-    warn "Unable to determine the appropriate action to take if"
-    warn "verifying the Node.js binary cannot proceed."
-    warn ""
-    warn "Continuing with the installation."
     warn ""
   fi
 }
@@ -127,19 +128,13 @@ function handleFailedVerification {
   warn "or may have been tampered with."
   warn ""
 
-  if [ "${verify_failure_action}" == "fail" ]; then
+  if [ "${strict}" == "true" ]; then
     warn "Aborting the installation."
     warn ""
     exitAsFailure
-  elif [ "${verify_failure_action}" == "warn" ]; then
+  else
     warn "The installation will continue, but it is strongly recommended"
     warn "that you install a version of Node.js that has been verified."
-    warn ""
-  else
-    warn "Unable to determine the appropriate action to take if"
-    warn "verifying the Node.js binary failed."
-    warn ""
-    warn "Continuing with the installation."
     warn ""
   fi
 }
