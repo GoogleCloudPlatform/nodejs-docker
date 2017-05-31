@@ -21,7 +21,7 @@ RUN ln -s /opt/google_appengine/runtime/install_node /usr/local/bin/install_node
 
 # Install the latest LTS release of nodejs directly from nodejs.org
 # with the installation aborting if verification of the nodejs binaries fails.
-RUN /opt/google_appengine/runtime/verify_install_node \
+RUN /opt/google_appengine/runtime/bootstrap_node \
     --direct \
     --strict \
     v6.11.1

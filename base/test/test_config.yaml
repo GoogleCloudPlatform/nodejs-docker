@@ -43,8 +43,8 @@ fileExistenceTests:
   isDirectory: false
   shouldExist: true
 
-- name: verify_install_node
-  path: '/opt/google_appengine/runtime/verify_install_node'
+- name: bootstrap_node
+  path: '/opt/google_appengine/runtime/bootstrap_node'
   isDirectory: false
   shouldExist: true
 
