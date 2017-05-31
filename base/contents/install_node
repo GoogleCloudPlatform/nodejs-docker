@@ -79,7 +79,7 @@ function verifyBinaryExists(version, cb) {
 
 
 function downloadAndInstallVersion(version, cb) {
-  var proc = spawn('/opt/google_appengine/runtime/bootstrap_node', [version]);
+  var proc = spawn('/opt/gcp/runtime/bootstrap_node', [version]);
 
   proc.stdout.pipe(process.stdout);
   proc.stderr.pipe(process.stderr);

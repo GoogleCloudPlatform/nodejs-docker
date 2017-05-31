@@ -34,22 +34,22 @@ fileExistenceTests:
   shouldExist: true
 
 - name: KEYS
-  path: '/opt/google_appengine/runtime/KEYS'
+  path: '/opt/gcp/runtime/KEYS'
   isDirectory: false
   shouldExist: true
 
 - name: install_node
-  path: '/opt/google_appengine/runtime/install_node'
+  path: '/opt/gcp/runtime/install_node'
   isDirectory: false
   shouldExist: true
 
 - name: bootstrap_node
-  path: '/opt/google_appengine/runtime/bootstrap_node'
+  path: '/opt/gcp/runtime/bootstrap_node'
   isDirectory: false
   shouldExist: true
 
 - name: verify_node
-  path: '/opt/google_appengine/runtime/verify_node'
+  path: '/opt/gcp/runtime/verify_node'
   isDirectory: false
   shouldExist: true
 
