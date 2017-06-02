@@ -147,7 +147,9 @@ var args = [];
 
 for (var i=2; i<process.argv.length; i++) {
   var a = process.argv[i];
-  if (a.startsWith('--')) {
+  // Check if the argument starts with '--' in a way that can be used with
+  // Node >= 0.10.0
+  if (a.indexOf('--') === 0) {
     args.push(a);
   }
   else {
