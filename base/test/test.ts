@@ -72,6 +72,12 @@ const CONFIGURATIONS: TestConfig[] = [
                    'check fails',
     tag: 'test/definitions/verify-fail-on-invalid-data',
     expectedOutput: 'Correctly failed verification'
+  },
+  {
+    description: 'install_node installs and verifies deprecated verifiable ' +
+                   'Node versions',
+    tag: 'test/definitions/old-verifiable-node',
+    expectedOutput: 'v0.12.0'
   }
 ];
 

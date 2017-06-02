@@ -78,8 +78,9 @@ function verifyBinaryExists(version, cb) {
 }
 
 
-function downloadAndInstallVersion(version, cb) {
-  var proc = spawn('/opt/gcp/runtime/bootstrap_node', [version]);
+function downloadAndInstallVersion(version, args, cb) {
+  var command = '/opt/gcp/runtime/bootstrap_node';
+  var proc = spawn(command, [version].concat(args ? args : []));
 
   proc.stdout.pipe(process.stdout);
   proc.stderr.pipe(process.stderr);
@@ -98,7 +99,8 @@ function downloadAndInstallVersion(version, cb) {
 
   proc.on('error', guardedCallback);
   proc.on('exit', function(code) {
-    return guardedCallback(null);
+    return guardedCallback(code === 0 ? null :
+      new Error(command + ' exited with a non-zero exit code: ' + code));
   });
 }
 
@@ -109,7 +111,7 @@ function fail(err) {
 }
 
 
-function main(requestedVersion) {
+function main(requestedVersion, args) {
   // Does the current Node.js version already satisfy the requested version?
   // If so, we have nothing to do.
   if (semver.satisfies(process.version, requestedVersion)) {
@@ -125,7 +127,7 @@ function main(requestedVersion) {
       if (err) {
         return fail(err);
       }
-      downloadAndInstallVersion(version, function(err) {
+      downloadAndInstallVersion(version, args, function(err) {
         if (err) {
           return fail(err);
         }
@@ -135,5 +137,32 @@ function main(requestedVersion) {
   });
 }
 
-var spec = process.argv[2];
-main(spec);
+function printUsageAndExit() {
+  console.log('Usage: install_node: [--ignore-verification-failure] [--direct] [--help] version');
+  process.exit(1);
+}
+
+var spec;
+var args = [];
+
+for (var i=2; i<process.argv.length; i++) {
+  var a = process.argv[i];
+  if (a.startsWith('--')) {
+    args.push(a);
+  }
+  else {
+    if (spec) {
+      console.log('Exactly one version must be specified.');
+      printUsageAndExit();
+    }
+    else {
+      spec = a;
+    }
+  }
+}
+
+if (!spec) {
+  printUsageAndExit();
+}
+
+main(spec, args);
