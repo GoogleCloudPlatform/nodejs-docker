@@ -57,9 +57,15 @@ const CONFIGURATIONS: TestConfig[] = [
   },
   {
     description: 'install_node still installs Node even if it cannot ' +
-                   'be verified',
+                   'be verified if --ingore-verification-failure is specified',
     tag: 'test/definitions/unverifiable-node',
     expectedOutput: 'v0.10.7'
+  },
+  {
+    description: 'install_node aborts the installation if verification fails ' +
+                   'and --ingore-verification-failure is not specified',
+    tag: 'test/definitions/verify-fail-aborts-install',
+    expectedOutput: 'v6.10.3'
   },
   {
     description: 'verify_node has a non-zero exit code if it is not supplied ' +
