@@ -18,6 +18,10 @@ commandTests:
   command: ['node', '-v']
   expectedOutput: ['v5.9.0\n']
 
+- name: 'Yarn Executable'
+  command: ['bash', '-c', 'yarn &> /dev/null && echo "ran without errors"']
+  expectedOutput: ['ran without errors\n']
+
 fileExistenceTests:
 - name: 'semver'
   path: '/node_modules/semver'
@@ -25,9 +29,9 @@ fileExistenceTests:
   shouldExist: true
 
 - name: 'yarn'
-  path: '/nodejs/bin/yarn'
+  path: '/opt/yarn/bin/yarn'
   isDirectory: false
-  shouldExist: false
+  shouldExist: true
 
 licenseTests:
 - debian: true
