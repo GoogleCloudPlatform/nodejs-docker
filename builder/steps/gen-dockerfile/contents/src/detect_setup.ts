@@ -40,6 +40,11 @@ export interface Setup {
    */
   canInstallDeps: boolean;
   /**
+   * Specifies the semver expression representing the version of npm to be
+   * installed, as specified by the application's package.json file.
+   */
+  npmVersion?: string;
+  /**
    * Specifies the semver expression representing the version of Node.js used
    * to run the application as specified by the application's package.json file
    */
@@ -92,6 +97,7 @@ export async function detectSetup(
 
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
+  let npmVersion: string|undefined;
   let nodeVersion: string|undefined;
   let useYarn: boolean;
 
@@ -133,14 +139,11 @@ export async function detectSetup(
     // See if we've got a scripts.start field.
     gotScriptsStart = !!(packageJson.scripts && packageJson.scripts.start);
 
-    // See if a version of node is specified.
-    if (packageJson.engines && packageJson.engines.node) {
-      nodeVersion = packageJson.engines.node;
-    } else {
-      nodeVersion = undefined;
-      warn(
-          'node.js checker: ignoring invalid "engines" field in ' +
-          'package.json');
+    // Check if the user has specified specific versions of node or npm in the
+    // package.json.
+    if (packageJson.engines) {
+      nodeVersion = packageJson.engines.node || undefined;
+      npmVersion = packageJson.engines.npm || undefined;
     }
 
     if (!nodeVersion) {
@@ -160,6 +163,7 @@ export async function detectSetup(
   // extend filters undefined properties.
   const setup = extend({}, {
     canInstallDeps: canInstallDeps,
+    npmVersion: npmVersion ? shellEscape([npmVersion]) : undefined,
     nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
     useYarn: useYarn
   });
