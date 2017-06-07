@@ -19,6 +19,7 @@
 // since the `shell-escape` module does not have type definitions available.
 const shellEscape: (args: string[]) => string = require('shell-escape');
 
+import * as extend from 'extend';
 import * as yaml from 'js-yaml';
 
 import {Locator, Reader} from './fsview';
@@ -47,7 +48,7 @@ export interface Setup {
    * Specifies the semver expression representing the version of Node.js used
    * to run the application as specified by the application's package.json file
    */
-  nodeVersion: string|undefined;
+  nodeVersion?: string;
   /**
    * Specifies whether or not Yarn should be used to install the application's
    * dependencies and launch the app.
@@ -161,10 +162,12 @@ export async function detectSetup(
         'the "server.js" file were found.');
   }
 
-  return {
+  // extend filters undefined properties.
+  const setup = extend({}, {
     canInstallDeps: canInstallDeps,
     gotScriptsStart: gotScriptsStart,
     nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
     useYarn: useYarn
-  };
+  });
+  return setup;
 }
