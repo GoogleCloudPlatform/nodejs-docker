@@ -101,12 +101,7 @@ describe('detectSetup', () => {
           {path: 'server.js', exists: true, contents: 'some content'}
         ],
         ['Checking for Node.js.', 'node.js checker: No package.json file.'], [],
-        {
-          canInstallDeps: false,
-          gotScriptsStart: false,
-          nodeVersion: undefined,
-          useYarn: false
-        });
+        {canInstallDeps: false, gotScriptsStart: false, useYarn: false});
 
     performTest(
         'should detect with package.json, without a start script, ' +
@@ -124,12 +119,7 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {
-          canInstallDeps: true,
-          gotScriptsStart: false,
-          nodeVersion: undefined,
-          useYarn: false
-        });
+        {canInstallDeps: true, gotScriptsStart: false, useYarn: false});
 
     performTest(
         'should detect with package.json, without a start script, ' +
@@ -151,12 +141,7 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {
-          canInstallDeps: true,
-          gotScriptsStart: false,
-          nodeVersion: undefined,
-          useYarn: false
-        });
+        {canInstallDeps: true, gotScriptsStart: false, useYarn: false});
 
     performTest(
         'should detect with package.json, without a start script, ' +
@@ -174,12 +159,7 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {
-          canInstallDeps: true,
-          gotScriptsStart: false,
-          nodeVersion: undefined,
-          useYarn: true
-        });
+        {canInstallDeps: true, gotScriptsStart: false, useYarn: true});
 
     performTest(
         'should detect with package.json, with start script, ' +
@@ -200,12 +180,7 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {
-          canInstallDeps: true,
-          gotScriptsStart: true,
-          nodeVersion: undefined,
-          useYarn: false
-        });
+        {canInstallDeps: true, gotScriptsStart: true, useYarn: false});
 
     performTest(
         'should detect with package.json, with start script, ' +
@@ -231,12 +206,7 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {
-          canInstallDeps: true,
-          gotScriptsStart: true,
-          nodeVersion: undefined,
-          useYarn: false
-        });
+        {canInstallDeps: true, gotScriptsStart: true, useYarn: false});
 
     performTest(
         'should detect with package.json, with start script, ' +
@@ -257,11 +227,6 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {
-          canInstallDeps: true,
-          gotScriptsStart: true,
-          nodeVersion: undefined,
-          useYarn: true
-        });
+        {canInstallDeps: true, gotScriptsStart: true, useYarn: true});
   });
 });
