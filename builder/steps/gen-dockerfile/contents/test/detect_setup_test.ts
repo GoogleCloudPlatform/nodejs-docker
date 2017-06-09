@@ -214,7 +214,7 @@ describe('detectSetup', () => {
         ['No node version specified.  Please add your node ' +
          'version, see ' +
          'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-        {canInstallDeps: true, gotScriptsStart: true, useYarn: true});
+        {canInstallDeps: true, useYarn: true});
 
     performTest(
         'should detect node version from the engines field in package.json',
@@ -230,7 +230,6 @@ describe('detectSetup', () => {
         ],
         ['Checking for Node.js.'], [], {
           canInstallDeps: true,
-          gotScriptsStart: true,
           nodeVersion: shellEscape(['^3.3.8']),
           useYarn: false
         });
