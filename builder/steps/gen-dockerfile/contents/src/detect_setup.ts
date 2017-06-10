@@ -40,11 +40,6 @@ export interface Setup {
    */
   canInstallDeps: boolean;
   /**
-   * Specifies whether the app directory's package.json file contains a
-   * "scripts" section that contains a "start" command
-   */
-  gotScriptsStart: boolean;
-  /**
    * Specifies the semver expression representing the version of Node.js used
    * to run the application as specified by the application's package.json file
    */
@@ -165,7 +160,6 @@ export async function detectSetup(
   // extend filters undefined properties.
   const setup = extend({}, {
     canInstallDeps: canInstallDeps,
-    gotScriptsStart: gotScriptsStart,
     nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
     useYarn: useYarn
   });
