@@ -46,6 +46,8 @@ const NODE_UPDATED_WARNING = 'WARNING: The default Node.js major version ' +
     'use Node 8.  To learn how to pin to a version of the Node.js runtime ' +
     'see https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
+const BUILD_SCRIPT_NAME = 'gcp-build';
+
 /**
  * Encapsulates the information about the Node.js application detected by
  * the {@link detectSetup} method.
@@ -81,6 +83,12 @@ export interface Setup {
    * identifies the yaml file used to deploy the application.
    */
   appYamlPath: string;
+  /*
+   * Specifies whether or not a build command should be run as part of the
+   * deployment.  In particular, does the package.json file contain a
+   * "gcp-build" script.
+   */
+  hasBuildCommand: boolean;
 }
 
 /**
@@ -166,6 +174,8 @@ export async function detectSetup(
   let npmVersion: string|undefined;
   let yarnVersion: string|undefined;
   let nodeVersion: string|undefined;
+  let useYarn: boolean;
+  let hasBuildCommand = false;
 
   if (!(await fsview.exists(PACKAGE_JSON))) {
     logger.log('node.js checker: No package.json file.');
@@ -199,6 +209,10 @@ export async function detectSetup(
       npmVersion = packageJson.engines.npm;
       yarnVersion = packageJson.engines.yarn;
     }
+
+    if (packageJson.scripts) {
+      hasBuildCommand = BUILD_SCRIPT_NAME in packageJson.scripts;
+    }
   }
 
   if (!nodeVersion) {
@@ -223,7 +237,8 @@ export async function detectSetup(
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
     useYarn: yarnLockExists,
-    appYamlPath
+    hasBuildCommand: hasBuildCommand,
+    appYamlPath: appYamlPath
   };
 
   // extend filters out undefined properties.

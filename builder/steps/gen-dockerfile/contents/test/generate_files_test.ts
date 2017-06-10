@@ -35,6 +35,8 @@ const BASE =
 FROM ${BASE_IMAGE}
 `;
 
+const BUILD_COMMAND = 'npm run gcp-build';
+
 const UPGRADE_NODE =
     `# Check to see if the the version included in the base runtime satisfies
 # '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
@@ -166,7 +168,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -181,7 +184,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -196,7 +200,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -211,7 +216,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -226,7 +232,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -241,7 +248,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -256,7 +264,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -271,7 +280,8 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -286,7 +296,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile:
                BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
@@ -302,7 +313,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile:
                BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
@@ -318,7 +330,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
                NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
@@ -334,7 +347,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
                YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
@@ -350,7 +364,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile:
                BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
@@ -366,7 +381,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile:
                BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
@@ -382,7 +398,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
                NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
@@ -398,7 +415,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
                YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
@@ -415,7 +433,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: 'custom.yaml'
+             appYamlPath: 'custom.yaml',
+             hasBuildCommand: false
            },
            expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
          });
@@ -428,7 +447,8 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             hasBuildCommand: false
            },
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
@@ -442,7 +462,8 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           npmVersion: NPM_VERSION,
           useYarn: false,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          hasBuildCommand: false
         },
         expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
             NPM_INSTALL_PRODUCTION_DEPS + NPM_START
@@ -455,7 +476,8 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           // Note: npmVersion is not specified
           useYarn: false,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          hasBuildCommand: false
         },
         expectedDockerfile:
             BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START
@@ -470,7 +492,8 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           yarnVersion: YARN_VERSION,
           useYarn: true,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          hasBuildCommand: false
         },
         expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
             YARN_INSTALL_PRODUCTION_DEPS + YARN_START
@@ -483,7 +506,8 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           // Note: yarnVersion is not specified
           useYarn: true,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          hasBuildCommand: false
         },
         expectedDockerfile:
             BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START
@@ -500,7 +524,8 @@ describe('generateFiles', async () => {
               npmVersion: NPM_VERSION,
               yarnVersion: YARN_VERSION,
               useYarn: false,
-              appYamlPath: DEFAULT_APP_YAML
+              appYamlPath: DEFAULT_APP_YAML,
+              hasBuildCommand: false
             },
             expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
                 NPM_INSTALL_PRODUCTION_DEPS + NPM_START
@@ -514,11 +539,77 @@ describe('generateFiles', async () => {
               npmVersion: NPM_VERSION,
               yarnVersion: YARN_VERSION,
               useYarn: true,
-              appYamlPath: DEFAULT_APP_YAML
+              appYamlPath: DEFAULT_APP_YAML,
+              hasBuildCommand: false
             },
             expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
                 YARN_INSTALL_PRODUCTION_DEPS + YARN_START
           });
         });
       });
+
+  it('should generate correctly with a build command specified and can ' +
+         'install deps',
+     async () => {
+       await runTest({
+         config: {
+           canInstallDeps: true,
+           useYarn: false,
+           hasBuildCommand: true,
+           appYamlPath: DEFAULT_APP_YAML
+         },
+         expectedDockerfile: `FROM ${BASE_IMAGE} as build_step
+COPY . /app/
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN NODE_ENV=development npm install --unsafe-perm || \\
+  ((if [ -f npm-debug.log ]; then \\
+      cat npm-debug.log; \\
+    fi) && false)
+RUN ${BUILD_COMMAND}
+RUN rm -Rf node_modules
+FROM build_step
+COPY --from=build_step /app .
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN npm install --unsafe-perm || \\
+  ((if [ -f npm-debug.log ]; then \\
+      cat npm-debug.log; \\
+    fi) && false)
+CMD npm start
+`,
+         expectedDockerignore: DEFAULT_DOCKERIGNORE
+       });
+     });
+
+  it('should generate correctly with a build command specified and cannot ' +
+         'install deps',
+     async () => {
+       await runTest({
+         config: {
+           canInstallDeps: false,
+           useYarn: false,
+           hasBuildCommand: true,
+           appYamlPath: DEFAULT_APP_YAML
+         },
+         expectedDockerfile: `FROM ${BASE_IMAGE} as build_step
+COPY . /app/
+RUN ${BUILD_COMMAND}
+FROM build_step
+COPY --from=build_step /app .
+CMD npm start
+`,
+         expectedDockerignore: DEFAULT_DOCKERIGNORE
+       });
+     });
 });

@@ -31,6 +31,7 @@
     "typescript": "^2.5.3"
   },
   "dependencies": {
+    "@types/extend": "^2.0.30",
     "argparse": "^1.0.9",
     "ejs": "^2.5.6",
     "extend": "^3.0.1",

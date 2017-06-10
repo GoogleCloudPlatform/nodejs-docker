@@ -1,6 +1,40 @@
+<% if (config.hasBuildCommand) { %>
+FROM <%- baseImage %> as build_step
+COPY . /app/
+<% if (config.canInstallDeps) { %>
+  <% if (config.useYarn) { %>
+RUN NODE_ENV=development yarn install || \
+  ((if [ -f yarn-error.log ]; then \
+      cat yarn-error.log; \
+    fi) && false)
+  <% } else { %>
+# You have to specify "--unsafe-perm" with npm install
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+RUN NODE_ENV=development npm install --unsafe-perm || \
+  ((if [ -f npm-debug.log ]; then \
+      cat npm-debug.log; \
+    fi) && false)
+  <% } %>
+<% } %>
+RUN npm run gcp-build
+  <% if (config.canInstallDeps) { %>
+RUN rm -Rf node_modules
+  <% } %>
+<% } %>
+
+<% if (config.hasBuildCommand) { %>
+FROM build_step
+COPY --from=build_step /app .
+<% } else { %>
 # Dockerfile extending the generic Node image with application files for a
 # single application.
 FROM <%- baseImage %>
+<% } %>
 
 <% if (config.nodeVersion) { %>
 # Check to see if the the version included in the base runtime satisfies
@@ -25,7 +59,9 @@ RUN yarn global add npm@'<%- config.npmVersion %>'
 RUN yarn global add yarn@'<%- config.yarnVersion %>'
 <% } %>
 
+<% if (!config.hasBuildCommand) { %>
 COPY . /app/
+<% } %>
 
 <% if (config.canInstallDeps) { %>
   <% if (config.useYarn) { %>
