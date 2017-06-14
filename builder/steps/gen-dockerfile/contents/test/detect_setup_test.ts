@@ -104,8 +104,8 @@ describe('detectSetup', () => {
         {canInstallDeps: false, useYarn: false});
 
     performTest(
-        'should detect with package.json, without a start script, ' +
-            'without yarn.lock, and with server.js',
+        'should detect with package.json, without yarn.lock, and with ' +
+            'server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
           {path: 'package.json', exists: true, contents: '{}'},
@@ -122,8 +122,8 @@ describe('detectSetup', () => {
         {canInstallDeps: true, useYarn: false});
 
     performTest(
-        'should detect with package.json, without a start script, ' +
-            'with yarn.lock, with yarn.lock skipped, and with server.js',
+        'should detect with package.json, with yarn.lock, with yarn.lock ' +
+            'skipped, and with server.js',
         [
           {
             path: 'app.yaml',
@@ -162,8 +162,8 @@ describe('detectSetup', () => {
         {canInstallDeps: true, useYarn: true});
 
     performTest(
-        'should detect with package.json, with start script, ' +
-            'without yarn.lock, and with server.js',
+        'should detect with package.json, without yarn.lock, ' +
+            'and with server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
             path: 'package.json',
@@ -183,8 +183,8 @@ describe('detectSetup', () => {
         {canInstallDeps: true, useYarn: false});
 
     performTest(
-        'should detect with package.json, with start script, ' +
-            'with yarn.lock, with yarn.lock skipped, and without server.js',
+        'should detect with package.json, with yarn.lock, with yarn.lock ' +
+            'skipped, and without server.js',
         [
           {
             path: 'app.yaml',
@@ -209,8 +209,8 @@ describe('detectSetup', () => {
         {canInstallDeps: true, useYarn: false});
 
     performTest(
-        'should detect with package.json, with start script, ' +
-            'with yarn.lock, and without server.js',
+        'should detect with package.json, with yarn.lock, and without ' +
+            'server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
             path: 'package.json',
