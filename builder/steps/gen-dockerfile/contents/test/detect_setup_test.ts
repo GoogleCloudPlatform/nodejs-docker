@@ -101,11 +101,11 @@ describe('detectSetup', () => {
           {path: 'server.js', exists: true, contents: 'some content'}
         ],
         ['Checking for Node.js.', 'node.js checker: No package.json file.'], [],
-        {canInstallDeps: false, gotScriptsStart: false, useYarn: false});
+        {canInstallDeps: false, useYarn: false});
 
     performTest(
-        'should detect with package.json, without a start script, ' +
-            'without yarn.lock, and with server.js',
+        'should detect with package.json, without yarn.lock, and with ' +
+            'server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
           {path: 'package.json', exists: true, contents: '{}'},
@@ -119,11 +119,11 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, gotScriptsStart: false, useYarn: false});
+        {canInstallDeps: true, useYarn: false});
 
     performTest(
-        'should detect with package.json, without a start script, ' +
-            'with yarn.lock, with yarn.lock skipped, and with server.js',
+        'should detect with package.json, with yarn.lock, with yarn.lock ' +
+            'skipped, and with server.js',
         [
           {
             path: 'app.yaml',
@@ -141,7 +141,7 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, gotScriptsStart: false, useYarn: false});
+        {canInstallDeps: true, useYarn: false});
 
     performTest(
         'should detect with package.json, without a start script, ' +
@@ -159,11 +159,11 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, gotScriptsStart: false, useYarn: true});
+        {canInstallDeps: true, useYarn: true});
 
     performTest(
-        'should detect with package.json, with start script, ' +
-            'without yarn.lock, and with server.js',
+        'should detect with package.json, without yarn.lock, ' +
+            'and with server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
             path: 'package.json',
@@ -180,11 +180,11 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, gotScriptsStart: true, useYarn: false});
+        {canInstallDeps: true, useYarn: false});
 
     performTest(
-        'should detect with package.json, with start script, ' +
-            'with yarn.lock, with yarn.lock skipped, and without server.js',
+        'should detect with package.json, with yarn.lock, with yarn.lock ' +
+            'skipped, and without server.js',
         [
           {
             path: 'app.yaml',
@@ -206,11 +206,11 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, gotScriptsStart: true, useYarn: false});
+        {canInstallDeps: true, useYarn: false});
 
     performTest(
-        'should detect with package.json, with start script, ' +
-            'with yarn.lock, and without server.js',
+        'should detect with package.json, with yarn.lock, and without ' +
+            'server.js',
         [
           {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
             path: 'package.json',
@@ -227,6 +227,6 @@ describe('detectSetup', () => {
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, gotScriptsStart: true, useYarn: true});
+        {canInstallDeps: true, useYarn: true});
   });
 });

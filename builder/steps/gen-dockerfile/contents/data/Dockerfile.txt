@@ -31,8 +31,4 @@ RUN npm install --unsafe-perm || \
   <% } %>
 <% } %>
 
-<% if (config.gotScriptsStart) { %>
 CMD <%- tool %> start
-<% } else { %>
-CMD node server.js
-<% } %>
