@@ -94,8 +94,7 @@ gulp.task('test.compile', ['compile'], function() {
 });
 
 gulp.task('test.unit', ['test.compile'], function() {
-  return gulp.src([outDir + '/test/**/*.js'])
-      .pipe(mocha({reporter: 'spec', require: 'source-map-support/register'}));
+  return gulp.src([outDir + '/test/**/*.js']).pipe(mocha({reporter: 'spec'}));
 });
 
 gulp.task('watch', function() {
