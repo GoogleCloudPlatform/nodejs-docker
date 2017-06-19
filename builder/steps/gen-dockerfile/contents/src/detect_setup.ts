@@ -142,8 +142,8 @@ export async function detectSetup(
     // Check if the user has specified specific versions of node or npm in the
     // package.json.
     if (packageJson.engines) {
-      nodeVersion = packageJson.engines.node || undefined;
-      npmVersion = packageJson.engines.npm || undefined;
+      nodeVersion = packageJson.engines.node;
+      npmVersion = packageJson.engines.npm;
     }
 
     if (!nodeVersion) {
