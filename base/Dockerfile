@@ -9,6 +9,10 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl pyth
 RUN mkdir /nodejs && curl https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.gz | tar xvzf - -C /nodejs --strip-components=1
 ENV PATH $PATH:/nodejs/bin
 
+# Install yarn
+RUN mkdir -p /opt/yarn && curl -L https://yarnpkg.com/latest.tar.gz | tar xvzf - -C /opt/yarn --strip-components=1
+ENV PATH $PATH:/opt/yarn/bin
+
 # The use of --unsafe-perm is used here so that the installation is done
 # as the current (root) user.  Otherwise, a failure in running 'npm install'
 # (for example through a failure in a pre-or-post install hook) won't cause
