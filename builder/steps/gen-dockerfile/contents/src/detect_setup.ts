@@ -25,7 +25,7 @@ import * as yaml from 'js-yaml';
 import {Locator, Reader} from './fsview';
 import {Logger} from './logger';
 
-const APP_YAML = 'app.yaml';
+const DEFAULT_APP_YAML = 'app.yaml';
 const PACKAGE_JSON = './package.json';
 const YARN_LOCK = 'yarn.lock';
 
@@ -79,10 +79,13 @@ export interface Setup {
  */
 export async function detectSetup(
     logger: Logger, fsview: Reader&Locator): Promise<Setup> {
-  if (!(await fsview.exists(APP_YAML))) {
-    throw new Error(`The file ${APP_YAML} does not exist`);
+  const appYamlPath = process.env.GAE_APPLICATION_YAML_PATH ?
+      process.env.GAE_APPLICATION_YAML_PATH :
+      DEFAULT_APP_YAML;
+  if (!(await fsview.exists(appYamlPath))) {
+    throw new Error(`The file ${appYamlPath} does not exist`);
   }
-  const config = yaml.safeLoad(await fsview.read(APP_YAML));
+  const config = yaml.safeLoad(await fsview.read(appYamlPath));
 
   // If nodejs has been explicitly specified then treat warnings as errors.
   const warn: (m: string) => void =
