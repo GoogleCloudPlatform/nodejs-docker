@@ -33,10 +33,12 @@ const VALID_APP_YAML_CONTENTS_SKIP_YARN =
 `;
 
 const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs'
-    //         ^
-    //         +-- This is intentionally unclosed
+//         ^
+//         +-- This is intentionally unclosed
 
-    interface TestConfig {
+const DEFAULT_APP_YAML = 'app.yaml';
+
+interface TestConfig {
   title: string;
   locations: Location[];
   // This type is `Setup|undefined` instead of being optional because the
@@ -149,7 +151,11 @@ describe('detectSetup', () => {
       expectedLogs:
           ['Checking for Node.js.', 'node.js checker: No package.json file.'],
       expectedErrors: [],
-      expectedResult: {canInstallDeps: false, useYarn: false}
+      expectedResult: {
+        canInstallDeps: false,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -168,7 +174,11 @@ describe('detectSetup', () => {
             'version, see ' +
             'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
-      expectedResult: {canInstallDeps: true, useYarn: false}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -192,7 +202,11 @@ describe('detectSetup', () => {
             'version, see ' +
             'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
-      expectedResult: {canInstallDeps: true, useYarn: false}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -211,7 +225,11 @@ describe('detectSetup', () => {
             'version, see ' +
             'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
-      expectedResult: {canInstallDeps: true, useYarn: true}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -233,7 +251,11 @@ describe('detectSetup', () => {
             'version, see ' +
             'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
-      expectedResult: {canInstallDeps: true, useYarn: false}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -261,7 +283,11 @@ describe('detectSetup', () => {
             'version, see ' +
             'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
-      expectedResult: {canInstallDeps: true, useYarn: false}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -283,7 +309,11 @@ describe('detectSetup', () => {
             'version, see ' +
             'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
-      expectedResult: {canInstallDeps: true, useYarn: true}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
 
     performTest({
@@ -299,7 +329,8 @@ describe('detectSetup', () => {
         {path: 'server.js', exists: true, contents: 'some content'},
         {path: 'yarn.lock', exists: true, contents: 'some content'}
       ],
-      expectedResult: {canInstallDeps: true, useYarn: true},
+      expectedResult:
+          {canInstallDeps: true, useYarn: true, appYamlPath: 'custom.yaml'},
       env: {GAE_APPLICATION_YAML_PATH: 'custom.yaml'}
     });
 
@@ -331,7 +362,11 @@ describe('detectSetup', () => {
         {path: 'server.js', exists: true, contents: 'some content'},
         {path: 'yarn.lock', exists: true, contents: 'some content'}
       ],
-      expectedResult: {canInstallDeps: true, useYarn: true}
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
   });
 });

@@ -49,6 +49,11 @@ export interface Setup {
    * dependencies and launch the app.
    */
   useYarn: boolean;
+  /**
+   * Specifies the path relative to the application's root directory that
+   * identifies the app.yaml file used to deploy the application.
+   */
+  appYamlPath: string;
 }
 
 /**
@@ -160,11 +165,17 @@ export async function detectSetup(
         'the "server.js" file were found.');
   }
 
-  // extend filters undefined properties.
-  const setup = extend({}, {
+  // This variable is defined here to allow the Typescript compiler
+  // to properly verify it is of type `Setup`.  If its value is directly
+  // passed to the `extend` function, the compiler cannot check
+  // that the input is of type `Setup` since `extend` takes `Object`s.
+  const setup: Setup = {
     canInstallDeps: canInstallDeps,
     nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
-    useYarn: useYarn
-  });
-  return setup;
+    useYarn: useYarn,
+    appYamlPath: appYamlPath
+  };
+
+  // extend filters out undefined properties.
+  return extend({}, setup);
 }

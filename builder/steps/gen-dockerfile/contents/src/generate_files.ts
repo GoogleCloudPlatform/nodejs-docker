@@ -21,6 +21,19 @@ import {Setup} from './detect_setup';
 import {FsView, Writer} from './fsview';
 
 /**
+ * Returns a string template with the specified template values filled in.
+ * Any blank lines are removed from the resulting string.
+ *
+ * @param template The template to render.
+ * @param data An object whose keys are used to identify the text in the
+ *  template to replace with the value of the object's key.
+ * @return The template supplied with the supplied data filled in.
+ */
+function renderTemplate(template: string, data?: ejs.Data): string {
+  return ejs.render(template, data).replace(/^\s*\n/gm, '');
+}
+
+/**
  * Generates a single file and records that the file was generated as well as
  * the contents of the file.
  *
@@ -65,14 +78,14 @@ export async function generateFiles(
 
   // Generate the Dockerfile and remove any empty lines
   const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
-  const dockerfile = ejs.render(dockerfileTemplate, {
-                          baseImage: baseImage,
-                          tool: config.useYarn ? 'yarn' : 'npm',
-                          config: config
-                        })
-                         .replace(/^\s*\n/gm, '');
+  const dockerfile = renderTemplate(dockerfileTemplate, {
+    baseImage: baseImage,
+    tool: config.useYarn ? 'yarn' : 'npm',
+    config: config
+  });
 
-  const dockerignore = await dataDirReader.read('dockerignore');
+  const dockerignoreTemplate = await dataDirReader.read('dockerignore');
+  const dockerignore = renderTemplate(dockerignoreTemplate, {config: config});
 
   // Generate the Dockerfile and .dockerignore files
   await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
