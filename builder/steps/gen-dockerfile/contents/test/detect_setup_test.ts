@@ -32,18 +32,30 @@ const VALID_APP_YAML_CONTENTS_SKIP_YARN =
 - ^yarn\.lock$
 `;
 
-interface TestConfig {
+const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs'
+    //         ^
+    //         +-- This is intentionally unclosed
+
+    interface TestConfig {
   title: string;
   locations: Location[];
   expectedLogs: string[];
   expectedErrors: string[];
   expectedResult: Setup|undefined;
   expectedThrownErrMessage?: RegExp;
+  env?: {[key: string]: string};
 }
 
 describe('detectSetup', () => {
   function performTest(testConfig: TestConfig) {
     it(testConfig.title, async () => {
+      const backupEnv = Object.assign({}, process.env);
+      if (testConfig.env) {
+        for (let key in testConfig.env) {
+          process.env[key] = testConfig.env[key];
+        }
+      }
+
       const logger = new MockLogger();
       const fsview = new MockView(testConfig.locations);
 
@@ -64,6 +76,15 @@ describe('detectSetup', () => {
 
       assert.deepStrictEqual(logger.logs, testConfig.expectedLogs);
       assert.deepStrictEqual(logger.errors, testConfig.expectedErrors);
+
+      if (testConfig.env) {
+        for (let key in testConfig.env) {
+          delete process.env[key];
+          if (backupEnv[key]) {
+            process.env[key] = backupEnv[key];
+          }
+        }
+      }
     });
   }
 
@@ -79,13 +100,9 @@ describe('detectSetup', () => {
 
     performTest({
       title: 'should fail with an invalid app.yaml',
-      locations: [{
-        path: 'app.yaml',
-        exists: true,
-        contents: 'runtime: \'nodejs'
-        //                  ^
-        //                  +-- This is intentionally unclosed
-      }],
+      locations: [
+        {path: 'app.yaml', exists: true, contents: INVALID_APP_YAML_CONTENTS}
+      ],
       expectedLogs: [],
       expectedErrors: [],
       expectedResult: undefined,
@@ -242,6 +259,53 @@ describe('detectSetup', () => {
           'server.js',
       locations: [
         {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'}
+      ],
+      expectedLogs: ['Checking for Node.js.'],
+      expectedErrors: [
+        'node.js checker: ignoring invalid "engines" field in package.json',
+        'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+      ],
+      expectedResult: {canInstallDeps: true, useYarn: true}
+    });
+
+    performTest({
+      title: 'should use a custom app.yaml path if specified',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: INVALID_APP_YAML_CONTENTS},
+        {path: 'custom.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'}
+      ],
+      expectedLogs: ['Checking for Node.js.'],
+      expectedErrors: [
+        'node.js checker: ignoring invalid "engines" field in package.json',
+        'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+      ],
+      expectedResult: {canInstallDeps: true, useYarn: true},
+      env: {GAE_APPLICATION_YAML_PATH: 'custom.yaml'}
+    });
+
+    performTest({
+      title: 'should not use a custom app.yaml path if not specified',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'node.yaml', exists: true, contents: INVALID_APP_YAML_CONTENTS},
+        {
           path: 'package.json',
           exists: true,
           contents: JSON.stringify({scripts: {start: 'npm start'}})
