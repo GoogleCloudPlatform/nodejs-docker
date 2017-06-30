@@ -39,9 +39,14 @@ const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs'
     interface TestConfig {
   title: string;
   locations: Location[];
-  expectedLogs: string[];
-  expectedErrors: string[];
+  // This type is `Setup|undefined` instead of being optional because the
+  // expected result is always required to ensure tests are checking the
+  // return value from the setup detection.  A value of `undefined`
+  // indicates that the setup detection didn't return a value (For example,
+  // it failed with an exception thrown).
   expectedResult: Setup|undefined;
+  expectedLogs?: string[];
+  expectedErrors?: string[];
   expectedThrownErrMessage?: RegExp;
   env?: {[key: string]: string};
 }
@@ -74,8 +79,13 @@ describe('detectSetup', () => {
       }
       assert.deepStrictEqual(setup, testConfig.expectedResult);
 
-      assert.deepStrictEqual(logger.logs, testConfig.expectedLogs);
-      assert.deepStrictEqual(logger.errors, testConfig.expectedErrors);
+      if (testConfig.expectedLogs) {
+        assert.deepStrictEqual(logger.logs, testConfig.expectedLogs);
+      }
+
+      if (testConfig.expectedErrors) {
+        assert.deepStrictEqual(logger.errors, testConfig.expectedErrors);
+      }
 
       if (testConfig.env) {
         for (let key in testConfig.env) {
@@ -289,13 +299,6 @@ describe('detectSetup', () => {
         {path: 'server.js', exists: true, contents: 'some content'},
         {path: 'yarn.lock', exists: true, contents: 'some content'}
       ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
       expectedResult: {canInstallDeps: true, useYarn: true},
       env: {GAE_APPLICATION_YAML_PATH: 'custom.yaml'}
     });
@@ -306,19 +309,27 @@ describe('detectSetup', () => {
         {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
         {path: 'node.yaml', exists: true, contents: INVALID_APP_YAML_CONTENTS},
         {
+          path: 'nodejs.yaml',
+          exists: true,
+          contents: INVALID_APP_YAML_CONTENTS
+        },
+        {
+          path: 'client.yaml',
+          exists: true,
+          contents: INVALID_APP_YAML_CONTENTS
+        },
+        {
+          path: 'server.yaml',
+          exists: true,
+          contents: INVALID_APP_YAML_CONTENTS
+        },
+        {
           path: 'package.json',
           exists: true,
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
         {path: 'server.js', exists: true, contents: 'some content'},
         {path: 'yarn.lock', exists: true, contents: 'some content'}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
       ],
       expectedResult: {canInstallDeps: true, useYarn: true}
     });
