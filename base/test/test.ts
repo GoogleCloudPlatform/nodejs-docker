@@ -39,18 +39,6 @@ const CONFIGURATIONS: TestConfig[] = [
     expectedOutput : '0.18.0\n'
   },
   {
-    description: 'install_node installs and verifies deprecated verifiable ' +
-                   'Node versions',
-    tag: 'test/definitions/old-verifiable-node',
-    expectedOutput: 'v0.8.10'
-  },
-  {
-    description: 'install_node still installs deprecated versions of ' +
-                   'Node even if they cannot be verified ',
-    tag: 'test/definitions/old-unverifiable-node',
-    expectedOutput: 'v0.8.7'
-  },
-  {
     description: 'install_node installs and verifies verifiable Node versions',
     tag: 'test/definitions/verifiable-node',
     expectedOutput: 'v6.0.0'
@@ -78,12 +66,6 @@ const CONFIGURATIONS: TestConfig[] = [
                    'check fails',
     tag: 'test/definitions/verify-fail-on-invalid-data',
     expectedOutput: 'Correctly failed verification'
-  },
-  {
-    description: 'install_node installs and verifies deprecated verifiable ' +
-                   'Node versions',
-    tag: 'test/definitions/old-verifiable-node',
-    expectedOutput: 'v0.12.0'
   }
 ];
 
