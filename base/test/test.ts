@@ -30,12 +30,12 @@ const CONFIGURATIONS: TestConfig[] = [
   },
   {
     description : 'can install yarn locally',
-    tag : 'test/yarn-local',
+    tag : 'test/definitions/yarn-local',
     expectedOutput : '0.18.0\n'
   },
   {
     description : 'can install yarn globally',
-    tag : 'test/yarn-global',
+    tag : 'test/definitions/yarn-global',
     expectedOutput : '0.18.0\n'
   },
   {
