@@ -39,33 +39,36 @@ const CONFIGURATIONS: TestConfig[] = [
     expectedOutput : '0.18.0\n'
   },
   {
-    description: 'install_node installs and verifies verifiable Node versions',
-    tag: 'test/definitions/verifiable-node',
-    expectedOutput: 'v6.0.0'
+    description : 'install_node installs and verifies verifiable Node versions',
+    tag : 'test/definitions/verifiable-node',
+    expectedOutput : 'v6.0.0'
   },
   {
-    description: 'install_node still installs Node even if it cannot ' +
-                   'be verified if --ingore-verification-failure is specified',
-    tag: 'test/definitions/unverifiable-node',
-    expectedOutput: 'v0.10.7'
+    description :
+        'install_node still installs Node even if it cannot ' +
+            'be verified if --ingore-verification-failure is specified',
+    tag : 'test/definitions/unverifiable-node',
+    expectedOutput : 'v0.10.7'
   },
   {
-    description: 'install_node aborts the installation if verification fails ' +
-                   'and --ingore-verification-failure is not specified',
-    tag: 'test/definitions/verify-fail-aborts-install',
-    expectedOutput: 'v6.10.3'
+    description :
+        'install_node aborts the installation if verification fails ' +
+            'and --ingore-verification-failure is not specified',
+    tag : 'test/definitions/verify-fail-aborts-install',
+    expectedOutput : 'v6.10.3'
   },
   {
-    description: 'verify_node has a non-zero exit code if it is not supplied ' +
-                   'the files it need for verification',
-    tag: 'test/definitions/verify-fail-without-files',
-    expectedOutput: 'Correctly failed verification'
+    description :
+        'verify_node has a non-zero exit code if it is not supplied ' +
+            'the files it need for verification',
+    tag : 'test/definitions/verify-fail-without-files',
+    expectedOutput : 'Correctly failed verification'
   },
   {
-    description: 'verify_node has a non-zero exit code if the checksum ' +
-                   'check fails',
-    tag: 'test/definitions/verify-fail-on-invalid-data',
-    expectedOutput: 'Correctly failed verification'
+    description : 'verify_node has a non-zero exit code if the checksum ' +
+                      'check fails',
+    tag : 'test/definitions/verify-fail-on-invalid-data',
+    expectedOutput : 'Correctly failed verification'
   }
 ];
 
