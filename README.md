@@ -9,7 +9,7 @@ for running applications on [Google App Engine Flexible](https://cloud.google.co
 
 This image is based on Debian Jessie and includes [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/).
 
-In addition, this repository contains the source for the Node.js Runtime Builder that can be used when deploying Node.js applications on App Engine Flexible.  The Node.js Runtime Builder currently is only used to deploy your application if the `gcloud beta app deploy` command is used.  If the `gcloud app deploy` command is instead used to deploy your application, the deployment is directly handled by `gcloud`.
+In addition, this repository contains the source for the Node.js Runtime Builder that can be used when deploying Node.js applications on App Engine Flexible.  The Node.js Runtime Builder currently is only used to deploy your application if the `gcloud beta app deploy` command is used.
 
 For a more thorough walk-through of getting started with Node.js on Google Cloud Platform, please see the [documentation and guides](https://cloud.google.com/nodejs).
 
@@ -103,9 +103,7 @@ The following illustrates a section of a `package.json` file that specifies that
 
 ### Package Manager
 
-If your application's root directory contains a `yarn.lock` file, and `yarn.lock` is not specified in the `skip_files` section of your application's `app.yaml` file, then `yarn` will be used to install your application's dependencies and start the application.
-
-Otherwise, if a `yarn.lock` file does not exist in your application's root directory, or if `yarn.lock` is specified in the `skip_files` section of your application's `app.yaml` file, `npm` will be used to install dependencies and start your application.
+If your application's root directory contains a `yarn.lock` file, and `yarn.lock` is not specified in the `skip_files` section of your application's `app.yaml` file, then `yarn` will be used to install your application's dependencies and start the application.  Otherwise `npm` will be used to install dependencies and start your application.
 
 The following is an example of an `app.yaml` file that will force the use of `npm` to install dependencies and start your deployed application even if a `yarn.lock` file exists in your application's root directory.
 
