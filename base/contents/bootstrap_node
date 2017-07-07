@@ -131,11 +131,14 @@ function exitAsFailure {
 function handleFailure {
   if [ "${ignore_verification_failure}" == "true" ]; then
     warn "The installation will continue because the --ignore-verification-failure"
-    warn "option was specified, but it is strongly recommended that you install"
+    warn "flag was specified, but it is strongly recommended that you install"
     warn "a version of Node.js that can been verified."
     warn ""
   else
     warn "Aborting the installation."
+    warn "The installation can be forced using the --ignore-verification-failure"
+    warn "flag.  However, it is strongly recommended that you install a version"
+    warn "of Node.js that can be verified."
     warn ""
     exitAsFailure
   fi
