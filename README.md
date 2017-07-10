@@ -74,8 +74,9 @@ COPY . /app/
 RUN npm --unsafe-perm install
 ```
 
-Node.js is installed with binary packages hosted on a Google-provided mirror.
+Node.js is installed with binary packages hosted on a Google-provided mirror.  Before installing the specified version of Node.js, checks are performed to verify that the associated binary is an official Node.js release.  The `install_node` script will refuse to install a binary that fails this verification.
 
+To override this behavior, and force the installation of the binary, pass the `--ignore-verification-failure` flag to `install_node`.  However, it is highly recommended that you only install Node.js binaries that have been successfully verified.
 
 # Contributing changes
 
