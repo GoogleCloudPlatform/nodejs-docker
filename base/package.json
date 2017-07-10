@@ -8,7 +8,7 @@
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
     "@types/node-uuid": "0.0.28",
-    "@types/request": "0.0.43",
+    "@types/request": "0.0.45",
     "clang-format": "^1.0.50",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
