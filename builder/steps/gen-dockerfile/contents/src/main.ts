@@ -62,8 +62,8 @@ parser.addArgument(['--app-dir'], {
   required: true,
   nargs: 1
 });
-parser.addArgument(['--base-image'], {
-  help: 'The full Docker image name of the base image to use when ' +
+parser.addArgument(['--runtime-image'], {
+  help: 'The full Docker image name of the runtime image to use when ' +
       'constructing the Dockerfile',
   required: true,
   nargs: 1
