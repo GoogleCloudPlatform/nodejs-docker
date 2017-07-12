@@ -27,6 +27,7 @@ const DOCKERIGNORE_NAME = '.dockerignore';
 
 const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
+const NPM_VERSION = '^5.0.2';
 
 const BASE =
     `# Dockerfile extending the generic Node image with application files for a
@@ -40,6 +41,12 @@ const UPGRADE_NODE =
      NODE_VERSION
    }' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '${NODE_VERSION}'
+`;
+
+const INSTALL_NPM =
+    `# Install the version of npm as requested by the engines.npm field in
+# package.json.
+RUN npm install -g 'npm@${NPM_VERSION}'
 `;
 
 const COPY_CONTENTS = `COPY . /app/\n`;
@@ -98,14 +105,14 @@ describe('generateFiles', async () => {
   it('should generate correctly without installing dependencies, without start script, without Node.version, and using npm',
      async () => {
        await runTest(
-           {canInstallDeps: false, nodeVersion: undefined, useYarn: false},
+           {canInstallDeps: false, useYarn: false},
            BASE + COPY_CONTENTS + NPM_START, DOCKERIGNORE);
      });
 
   it('should generate correctly without installing dependencies, without start script, without Node.version, and using yarn',
      async () => {
        await runTest(
-           {canInstallDeps: false, nodeVersion: undefined, useYarn: true},
+           {canInstallDeps: false, useYarn: true},
            BASE + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
      });
 
@@ -130,14 +137,14 @@ describe('generateFiles', async () => {
   it('should generate correctly without installing dependencies, with start script, without Node.version, and using npm',
      async () => {
        await runTest(
-           {canInstallDeps: false, nodeVersion: undefined, useYarn: false},
+           {canInstallDeps: false, useYarn: false},
            BASE + COPY_CONTENTS + NPM_START, DOCKERIGNORE);
      });
 
   it('should generate correctly without installing dependencies, with start script, without Node.version, and using yarn',
      async () => {
        await runTest(
-           {canInstallDeps: false, nodeVersion: undefined, useYarn: true},
+           {canInstallDeps: false, useYarn: true},
            BASE + COPY_CONTENTS + YARN_START, DOCKERIGNORE);
      });
 
@@ -158,14 +165,14 @@ describe('generateFiles', async () => {
   it('should generate correctly with installing dependencies, without start script, without Node.version, and using npm',
      async () => {
        await runTest(
-           {canInstallDeps: true, nodeVersion: undefined, useYarn: false},
+           {canInstallDeps: true, useYarn: false},
            BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START, DOCKERIGNORE);
      });
 
   it('should generate correctly with installing dependencies, without start script, without Node.version, and using yarn',
      async () => {
        await runTest(
-           {canInstallDeps: true, nodeVersion: undefined, useYarn: true},
+           {canInstallDeps: true, useYarn: true},
            BASE + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START, DOCKERIGNORE);
      });
 
@@ -188,14 +195,14 @@ describe('generateFiles', async () => {
   it('should generate correctly with installing dependencies, with start script, without Node.version, and using npm',
      async () => {
        await runTest(
-           {canInstallDeps: true, nodeVersion: undefined, useYarn: false},
+           {canInstallDeps: true, useYarn: false},
            BASE + COPY_CONTENTS + NPM_INSTALL_DEPS + NPM_START, DOCKERIGNORE);
      });
 
   it('should generate correctly with installing dependencies, with start script, without Node.version, and using yarn',
      async () => {
        await runTest(
-           {canInstallDeps: true, nodeVersion: undefined, useYarn: true},
+           {canInstallDeps: true, useYarn: true},
            BASE + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START, DOCKERIGNORE);
      });
 
@@ -214,4 +221,17 @@ describe('generateFiles', async () => {
            BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_INSTALL_DEPS + YARN_START,
            DOCKERIGNORE);
      });
+
+  it('should install the requested version of npm', async () => {
+    await runTest(
+        {
+          canInstallDeps: true,
+          npmVersion: NPM_VERSION,
+          nodeVersion: NODE_VERSION,
+          useYarn: true
+        },
+        BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS + YARN_INSTALL_DEPS +
+            YARN_START,
+        DOCKERIGNORE);
+  });
 });

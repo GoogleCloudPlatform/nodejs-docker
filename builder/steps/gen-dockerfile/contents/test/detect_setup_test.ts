@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// Describe the signature of function exported by the `shell-escape` module
+// so the compiler knows what types to expect and return.  This is needed
+// since the `shell-escape` module does not have type definitions available.
+const shellEscape: (args: string[]) => string = require('shell-escape');
+
 import * as assert from 'assert';
 
 import {detectSetup, Setup} from '../src/detect_setup';
@@ -113,12 +118,9 @@ describe('detectSetup', () => {
           {path: 'yarn.lock', exists: false}
         ],
         ['Checking for Node.js.'],
-        [
-          'node.js checker: ignoring invalid "engines" field in package.json',
-          'No node version specified.  Please add your node ' +
-              'version, see ' +
-              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-        ],
+        ['No node version specified.  Please add your node ' +
+         'version, see ' +
+         'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
         {canInstallDeps: true, useYarn: false});
 
     performTest(
@@ -135,12 +137,9 @@ describe('detectSetup', () => {
           {path: 'yarn.lock', exists: true, contents: 'some contents'}
         ],
         ['Checking for Node.js.'],
-        [
-          'node.js checker: ignoring invalid "engines" field in package.json',
-          'No node version specified.  Please add your node ' +
-              'version, see ' +
-              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-        ],
+        ['No node version specified.  Please add your node ' +
+         'version, see ' +
+         'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
         {canInstallDeps: true, useYarn: false});
 
     performTest(
@@ -153,12 +152,9 @@ describe('detectSetup', () => {
           {path: 'yarn.lock', exists: true, contents: 'some content'}
         ],
         ['Checking for Node.js.'],
-        [
-          'node.js checker: ignoring invalid "engines" field in package.json',
-          'No node version specified.  Please add your node ' +
-              'version, see ' +
-              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-        ],
+        ['No node version specified.  Please add your node ' +
+         'version, see ' +
+         'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
         {canInstallDeps: true, useYarn: true});
 
     performTest(
@@ -174,12 +170,9 @@ describe('detectSetup', () => {
           {path: 'yarn.lock', exists: false}
         ],
         ['Checking for Node.js.'],
-        [
-          'node.js checker: ignoring invalid "engines" field in package.json',
-          'No node version specified.  Please add your node ' +
-              'version, see ' +
-              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-        ],
+        ['No node version specified.  Please add your node ' +
+         'version, see ' +
+         'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
         {canInstallDeps: true, useYarn: false});
 
     performTest(
@@ -200,12 +193,9 @@ describe('detectSetup', () => {
           {path: 'yarn.lock', exists: true, contents: 'some contents'}
         ],
         ['Checking for Node.js.'],
-        [
-          'node.js checker: ignoring invalid "engines" field in package.json',
-          'No node version specified.  Please add your node ' +
-              'version, see ' +
-              'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-        ],
+        ['No node version specified.  Please add your node ' +
+         'version, see ' +
+         'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
         {canInstallDeps: true, useYarn: false});
 
     performTest(
@@ -221,12 +211,51 @@ describe('detectSetup', () => {
           {path: 'yarn.lock', exists: true, contents: 'some content'}
         ],
         ['Checking for Node.js.'],
+        ['No node version specified.  Please add your node ' +
+         'version, see ' +
+         'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
+        {canInstallDeps: true, useYarn: true});
+
+    performTest(
+        'should detect node version from the engines field in package.json',
         [
-          'node.js checker: ignoring invalid "engines" field in package.json',
+          {
+            path: 'package.json',
+            exists: true,
+            contents: JSON.stringify(
+                {engines: {node: '^3.3.8'}, scripts: {start: 'npm start'}})
+          },
+          {path: 'app.yaml', exists: true, contents: 'some contents'},
+          {path: 'yarn.lock', exists: false}
+        ],
+        ['Checking for Node.js.'], [], {
+          canInstallDeps: true,
+          nodeVersion: shellEscape(['^3.3.8']),
+          useYarn: false
+        });
+
+    performTest(
+        'should detect npm version from the engines field in package.json',
+        [
+          {
+            path: 'package.json',
+            exists: true,
+            contents: JSON.stringify(
+                {engines: {npm: '5.x'}, scripts: {start: 'npm start'}})
+          },
+          {path: 'app.yaml', exists: true, contents: 'some contents'},
+          {path: 'yarn.lock', exists: false}
+        ],
+        [
+          'Checking for Node.js.',
           'No node version specified.  Please add your node ' +
               'version, see ' +
               'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
         ],
-        {canInstallDeps: true, useYarn: true});
+        [], {
+          canInstallDeps: true,
+          npmVersion: shellEscape(['5.x']),
+          useYarn: false
+        });
   });
 });
