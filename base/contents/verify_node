@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Copyright 2017 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
+
+# fail fast
+set -e
+
+# Bail with a help message if the arguments look wrong
+if [ $# != 2 -o "${1}" == "help" ]; then
+  echo "Usage: ${0} <node-js-binary-file> <SHASUMS256.txt.asc file>"
+  echo ""
+  echo "Verifies the integrity of the given Node.js binary file using the "
+  echo "given SHASUMS256.txt.asc file."
+  echo ""
+  echo "Note: To be valid, the filename of the given Node.js binary must "
+  echo "      match the expected name in the SHASUMS256.txt.asc file."
+  exit 1
+fi
+
+nodejs_file=${1}
+shasums_file=${2}
+
+# Use the absolute path of the KEYS file for safety
+keys_file='/opt/gcp/runtime/KEYS'
+
+# Use a temporary file for the keyring file created from the KEYS file
+# to avoid file access conflicts with concurrent invocations of this script
+script_name=$(basename ${0})
+keys_gpg_file=$(mktemp /tmp/${script_name}.XXXXXX.keys.gpg)
+
+# Clean up any temporary files created by this script
+function cleanUp {
+  rm -Rf "${keys_gpg_file}"
+}
+
+# The KEYS file needs to be dearmored so that it can be used as a
+# keyring with gpg
+(cat ${keys_file} | gpg --dearmor > ${keys_gpg_file}) \
+  || (cleanUp; exit 1)
+
+# Verify the SHASUMS256.txt.asc file using only the keys in the specified
+# KEYS file.  The --no-default-keyring option makes sure other keys already
+# in the default keyring are *not* used.  Otherwise, a key already existing in
+# the default keyring could verify the file, but no keys in the KEYS file
+# verify the file, which would incorrectly report that the file is verified.
+(gpg --no-default-keyring --keyring ${keys_gpg_file} --verify ${shasums_file}) \
+  || (cleanUp; exit 1)
+
+# Verify the Node.js binary
+(grep ${nodejs_file} ${shasums_file} | shasum --algorithm 256 -c -) \
+  || (cleanUp; exit 1)
+
+cleanUp

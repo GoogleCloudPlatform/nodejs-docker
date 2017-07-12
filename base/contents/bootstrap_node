@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+
+# Copyright 2017 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
+
+# fail fast
+set -e
+
+function usage() {
+  echo "Usage: $(basename $0) [--ignore-verification-failure] [--direct] [--help] version"
+  echo ""
+  echo "Verifies and installs the specified version of Node.js."
+  echo ""
+  echo "Options:"
+  echo "  --ignore-verification-failure  If the binary verification fails,"
+  echo "                                 still continue with the installation."
+  echo "                                 By default, if binary verification"
+  echo "                                 fails, the installation is aborted."
+  echo "  --direct                       Download and install directly from"
+  echo "                                 nodejs.org instead of from"
+  echo "                                 https://storage.googleapis.com/gae_node_packages"
+  echo "  --help                         Prints this help message"
+  echo ""
+  echo "  version                        The version of Node.js to install."
+  echo "                                 The version number is expected to be"
+  echo "                                 of the form 'v#.#.#'."
+  exit 1
+}
+
+ignore_verification_failure="false"
+direct="false"
+
+# The node version to install expected to be of the form 'v#.#.#'
+node_version=
+
+# Parse the command line arguments
+while [ $# -gt 0 ]; do
+  case "${1}" in
+    --ignore-verification-failure)
+      ignore_verification_failure="true"
+      shift
+      ;;
+    --direct)
+      direct="true"
+      shift
+      ;;
+    --help)
+      shift
+      usage
+      ;;
+    *)
+      # If the argument with any -- prefix removed is equal to the
+      # argument itself, then the argument does not start with --.
+      # Thus, interpret it as specifying the version.
+      if [ "${1#--}" == "${1}" ]; then
+        if [ -z "${node_version}" ]; then
+          node_version="${1}"
+        else
+          echo "Note: Exactly one version must be specified and"
+          echo "      \"${node_version}\" was already specified as the version."
+          usage
+        fi
+      else
+        echo "Unexpected argument ${1}"
+        usage
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [ -z "${node_version}" ]; then
+  echo "A version must be specified."
+  usage
+fi
+
+if [ "${direct}" == "true" ]; then
+  # The URL of the location from which the specified Node.js file
+  # and checksum file can be downloaded
+  base_url="https://nodejs.org/dist/${node_version}"
+  # The name of the checksum file found in ${base_url} that is used to
+  # verify the Node.js binary
+  checksum_file="SHASUMS256.txt.asc"
+else
+  base_url="https://storage.googleapis.com/gae_node_packages"
+  checksum_file="${node_version}-SHASUMS256.txt.asc"
+fi
+
+# The location where the Node will be installed
+install_dir="/nodejs"
+
+# The name of the Node.js binary to install
+node_filename="node-${node_version}-linux-x64.tar.gz"
+
+# The temporary location where the downloaded files are stored while being
+# verified.  The script will ensure that this directory is removed before
+# the script exits.
+script_name=$(basename ${0})
+tmp_dir=$(mktemp -d /tmp/${script_name}.XXXXXX) || exit 1
+
+# Used to issue warnings to the user, directing the message to standard error
+function warn {
+  echo ${1} 1>&2;
+}
+
+# Used to cleanup any temporary directories
+function cleanUp {
+  rm -Rf "${tmp_dir}"
+}
+
+# Used to cleanup any temporary directories and immediately exit this
+# script with an error code indicating failure
+function exitAsFailure {
+  cleanUp
+  exit 1
+}
+
+# Used to handle a failure by either aborting the installation or issuing a
+# warning depending on the options passed to this script.
+function handleFailure {
+  if [ "${ignore_verification_failure}" == "true" ]; then
+    warn "The installation will continue because the --ignore-verification-failure"
+    warn "flag was specified, but it is strongly recommended that you install"
+    warn "a version of Node.js that can been verified."
+    warn ""
+  else
+    warn "Aborting the installation."
+    warn ""
+    warn "The installation can be forced using the --ignore-verification-failure"
+    warn "flag.  However, it is strongly recommended that you install a version"
+    warn "of Node.js that can be verified."
+    warn ""
+    exitAsFailure
+  fi
+}
+
+# Used to handle not being able to download the checksum file needed to
+# verify the Node.js binary.
+function handleFailedChecksumDownload {
+  warn "The files required to verify the requested Node.js binary could not be"
+  warn "downloaded."
+  warn ""
+  handleFailure
+}
+
+# Used to handle a failure in verifying the specified Node.js binary.
+function handleFailedVerification {
+  warn "The Node.js binary could not be verified."
+  warn "This means it may not be an officially released Node.js binary"
+  warn "or may have been tampered with."
+  warn ""
+  handleFailure
+}
+
+# Make sure we are in the correct place in the fs and it is pristine
+cleanUp
+mkdir -p "${tmp_dir}"
+cd "${tmp_dir}"
+
+# Use the --fail option so that a non-zero exit code is produced if a
+# 404 error is encountered
+curl --fail -O ${base_url}/${node_filename} || exitAsFailure
+curl --fail -O ${base_url}/${checksum_file} || handleFailedChecksumDownload
+
+# The verify node script has a non-zero exit code on failure
+/opt/gcp/runtime/verify_node ${node_filename} ${checksum_file} \
+  || handleFailedVerification
+
+# Proceed to install Node
+# First, remove the installation directory to prepare for a fresh install
+# Note: The -f option is used with rm so that rm will still succeed if
+#       the installation directory doesn't exist.
+(rm -Rf "${install_dir}") || exitAsFailure
+(mkdir -p "${install_dir}") || exitAsFailure
+
+# Do the actual installation
+(tar xvzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
+  || exitAsFailure
+
+# Remove any temporary directories
+cleanUp

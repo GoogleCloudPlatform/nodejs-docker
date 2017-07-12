@@ -1,0 +1,9 @@
+{
+  "name": "test-verify-fail-without-files",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

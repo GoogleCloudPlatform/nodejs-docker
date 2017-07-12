@@ -33,6 +33,26 @@ fileExistenceTests:
   isDirectory: false
   shouldExist: true
 
+- name: KEYS
+  path: '/opt/gcp/runtime/KEYS'
+  isDirectory: false
+  shouldExist: true
+
+- name: install_node
+  path: '/opt/gcp/runtime/install_node'
+  isDirectory: false
+  shouldExist: true
+
+- name: bootstrap_node
+  path: '/opt/gcp/runtime/bootstrap_node'
+  isDirectory: false
+  shouldExist: true
+
+- name: verify_node
+  path: '/opt/gcp/runtime/verify_node'
+  isDirectory: false
+  shouldExist: true
+
 licenseTests:
 - debian: true
   files: [

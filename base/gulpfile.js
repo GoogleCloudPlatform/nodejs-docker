@@ -97,7 +97,7 @@ function dockerBuild(tag, baseDir, cb) {
 gulp.task('test.prepare',
           [ 'test.compile', 'test.check-format', 'test.check-lint' ], cb => {
             const baseDir = __dirname;
-            const testDir = path.join(baseDir, 'test');
+            const testDir = path.join(baseDir, 'test', 'definitions');
             dockerBuild('test/nodejs', baseDir, () => {
               fs.readdir(testDir, 'utf8', (err, items) => {
                 if (err) {
@@ -116,7 +116,7 @@ gulp.task('test.prepare',
                         })
                         .map(pathname => {
                           return (cb) => {
-                            dockerBuild(`test/${pathname}`,
+                            dockerBuild(`test/definitions/${pathname}`,
                                         path.join(testDir, pathname), cb);
                           };
                         });

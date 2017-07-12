@@ -2,7 +2,7 @@
 
 var semver = require('semver');
 var https = require('https');
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 
 function request(method, host, path, cb) {
   var options = {
@@ -33,7 +33,7 @@ function request(method, host, path, cb) {
 
 function getAvailableVersions(cb) {
   request(
-    'GET', 'storage.googleapis.com', '/gcp-node-packages/node_versions',
+    'GET', 'storage.googleapis.com', '/gae_node_packages/node_versions',
     function(err, body) {
       if (err) {
         return cb(err);
@@ -67,7 +67,7 @@ function verifyBinaryExists(version, cb) {
   request(
     'HEAD',
     'storage.googleapis.com',
-    '/gcp-node-packages/node-' + version + '-linux-x64.tar.gz',
+    '/gae_node_packages/node-' + version + '-linux-x64.tar.gz',
     function(err) {
       if (err) {
         return cb(new Error(
@@ -78,18 +78,29 @@ function verifyBinaryExists(version, cb) {
 }
 
 
-function downloadAndInstallVersion(version, cb) {
-  var downloadUrl = 'https://storage.googleapis.com' +
-    '/gcp-node-packages/node-' + version + '-linux-x64.tar.gz';
-  var destPath = '/nodejs';
-  var cmd = 'curl ' + downloadUrl + '| tar xzf - -C ' + destPath +
-    ' --strip-components=1';
+function downloadAndInstallVersion(version, args, cb) {
+  var command = '/opt/gcp/runtime/bootstrap_node';
+  var proc = spawn(command, [version].concat(args ? args : []));
 
-  exec('rm -rf ' + destPath + '/*', function(err) {
-    if (err) {
-      return cb(err);
+  proc.stdout.pipe(process.stdout);
+  proc.stderr.pipe(process.stderr);
+
+  // wrap the callback to use state to ensure the callback
+  // is not called more than once
+  var invoked = false;
+  function guardedCallback(err) {
+    if (invoked) {
+      return;
     }
-    exec(cmd, cb);
+
+    invoked = true;
+    return cb(err);
+  }
+
+  proc.on('error', guardedCallback);
+  proc.on('exit', function(code) {
+    return guardedCallback(code === 0 ? null :
+      new Error(command + ' exited with a non-zero exit code: ' + code));
   });
 }
 
@@ -100,7 +111,7 @@ function fail(err) {
 }
 
 
-function main(requestedVersion) {
+function main(requestedVersion, args) {
   // Does the current Node.js version already satisfy the requested version?
   // If so, we have nothing to do.
   if (semver.satisfies(process.version, requestedVersion)) {
@@ -116,7 +127,7 @@ function main(requestedVersion) {
       if (err) {
         return fail(err);
       }
-      downloadAndInstallVersion(version, function(err) {
+      downloadAndInstallVersion(version, args, function(err) {
         if (err) {
           return fail(err);
         }
@@ -126,5 +137,50 @@ function main(requestedVersion) {
   });
 }
 
-var spec = process.argv[2];
-main(spec);
+function printUsageAndExit() {
+  console.log('Usage: install_node: [--ignore-verification-failure] [--direct] [--help] version');
+  console.log('');
+  console.log('Verifies and installs the specified version of Node.js.');
+  console.log('');
+  console.log('Options:');
+  console.log('  --ignore-verification-failure  If the binary verification fails,');
+  console.log('                                 still continue with the installation.');
+  console.log('                                 By default, if binary verification');
+  console.log('                                 fails, the installation is aborted.');
+  console.log('  --direct                       Download and install directly from');
+  console.log('                                 nodejs.org instead of from');
+  console.log('                                 https://storage.googleapis.com/gae_node_packages');
+  console.log('  --help                         Prints this help message');
+  console.log('');
+  console.log('  version                        The version of Node.js to install.');
+  console.log('                                 The version number is expected to be');
+  console.log('                                 of the form \'v#.#.#\'.');
+  process.exit(1);
+}
+
+var spec;
+var args = [];
+
+for (var i=2; i<process.argv.length; i++) {
+  var a = process.argv[i];
+  // Check if the argument starts with '--' in a way that can be used with
+  // Node >= 0.10.0
+  if (a.indexOf('--') === 0) {
+    args.push(a);
+  }
+  else {
+    if (spec) {
+      console.log('Exactly one version must be specified.');
+      printUsageAndExit();
+    }
+    else {
+      spec = a;
+    }
+  }
+}
+
+if (!spec) {
+  printUsageAndExit();
+}
+
+main(spec, args);
