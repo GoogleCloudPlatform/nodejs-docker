@@ -388,8 +388,8 @@ describe('generateFiles', async () => {
        });
      });
 
-  it('should generate a .dockerignore file with a custom app.yaml path if ' +
-         'specified',
+  it('should generate a .dockerignore file with a custom deployment yaml ' +
+         'path if specified',
      async () => {
        await runTest({
          config: {

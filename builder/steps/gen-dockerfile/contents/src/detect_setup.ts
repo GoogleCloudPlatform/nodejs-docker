@@ -51,7 +51,7 @@ export interface Setup {
   useYarn: boolean;
   /**
    * Specifies the path relative to the application's root directory that
-   * identifies the app.yaml file used to deploy the application.
+   * identifies the yaml file used to deploy the application.
    */
   appYamlPath: string;
 }
@@ -69,8 +69,8 @@ export interface Setup {
  * @param fsview Represents a view of the root directory of a Node.js
  *               application.
  *
- * @throws If an `app.yaml` file does not exist in the directory desribed by
- *         the given {@link Locator}.
+ * @throws If the deployment yaml file does not exist in the directory desribed
+ *         by the given {@link Locator}.
  * @throws If a `package.json` file exists but a problem occurred while
  *         trying to parse the file.
  * @throws If the directory described by the {@link Reader} and {@link Locator}
@@ -84,9 +84,7 @@ export interface Setup {
  */
 export async function detectSetup(
     logger: Logger, fsview: Reader&Locator): Promise<Setup> {
-  const appYamlPath = process.env.GAE_APPLICATION_YAML_PATH ?
-      process.env.GAE_APPLICATION_YAML_PATH :
-      DEFAULT_APP_YAML;
+  const appYamlPath = process.env.GAE_APPLICATION_YAML_PATH || DEFAULT_APP_YAML;
   if (!(await fsview.exists(appYamlPath))) {
     throw new Error(`The file ${appYamlPath} does not exist`);
   }
@@ -113,7 +111,8 @@ export async function detectSetup(
     canInstallDeps = true;
 
     // Consider the yarn.lock file as present if and only if the yarn.lock
-    // file exists and is not specified as being skipped in app.yaml.
+    // file exists and is not specified as being skipped in the deploment yaml
+    // file.
     let skipFiles = config.skip_files || [];
     if (!Array.isArray(skipFiles)) {
       skipFiles = [skipFiles];
