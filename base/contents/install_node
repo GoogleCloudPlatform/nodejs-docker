@@ -139,6 +139,22 @@ function main(requestedVersion, args) {
 
 function printUsageAndExit() {
   console.log('Usage: install_node: [--ignore-verification-failure] [--direct] [--help] version');
+  console.log('');
+  console.log('Verifies and installs the specified version of Node.js.');
+  console.log('');
+  console.log('Options:');
+  console.log('  --ignore-verification-failure  If the binary verification fails,');
+  console.log('                                 still continue with the installation.');
+  console.log('                                 By default, if binary verification');
+  console.log('                                 fails, the installation is aborted.');
+  console.log('  --direct                       Download and install directly from');
+  console.log('                                 nodejs.org instead of from');
+  console.log('                                 https://storage.googleapis.com/gae_node_packages');
+  console.log('  --help                         Prints this help message');
+  console.log('');
+  console.log('  version                        The version of Node.js to install.');
+  console.log('                                 The version number is expected to be');
+  console.log('                                 of the form \'v#.#.#\'.');
   process.exit(1);
 }
 
