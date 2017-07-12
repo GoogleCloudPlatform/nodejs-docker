@@ -25,7 +25,7 @@ import * as yaml from 'js-yaml';
 import {Locator, Reader} from './fsview';
 import {Logger} from './logger';
 
-const APP_YAML = 'app.yaml';
+const DEFAULT_APP_YAML = 'app.yaml';
 const PACKAGE_JSON = './package.json';
 const YARN_LOCK = 'yarn.lock';
 
@@ -49,6 +49,11 @@ export interface Setup {
    * dependencies and launch the app.
    */
   useYarn: boolean;
+  /**
+   * Specifies the path relative to the application's root directory that
+   * identifies the yaml file used to deploy the application.
+   */
+  appYamlPath: string;
 }
 
 /**
@@ -64,8 +69,8 @@ export interface Setup {
  * @param fsview Represents a view of the root directory of a Node.js
  *               application.
  *
- * @throws If an `app.yaml` file does not exist in the directory desribed by
- *         the given {@link Locator}.
+ * @throws If the deployment yaml file does not exist in the directory desribed
+ *         by the given {@link Locator}.
  * @throws If a `package.json` file exists but a problem occurred while
  *         trying to parse the file.
  * @throws If the directory described by the {@link Reader} and {@link Locator}
@@ -79,10 +84,11 @@ export interface Setup {
  */
 export async function detectSetup(
     logger: Logger, fsview: Reader&Locator): Promise<Setup> {
-  if (!(await fsview.exists(APP_YAML))) {
-    throw new Error(`The file ${APP_YAML} does not exist`);
+  const appYamlPath = process.env.GAE_APPLICATION_YAML_PATH || DEFAULT_APP_YAML;
+  if (!(await fsview.exists(appYamlPath))) {
+    throw new Error(`The file ${appYamlPath} does not exist`);
   }
-  const config = yaml.safeLoad(await fsview.read(APP_YAML));
+  const config = yaml.safeLoad(await fsview.read(appYamlPath));
 
   // If nodejs has been explicitly specified then treat warnings as errors.
   const warn: (m: string) => void =
@@ -105,7 +111,8 @@ export async function detectSetup(
     canInstallDeps = true;
 
     // Consider the yarn.lock file as present if and only if the yarn.lock
-    // file exists and is not specified as being skipped in app.yaml.
+    // file exists and is not specified as being skipped in the deploment yaml
+    // file.
     let skipFiles = config.skip_files || [];
     if (!Array.isArray(skipFiles)) {
       skipFiles = [skipFiles];
@@ -157,11 +164,17 @@ export async function detectSetup(
         'the "server.js" file were found.');
   }
 
-  // extend filters undefined properties.
-  const setup = extend({}, {
+  // This variable is defined here to allow the Typescript compiler
+  // to properly verify it is of type `Setup`.  If its value is directly
+  // passed to the `extend` function, the compiler cannot check
+  // that the input is of type `Setup` since `extend` takes `Object`s.
+  const setup: Setup = {
     canInstallDeps: canInstallDeps,
     nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
-    useYarn: useYarn
-  });
-  return setup;
+    useYarn: useYarn,
+    appYamlPath: appYamlPath
+  };
+
+  // extend filters out undefined properties.
+  return extend({}, setup);
 }
