@@ -136,6 +136,7 @@ function handleFailure {
     warn ""
   else
     warn "Aborting the installation."
+    warn ""
     warn "The installation can be forced using the --ignore-verification-failure"
     warn "flag.  However, it is strongly recommended that you install a version"
     warn "of Node.js that can be verified."
