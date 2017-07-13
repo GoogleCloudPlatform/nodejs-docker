@@ -21,6 +21,35 @@ import {FsView} from './fsview';
 import {generateFiles} from './generate_files';
 import {Logger} from './logger';
 
+let PARSER = new ArgumentParser({
+  version: require('../package.json').version,
+  addHelp: true,
+  description: 'Generates Dockerfile and .dockerignore files that can be ' +
+      'used to build a Docker image that runs an application ' +
+      'when Docker run.'
+});
+PARSER.addArgument(['--app-dir'], {
+  help: 'The root directory of the application code',
+  required: true,
+  nargs: 1
+});
+PARSER.addArgument(['--runtime-image'], {
+  help: 'The full Docker image name of the runtime image to use when ' +
+      'constructing the Dockerfile',
+  required: true,
+  nargs: 1
+});
+
+const LOGGER = {
+  log: (message: string) => {
+    console.log(message);
+  },
+
+  error: (message: string) => {
+    console.error(message);
+  }
+};
+
 /**
  * Analyzes a Node.js application in the directory specified by the
  * {@link appDirView} parameter and generates Dockerfile and .dockerignore
@@ -44,43 +73,28 @@ async function generateConfigs(
       }
     }
 
+// exported for testing
+/**
+ * Parses the given array of strings, parses them, and returns the specified
+ * application directory and runtime image.
+ *
+ * @param args The arguments to parse
+ * @return The application directory and runtime image specified in the args
+ */
+export function
+parseArgs(args?: string[]):
+    {appDir: string, runtimeImage: string} {
+      let parsedArgs = PARSER.parseArgs(args);
+      return {
+        appDir: parsedArgs.app_dir[0],
+        runtimeImage: parsedArgs.runtime_image[0]
+      };
+    }
+
 // Only run the code if this file was invoked from the command line
 // (i.e. not required).
-if (require.main !== module) {
-  throw new Error('This file is designed to be run, not loaded via require().');
+if (require.main === module) {
+  const parsedArgs = parseArgs();
+  generateConfigs(
+      LOGGER, new FsView(parsedArgs.appDir), parsedArgs.runtimeImage);
 }
-
-let parser = new ArgumentParser({
-  version: require('../package.json').version,
-  addHelp: true,
-  description: 'Generates Dockerfile and .dockerignore files that can be ' +
-      'used to build a Docker image that runs an application ' +
-      'when Docker run.'
-});
-parser.addArgument(['--app-dir'], {
-  help: 'The root directory of the application code',
-  required: true,
-  nargs: 1
-});
-parser.addArgument(['--runtime-image'], {
-  help: 'The full Docker image name of the runtime image to use when ' +
-      'constructing the Dockerfile',
-  required: true,
-  nargs: 1
-});
-
-let args = parser.parseArgs();
-let appDir = args.app_dir[0];
-let baseImage = args.base_image[0];
-
-const logger = {
-  log: (message: string) => {
-    console.log(message);
-  },
-
-  error: (message: string) => {
-    console.error(message);
-  }
-};
-
-generateConfigs(logger, new FsView(appDir), baseImage);
