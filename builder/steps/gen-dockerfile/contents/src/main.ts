@@ -73,7 +73,7 @@ async function generateConfigs(
       }
     }
 
-// exportected for testing
+// exported for testing
 /**
  * Parses the given array of strings, parses them, and returns the specified
  * application directory and runtime image.
