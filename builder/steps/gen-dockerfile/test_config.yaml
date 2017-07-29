@@ -1,0 +1,72 @@
+schemaVersion: "1.0.0"
+commandTests:
+- name: 'Execution Check'
+  # Create a directory that contains an app.yaml and server.js file
+  # that will be used to generate a Dockerfile and .dockerignore file.
+  setup: [['mkdir', '/tmp/gen_dockerfile_test_dir'],
+          ['echo "env: flex" > /tmp/gen_dockerfile_test_dir/app.yaml'],
+          ['echo "runtime: flex" >> /tmp/gen_dockerfile_test_dir/app.yaml'],
+          ['touch', '/tmp/gen_dockerfile_test_dir/server.js']]
+  command: ['node', '/opt/nodejs-runtime-builder/dist/src/main.js',
+            '--app-dir', '/tmp/gen_dockerfile_test_dir',
+            '--runtime-image', 'some-image']
+  # Remove each file separately to ensure the directory has the
+  # expected files in it.
+  teardown: [['rm', '/tmp/gen_dockerfile_test_dir/app.yaml'],
+            ['rm', '/tmp/gen_dockerfile_test_dir/server.js'],
+            ['rm', '/tmp/gen_dockerfile_test_dir/Dockerfile'],
+            ['rm', '/tmp/gen_dockerfile_test_dir/.dockerignore'],
+            ['rmdir', '/tmp/gen_dockerfile_test_dir']]
+  shellMode: true
+  exitCode: 0
+
+fileExistenceTests:
+- name: 'dist'
+  path: '/opt/nodejs-runtime-builder/dist'
+  isDirectory: true
+  shouldExist: true
+
+- name: 'dist/src'
+  path: '/opt/nodejs-runtime-builder/dist/src'
+  isDirectory: true
+  shouldExist: true
+
+- name: 'dist/src/detect_setup.js'
+  path: '/opt/nodejs-runtime-builder/dist/src/detect_setup.js'
+  isDirectory: false
+  shouldExist: true
+
+- name: 'dist/src/fsview.js'
+  path: '/opt/nodejs-runtime-builder/dist/src/fsview.js'
+  isDirectory: false
+  shouldExist: true
+
+- name: 'dist/src/generate_files.js'
+  path: '/opt/nodejs-runtime-builder/dist/src/generate_files.js'
+  isDirectory: false
+  shouldExist: true
+
+- name: 'dist/src/logger.js'
+  path: '/opt/nodejs-runtime-builder/dist/src/logger.js'
+  isDirectory: false
+  shouldExist: true
+
+- name: 'dist/src/main.js'
+  path: '/opt/nodejs-runtime-builder/dist/src/main.js'
+  isDirectory: false
+  shouldExist: true
+
+- name: 'dist/data'
+  path: '/opt/nodejs-runtime-builder/dist/data'
+  isDirectory: true
+  shouldExist: true
+
+- name: 'dist/data/Dockerfile.txt'
+  path: '/opt/nodejs-runtime-builder/dist/data/Dockerfile.txt'
+  isDirectory: false
+  shouldExist: true
+
+- name: 'dist/data/dockerignore'
+  path: '/opt/nodejs-runtime-builder/dist/data/dockerignore'
+  isDirectory: false
+  shouldExist: true
