@@ -185,7 +185,7 @@ curl --fail -O ${base_url}/${checksum_file} || handleFailedChecksumDownload
 (mkdir -p "${install_dir}") || exitAsFailure
 
 # Do the actual installation
-(tar xvzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
+(tar xzf "${tmp_dir}/${node_filename}" -C "${install_dir}" --strip-components=1) \
   || exitAsFailure
 
 # Remove any temporary directories
