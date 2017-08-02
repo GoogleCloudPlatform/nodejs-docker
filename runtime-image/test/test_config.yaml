@@ -18,6 +18,11 @@ commandTests:
   command: ['node', '-v']
   expectedOutput: ['v5.9.0\n']
 
+- name: 'Installing Node is Not Verbose'
+  teardown: [['install_node', 'v6.11.1']]
+  command: ['install_node', 'v5.9.0']
+  excludedOutput: ['node-v5.9.0-linux-x64/.*']
+
 - name: 'Yarn Executable'
   command: ['bash', '-c', 'yarn &> /dev/null && echo "ran without errors"']
   expectedOutput: ['ran without errors\n']
