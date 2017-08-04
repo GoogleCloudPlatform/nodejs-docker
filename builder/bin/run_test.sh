@@ -17,12 +17,22 @@
 # Fail fast
 set -e
 
-# Enter the steps directory so that all paths can be relative to that directory
-pushd $(dirname $0)/../steps > /dev/null
+# Ensure we are in the builder directory
+pushd $(dirname $0)/.. > /dev/null
+  pushd bin > /dev/null
+    EXT_RUN_SH=ext_run.sh
+    curl https://raw.githubusercontent.com/GoogleCloudPlatform/runtimes-common/master/structure_tests/ext_run.sh > ${EXT_RUN_SH}
+    chmod +x ${EXT_RUN_SH}
+  popd > /dev/null
 
-pushd gen-dockerfile/contents/ > /dev/null
-yarn install
-yarn test
-popd > /dev/null
-
+  pushd steps > /dev/null
+    pushd gen-dockerfile > /dev/null
+      docker build -t test/gen-dockerfile .
+      ../../bin/${EXT_RUN_SH} -i test/gen-dockerfile -v --config test_config.yaml
+      pushd contents/ > /dev/null
+        yarn install
+        yarn test
+      popd > /dev/null
+    popd > /dev/null
+  popd > /dev/null
 popd > /dev/null
