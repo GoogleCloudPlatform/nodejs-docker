@@ -59,7 +59,7 @@ set +e
 output=$(gpg --no-default-keyring --keyring ${keys_gpg_file} --verify ${shasums_file} 2>&1)
 exit_code=$?
 if [[ $exit_code != 0 ]]; then
-  echo ${output}
+  echo ${output} >&2
   cleanUp
   exit $exit_code
 fi
