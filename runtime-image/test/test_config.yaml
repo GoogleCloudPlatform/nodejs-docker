@@ -23,6 +23,11 @@ commandTests:
   command: ['install_node', 'v5.9.0']
   excludedOutput: ['node-v5.9.0-linux-x64/.*']
 
+- name: 'Trusted Keys Do Not Cause Warnings'
+  teardown: [['install_node', 'v6.11.1']]
+  command: ['install_node', 'v5.9.0']
+  excludedOutput: ['gpg: WARNING: This key is not certified with a trusted signature!']
+
 - name: 'Yarn Executable'
   command: ['bash', '-c', 'yarn &> /dev/null && echo "ran without errors"']
   expectedOutput: ['ran without errors\n']

@@ -55,8 +55,15 @@ function cleanUp {
 # in the default keyring are *not* used.  Otherwise, a key already existing in
 # the default keyring could verify the file, but no keys in the KEYS file
 # verify the file, which would incorrectly report that the file is verified.
-(gpg --no-default-keyring --keyring ${keys_gpg_file} --verify ${shasums_file}) \
-  || (cleanUp; exit 1)
+set +e
+output=$(gpg --no-default-keyring --keyring ${keys_gpg_file} --verify ${shasums_file} 2>&1)
+exit_code=$?
+if [[ $exit_code != 0 ]]; then
+  echo ${output}
+  cleanUp
+  exit $exit_code
+fi
+set -e
 
 # Verify the Node.js binary
 (grep ${nodejs_file} ${shasums_file} | shasum --algorithm 256 -c -) \
