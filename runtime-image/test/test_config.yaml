@@ -10,21 +10,21 @@ commandTests:
 
 - name: 'Node Version'
   command: ['node', '-v']
-  expectedOutput: ['v6.11.1\n']
+  expectedOutput: ['v6.11.2\n']
 
 - name: 'Custom Node Version'
   setup: [['install_node', 'v5.9.0']]
-  teardown: [['install_node', 'v6.11.1']]
+  teardown: [['install_node', 'v6.11.2']]
   command: ['node', '-v']
   expectedOutput: ['v5.9.0\n']
 
 - name: 'Installing Node is Not Verbose'
-  teardown: [['install_node', 'v6.11.1']]
+  teardown: [['install_node', 'v6.11.2']]
   command: ['install_node', 'v5.9.0']
   excludedOutput: ['node-v5.9.0-linux-x64/.*']
 
 - name: 'Trusted Keys Do Not Cause Warnings'
-  teardown: [['install_node', 'v6.11.1']]
+  teardown: [['install_node', 'v6.11.2']]
   command: ['install_node', 'v5.9.0']
   excludedOutput: ['gpg: WARNING: This key is not certified with a trusted signature!']
   excludedError: ['gpg: WARNING: This key is not certified with a trusted signature!']
