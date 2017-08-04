@@ -164,13 +164,19 @@ export async function detectSetup(
         'the "server.js" file were found.');
   }
 
+  if (nodeVersion) {
+    nodeVersion = shellEscape([nodeVersion.trim()])
+                      .replace(/^'+/g, '')
+                      .replace(/'+$/g, '');
+  }
+
   // This variable is defined here to allow the Typescript compiler
   // to properly verify it is of type `Setup`.  If its value is directly
   // passed to the `extend` function, the compiler cannot check
   // that the input is of type `Setup` since `extend` takes `Object`s.
   const setup: Setup = {
     canInstallDeps: canInstallDeps,
-    nodeVersion: nodeVersion ? shellEscape([nodeVersion]) : undefined,
+    nodeVersion: nodeVersion,
     useYarn: useYarn,
     appYamlPath: appYamlPath
   };
