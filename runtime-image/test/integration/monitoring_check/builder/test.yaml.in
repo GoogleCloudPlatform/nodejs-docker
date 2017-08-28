@@ -1,0 +1,6 @@
+steps:
+- name: '${STAGING_BUILDER_IMAGE}'
+- name: 'gcr.io/cloud-builders/docker:latest'
+  args: ['build', '-t', '${_OUTPUT_IMAGE}', '.']
+images:
+- '${_OUTPUT_IMAGE}'

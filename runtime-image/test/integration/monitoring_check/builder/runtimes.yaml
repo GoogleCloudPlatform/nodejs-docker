@@ -1,0 +1,6 @@
+schema_version: 1
+
+runtimes:
+  nodejs:
+    target:
+      file: test.yaml
