@@ -1,6 +1,0 @@
-steps:
-- name: 'gcr.io/gcp-runtimes/nodejs/gen-dockerfile'
-- name: 'gcr.io/cloud-builders/docker:latest'
-  args: ['build', '-t', '${_OUTPUT_IMAGE}', '.']
-images:
-- '${_OUTPUT_IMAGE}'
