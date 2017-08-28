@@ -127,8 +127,11 @@ gulp.task('test.prepare',
           });
 
 gulp.task('test.unit', [ 'test.prepare' ], () => {
-  return gulp.src([ `${outDir}/test/**/*.js` ])
-      .pipe(mocha({reporter : 'spec', timeout : 25000}));
+  return gulp.src([ `${outDir}/test/**/*.js` ]).pipe(mocha({
+    reporter : 'spec',
+    timeout : 25000,
+    require : 'source-map-support/register'
+  }));
 });
 
 gulp.task('watch', () => {
