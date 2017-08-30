@@ -8,6 +8,12 @@ FROM <%- baseImage %>
 RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
 
+<% if (config.npmVersion) { %>
+# Install the version of npm as requested by the engines.npm field in
+# package.json.
+RUN npm install -g 'npm@<%- config.npmVersion %>'
+<% } %>
+
 COPY . /app/
 
 <% if (config.canInstallDeps) { %>
