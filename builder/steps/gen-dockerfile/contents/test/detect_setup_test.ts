@@ -356,65 +356,66 @@ describe('detectSetup', () => {
         appYamlPath: DEFAULT_APP_YAML
       }
     });
-  });
 
-  performTest({
-    title: 'should properly detect a Node version specification',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents:
-            JSON.stringify({name: 'some-package', engines: {node: '>=4.3.2'}})
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: false,
-      appYamlPath: DEFAULT_APP_YAML,
-      nodeVersion: '>=4.3.2'
-    }
-  });
+    performTest({
+      title: 'should properly detect a Node version specification',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {name: 'some-package', engines: {node: '>=4.3.2'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        nodeVersion: '>=4.3.2'
+      }
+    });
 
-  performTest({
-    title: 'should detect node version from the engines field in package.json',
-    locations: [
-      {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify(
-            {engines: {node: '^3.3.8'}, scripts: {start: 'npm start'}})
-      },
-      {path: 'app.yaml', exists: true, contents: 'some contents'},
-      {path: 'yarn.lock', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      nodeVersion: '^3.3.8',
-      appYamlPath: DEFAULT_APP_YAML,
-      useYarn: false
-    }
-  });
+    performTest({
+      title:
+          'should detect node version from the engines field in package.json',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {engines: {node: '^3.3.8'}, scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        nodeVersion: '^3.3.8',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
 
-  performTest({
-    title: 'should detect npm version from the engines field in package.json',
-    locations: [
-      {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify(
-            {engines: {npm: '5.x'}, scripts: {start: 'npm start'}})
-      },
-      {path: 'app.yaml', exists: true, contents: 'some contents'},
-      {path: 'yarn.lock', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      npmVersion: '5.x',
-      appYamlPath: DEFAULT_APP_YAML,
-      useYarn: false
-    }
+    performTest({
+      title: 'should detect npm version from the engines field in package.json',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {engines: {npm: '5.x'}, scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        npmVersion: '5.x',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
   });
 });
