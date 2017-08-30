@@ -45,6 +45,11 @@ export interface Setup {
    */
   npmVersion?: string;
   /**
+   * Specifies the semver expression representing the version of yarn to be
+   * installed, as specified by the application's package.json file.
+   */
+  yarnVersion?: string;
+  /**
    * Specifies the semver expression representing the version of Node.js used
    * to run the application as specified by the application's package.json file
    */
@@ -121,6 +126,7 @@ export async function detectSetup(
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
   let npmVersion: string|undefined;
+  let yarnVersion: string|undefined;
   let nodeVersion: string|undefined;
   let useYarn: boolean;
 
@@ -168,6 +174,7 @@ export async function detectSetup(
     if (packageJson.engines) {
       nodeVersion = packageJson.engines.node;
       npmVersion = packageJson.engines.npm;
+      yarnVersion = packageJson.engines.yarn;
     }
 
     if (!nodeVersion) {
@@ -191,6 +198,7 @@ export async function detectSetup(
   const setup: Setup = {
     canInstallDeps: canInstallDeps,
     npmVersion: escape(npmVersion),
+    yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
     useYarn: useYarn,
     appYamlPath: appYamlPath

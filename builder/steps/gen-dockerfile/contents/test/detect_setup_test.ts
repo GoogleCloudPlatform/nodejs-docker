@@ -379,20 +379,20 @@ describe('detectSetup', () => {
 
     performTest({
       title:
-          'should detect node version from the engines field in package.json',
+          'should detect yarn version from the engines field in package.json',
       locations: [
         {
           path: 'package.json',
           exists: true,
           contents: JSON.stringify(
-              {engines: {node: '^3.3.8'}, scripts: {start: 'npm start'}})
+              {engines: {yarn: '5.x'}, scripts: {start: 'npm start'}})
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
         {path: 'yarn.lock', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
-        nodeVersion: '^3.3.8',
+        yarnVersion: '5.x',
         appYamlPath: DEFAULT_APP_YAML,
         useYarn: false
       }
