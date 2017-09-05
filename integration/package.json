@@ -21,7 +21,6 @@
     "gulp-sourcemaps": "^2.6.1",
     "gulp-tslint": "^8.1.2",
     "gulp-typescript": "^3.2.2",
-    "mocha": "^3.5.0",
     "request": "^2.81.0",
     "source-map-support": "^0.4.16",
     "tslint": "^5.7.0",
