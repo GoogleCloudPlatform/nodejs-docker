@@ -15,12 +15,11 @@
  */
 
 import * as assert from 'assert';
-
-import { spawn } from 'child_process';
+import {spawn} from 'child_process';
 import {exec} from 'child_process';
 import * as path from 'path';
-import * as util from 'util';
 import * as request from 'request';
+import * as util from 'util';
 import * as uuid from 'uuid';
 
 const TIMEOUT = 3000;
@@ -28,9 +27,10 @@ const PORT = 8080;
 
 const TAG_PREFIX = 'test/nodejs-docker/integration';
 const RUNTIME_TAG = `${TAG_PREFIX}/runtime`;
-const GEN_DOCKERFILE_DIR = path.join(__dirname, '..', '..', '..', 'builder', 'steps',
-                                     'gen-dockerfile', 'contents');
-const GEN_DOCKERFILE_FILE = path.join(GEN_DOCKERFILE_DIR, 'dist', 'src', 'main.js');
+const GEN_DOCKERFILE_DIR = path.join(__dirname, '..', '..', '..', 'builder',
+                                     'steps', 'gen-dockerfile', 'contents');
+const GEN_DOCKERFILE_FILE =
+    path.join(GEN_DOCKERFILE_DIR, 'dist', 'src', 'main.js');
 
 interface TestConfig {
   description: string;
@@ -38,11 +38,11 @@ interface TestConfig {
   expectedOutput: string;
 }
 
-const CONFIGURATIONS: TestConfig[] = [{
-  description: 'A basic http server can be run',
-  directoryName: 'hello-world',
-  expectedOutput: 'Hello World'
-}];
+const CONFIGURATIONS: TestConfig[] = [ {
+  description : 'A basic http server can be run',
+  directoryName : 'hello-world',
+  expectedOutput : 'Hello World'
+} ];
 
 const DEBUG = false;
 function log(message: string): void {
@@ -51,36 +51,31 @@ function log(message: string): void {
   }
 }
 
-function run(cmd: string, args: string[],
-             options: { [key: string]: any }, cb: (err: Error|null) => void): void {
-  spawn(cmd, args, options)
-   .on('exit', exitCode => {
-     if (exitCode !== 0) {
-       const fullCmd = cmd + ' ' + args.join(' ');
-       return cb(new Error(`'${fullCmd}' encountered a non-zero exit code: ${exitCode}`));
-     }
-     return cb(null);
-   });
+function run(cmd: string, args: string[], options: {[key: string]: any},
+             cb: (err: Error|null) => void): void {
+  spawn(cmd, args, options).on('exit', exitCode => {
+    if (exitCode !== 0) {
+      const fullCmd = cmd + ' ' + args.join(' ');
+      return cb(new Error(
+          `'${fullCmd}' encountered a non-zero exit code: ${exitCode}`));
+    }
+    return cb(null);
+  });
 }
 
 function buildGenDockerfile(cb: (err: Error|null) => void): void {
-  const options = {
-    stdio: 'inherit',
-    cwd: GEN_DOCKERFILE_DIR
-  };
-  run('npm', ['install'], options, (err) => {
+  const options = {stdio : 'inherit', cwd : GEN_DOCKERFILE_DIR};
+  run('npm', [ 'install' ], options, (err) => {
     if (err) {
       return cb(err);
     }
-    run('npm', [ 'run', 'prepublish'], options, cb);
+    run('npm', [ 'run', 'prepublish' ], options, cb);
   });
 }
 
 function dockerBuild(tag: string, baseDir: string,
                      cb: (err: Error|null) => void): void {
-  run('docker', ['build', '-t', tag, baseDir], {
-    stdio: 'inherit'
-  }, cb);
+  run('docker', [ 'build', '-t', tag, baseDir ], {stdio : 'inherit'}, cb);
 }
 
 /**
@@ -89,13 +84,13 @@ function dockerBuild(tag: string, baseDir: string,
 function runDocker(tag: string, name: string, port: number,
                    callback: (host: string) => void) {
   let d = spawn(
-    'docker',
-    [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
+      'docker',
+      [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
 
   d.stdout.on('data', log);
   d.stderr.on('data', log);
   d.on('error', (err) => {
-  log(`Error spawning docker process: ${util.inspect(err)}`);
+    log(`Error spawning docker process: ${util.inspect(err)}`);
     assert.ifError(err);
   });
 
@@ -110,33 +105,35 @@ function runDocker(tag: string, name: string, port: number,
 
 describe('runtime image and builder integration', () => {
   before((done) => {
-    dockerBuild(RUNTIME_TAG, path.join(__dirname, '..', '..', '..',
-        'runtime-image'), (err1) => {
-      if (err1) {
-        return done(err1);
-      }
-      buildGenDockerfile(done);
-    });
+    dockerBuild(RUNTIME_TAG,
+                path.join(__dirname, '..', '..', '..', 'runtime-image'),
+                (err1) => {
+                  if (err1) {
+                    return done(err1);
+                  }
+                  buildGenDockerfile(done);
+                });
   });
 
   CONFIGURATIONS.forEach((config) => {
     describe(`For directory ${config.directoryName}`, () => {
       const containerName = uuid.v4();
-      const appDir = path.join(__dirname, '..', '..', 'test',
-                               'definitions', config.directoryName);
+      const appDir = path.join(__dirname, '..', '..', 'test', 'definitions',
+                               config.directoryName);
       const tag = `${TAG_PREFIX}/${config.directoryName}`;
       before((done) => {
-        run('node', [GEN_DOCKERFILE_FILE, '--runtime-image',
-                     RUNTIME_TAG, '--app-dir', appDir], {
-          stdio: 'inherit',
-          cwd: appDir
-        }, (err) => {
-          if (err) {
-            return done(err);
-          }
+        run('node',
+            [
+              GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG, '--app-dir',
+              appDir
+            ],
+            {stdio : 'inherit', cwd : appDir}, (err) => {
+              if (err) {
+                return done(err);
+              }
 
-          dockerBuild(tag, appDir, done);
-        });
+              dockerBuild(tag, appDir, done);
+            });
       });
 
       it(`Should output '${config.expectedOutput}'`, function(done) {

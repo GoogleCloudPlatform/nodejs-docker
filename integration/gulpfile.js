@@ -16,10 +16,14 @@
 
 require('source-map-support').install();
 
+const clangFormat = require('clang-format');
+const del = require('del');
 const gulp = require('gulp');
+const format = require('gulp-clang-format');
 const mocha = require('gulp-mocha');
 const sourcemaps = require('gulp-sourcemaps');
 const ts = require('gulp-typescript');
+const tslint = require('gulp-tslint');
 
 const outDir = 'build';
 const tests = [ 'test/**/*.ts' ];
@@ -30,6 +34,27 @@ function onError() {
     process.exit(1);
   }
 }
+
+gulp.task('test.check-format', () => {
+  return gulp.src(tests)
+      .pipe(format.checkFormat('file', clangFormat))
+      .on('warning', onError);
+});
+
+gulp.task('format', () => {
+  return gulp.src(tests, {base : '.'})
+      .pipe(format.format('file', clangFormat))
+      .pipe(gulp.dest('.'));
+});
+
+gulp.task('test.check-lint', () => {
+  return gulp.src(tests)
+      .pipe(tslint({formatter : 'verbose'}))
+      .pipe(tslint.report())
+      .on('warning', onError);
+});
+
+gulp.task('clean', () => { return del([ `${outDir}` ]); });
 
 gulp.task('test.compile', () => {
   return gulp.src(tests, {base : '.'})
@@ -49,4 +74,4 @@ gulp.task('test', [ 'test.compile' ], () => {
   }));
 });
 
-gulp.task('default', [ 'test' ]);
+gulp.task('default', [ 'test', 'test.check-format', 'test.check-lint' ]);
