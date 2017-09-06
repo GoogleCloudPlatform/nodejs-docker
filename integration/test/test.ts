@@ -33,13 +33,11 @@ const GEN_DOCKERFILE_FILE =
     path.join(GEN_DOCKERFILE_DIR, 'dist', 'src', 'main.js');
 
 interface TestConfig {
-  description: string;
   directoryName: string;
   expectedOutput: string;
 }
 
 const CONFIGURATIONS: TestConfig[] = [ {
-  description : 'A basic http server can be run',
   directoryName : 'hello-world',
   expectedOutput : 'Hello World'
 } ];
