@@ -17,19 +17,8 @@
 # Fail fast
 set -e
 
-# Change the current working directory to the directory containing this script
-pushd $(dirname $0) > /dev/null
-
-pushd runtime-image/bin > /dev/null
-./run_test.sh
-popd > /dev/null
-
-pushd builder/bin > /dev/null
-./run_test.sh
-popd > /dev/null
-
-pushd integration/bin > /dev/null
-./run_test.sh
-popd > /dev/null
-
+# Ensure we are in the builder directory
+pushd $(dirname $0)/.. > /dev/null
+  npm install
+  npm test
 popd > /dev/null

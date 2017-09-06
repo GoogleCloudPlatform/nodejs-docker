@@ -1,0 +1,30 @@
+{
+  "name": "nodejs-docker-integration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.0.26",
+    "@types/request": "^2.0.3",
+    "@types/uuid": "^3.4.1",
+    "clang-format": "^1.0.55",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-clang-format": "^1.0.23",
+    "gulp-mocha": "^4.3.1",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.2",
+    "request": "^2.81.0",
+    "source-map-support": "^0.4.16",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.2",
+    "uuid": "^3.1.0"
+  }
+}
