@@ -60,6 +60,12 @@ const CONFIGURATIONS: TestConfig[] = [
     directoryName : 'custom-npm-complex',
     expectedStdout : '5.4.1\n',
     expectedStderr : ''
+  },
+  {
+    description : 'Should install the single yarn version specified',
+    directoryName : 'custom-yarn',
+    expectedStdout : '0.26.0\n',
+    expectedStderr : ''
   }
 ];
 
