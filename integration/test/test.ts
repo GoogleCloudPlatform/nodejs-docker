@@ -17,6 +17,7 @@
 import * as assert from 'assert';
 import {spawn} from 'child_process';
 import {exec} from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as request from 'request';
 import * as util from 'util';
@@ -37,10 +38,10 @@ interface TestConfig {
   expectedOutput: string;
 }
 
-const CONFIGURATIONS: TestConfig[] = [ {
-  directoryName : 'hello-world',
-  expectedOutput : 'Hello World'
-} ];
+const CONFIGURATIONS: TestConfig[] = [
+  {directoryName : 'hello-world', expectedOutput : 'Hello World'},
+  {directoryName : 'custom-npm', expectedOutput : '3.5.0\n'}
+];
 
 const DEBUG = false;
 function log(message: string): void {
@@ -101,6 +102,26 @@ function runDocker(tag: string, name: string, port: number,
   callback(host);
 }
 
+function cleanDirectory(dirPath: string, cb: (err: Error|null) => void): void {
+  const dockerfile = path.join(dirPath, 'Dockerfile');
+  const dockerignore = path.join(dirPath, '.dockerignore');
+  fs.unlink(dockerfile, (err1) => {
+    // It is ok if the file could not be deleted because it doesn't exist.
+    if (err1 && err1.code !== 'ENOENT') {
+      return cb(err1);
+    }
+
+    fs.unlink(dockerignore, (err2) => {
+      // Again it is ok if the file does not exist.
+      if (err2 && err2.code !== 'ENOENT') {
+        return cb(err2);
+      }
+
+      return cb(null);
+    });
+  });
+}
+
 describe('runtime image and builder integration', () => {
   before((done) => {
     dockerBuild(RUNTIME_TAG,
@@ -120,18 +141,24 @@ describe('runtime image and builder integration', () => {
                                config.directoryName);
       const tag = `${TAG_PREFIX}/${config.directoryName}`;
       before((done) => {
-        run('node',
-            [
-              GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG, '--app-dir',
-              appDir
-            ],
-            {stdio : 'inherit', cwd : appDir}, (err) => {
-              if (err) {
-                return done(err);
-              }
+        cleanDirectory(appDir, (err) => {
+          if (err) {
+            return done(err);
+          }
 
-              dockerBuild(tag, appDir, done);
-            });
+          run('node',
+              [
+                GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG,
+                '--app-dir', appDir
+              ],
+              {stdio : 'inherit', cwd : appDir}, (err) => {
+                if (err) {
+                  return done(err);
+                }
+
+                dockerBuild(tag, appDir, done);
+              });
+        });
       });
 
       it(`Should output '${config.expectedOutput}'`, function(done) {
