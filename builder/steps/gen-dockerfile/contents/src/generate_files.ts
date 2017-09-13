@@ -64,6 +64,8 @@ async function generateSingleFile(
  *                      Dockerfile and .dockerignore files.
  * @param baseNamespace The full Docker name of the Node.js base image to use
  *                      in the FROM line of the generated Dockerfile.
+ * @param uuid          The UUID used to record timing information in the
+ *                      generated Dockerfile.
  *
  * @return A {@link Promise} so that this method can be used with async/await.
  *         The resolved value of the {@link Promise} is a map that maps
@@ -71,8 +73,8 @@ async function generateSingleFile(
  *         each corresponding file.
  */
 export async function generateFiles(
-    appDirWriter: Writer, config: Setup,
-    baseImage: string): Promise<Map<string, string>> {
+    appDirWriter: Writer, config: Setup, baseImage: string,
+    uuid: string): Promise<Map<string, string>> {
   const genFiles = new Map();
   const dataDirReader = new FsView(path.join(__dirname, '../data'));
 
@@ -81,6 +83,8 @@ export async function generateFiles(
   const dockerfile = renderTemplate(dockerfileTemplate, {
     baseImage: baseImage,
     tool: config.useYarn ? 'yarn' : 'npm',
+    toolVersion: config.useYarn ? config.yarnVersion : config.npmVersion,
+    uuid: uuid,
     config: config
   });
 

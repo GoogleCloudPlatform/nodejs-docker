@@ -29,6 +29,11 @@ const NODE_VERSION = 'v6.10.0';
 const NPM_VERSION = '^5.0.2';
 const YARN_VERSION = '^1.2.3';
 
+const RUNTIME = 'node.js-runtime';
+const ENV = 'flex-environment';
+
+const UUID = 'SOME-UUID';
+
 const BASE =
     `# Dockerfile extending the generic Node image with application files for a
 # single application.
@@ -37,10 +42,10 @@ FROM ${BASE_IMAGE}
 
 const UPGRADE_NODE =
     `# Check to see if the the version included in the base runtime satisfies
-# '${
-     NODE_VERSION
-   }' and, if not, install a version of Node.js that does satisfy it.
-RUN /usr/local/bin/install_node '${NODE_VERSION}'
+# '${NODE_VERSION}' and, if not, install a version of Node.js that
+# does satisfy it.
+RUN timer record install.node.${UUID} \\
+    /usr/local/bin/install_node '${NODE_VERSION}'
 `;
 
 const INSTALL_NPM =
@@ -70,20 +75,45 @@ const NPM_INSTALL_PRODUCTION_DEPS =
 # as well.
 # This command will also cat the npm-debug.log file after the
 # build, if it exists.
-RUN npm install --unsafe-perm || \\
-  ((if [ -f npm-debug.log ]; then \\
-      cat npm-debug.log; \\
-    fi) && false)
+RUN timer record install.deps.${UUID} \\
+    npm install --unsafe-perm || \\
+    ((if [ -f npm-debug.log ]; then \\
+        cat npm-debug.log; \\
+      fi) \\
+      && false)
 `;
 
-const YARN_INSTALL_PRODUCTION_DEPS = `RUN yarn install --production || \\
-  ((if [ -f yarn-error.log ]; then \\
-      cat yarn-error.log; \\
-    fi) && false)
+const YARN_INSTALL_PRODUCTION_DEPS = `RUN timer record install.deps.${UUID} \\
+    yarn install --production || \\
+    ((if [ -f yarn-error.log ]; then \\
+        cat yarn-error.log; \\
+      fi) \\
+      && false)
 `;
 
-const YARN_START = `CMD yarn start\n`;
-const NPM_START = `CMD npm start\n`;
+function getStatsLine(
+    tool: string, toolVersion?: string, nodeVersion?: string): string {
+  return `RUN echo "\\
+DEPLOYMENT:METADATA:\\
+ENV=${ENV},\\
+RUNTIME=${RUNTIME},\\
+RUNTIME_IMAGE=${BASE_IMAGE},\\
+LATENCY.INSTALL.NODE=$(timer read install.node.${UUID}),\\
+LATENCY.INSTALL.DEPENDENCIES=$(timer read install.deps.${UUID}),\\
+PACKAGE_MANAGER=${tool},\\
+PACKAGE_MANAGER.REQUESTED_VERSION=${toolVersion || 'None'},\\
+PACKAGE_MANAGER.RESOLVED_VERSION=$(${tool} --version),\\
+NODE.REQUESTED_VERSION=${nodeVersion || 'None'},\\
+NODE.RESOLVED_VERSION=$(node --version)" \\
+&& timer clean
+`;
+}
+
+const NPM = 'npm';
+const YARN = 'yarn';
+
+const YARN_START = `CMD ${YARN} start\n`;
+const NPM_START = `CMD ${NPM} start\n`;
 
 const BASE_DOCKERIGNORE = `# Copyright 2015 Google Inc. All Rights Reserved.
 #
@@ -126,7 +156,8 @@ function hasLocation(locationArr: Location[], location: Location) {
 
 async function runTest(testConfig: TestConfig) {
   const appView = new MockView([]);
-  const files = await generateFiles(appView, testConfig.config, BASE_IMAGE);
+  const files =
+      await generateFiles(appView, testConfig.config, BASE_IMAGE, UUID);
   assert.ok(files);
 
   // Verify the paths written matches the number of locations returned
@@ -168,9 +199,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + getStatsLine(NPM) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -183,9 +217,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + getStatsLine(YARN) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -198,9 +235,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               getStatsLine(NPM, undefined, NODE_VERSION) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -213,9 +253,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               getStatsLine(YARN, undefined, NODE_VERSION) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -228,9 +271,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + getStatsLine(NPM) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -243,9 +289,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + getStatsLine(YARN) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -258,9 +307,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               getStatsLine(NPM, undefined, NODE_VERSION) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -273,9 +325,12 @@ describe('generateFiles', async () => {
              canInstallDeps: false,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               getStatsLine(YARN, undefined, NODE_VERSION) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -288,10 +343,12 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile:
-               BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+           expectedDockerfile: BASE + COPY_CONTENTS +
+               NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -304,10 +361,12 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile:
-               BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+           expectedDockerfile: BASE + COPY_CONTENTS +
+               YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -320,10 +379,13 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-               NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+               NPM_INSTALL_PRODUCTION_DEPS +
+               getStatsLine(NPM, undefined, NODE_VERSION) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -336,10 +398,13 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-               YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+               YARN_INSTALL_PRODUCTION_DEPS +
+               getStatsLine(YARN, undefined, NODE_VERSION) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -352,10 +417,12 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile:
-               BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+           expectedDockerfile: BASE + COPY_CONTENTS +
+               NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -368,10 +435,12 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: undefined,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
-           expectedDockerfile:
-               BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+           expectedDockerfile: BASE + COPY_CONTENTS +
+               YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -384,10 +453,13 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: false,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-               NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+               NPM_INSTALL_PRODUCTION_DEPS +
+               getStatsLine(NPM, undefined, NODE_VERSION) + NPM_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -400,10 +472,13 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
            expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-               YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+               YARN_INSTALL_PRODUCTION_DEPS +
+               getStatsLine(YARN, undefined, NODE_VERSION) + YARN_START,
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
        });
@@ -417,7 +492,9 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: 'custom.yaml'
+             appYamlPath: 'custom.yaml',
+             runtime: RUNTIME,
+             env: ENV
            },
            expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
          });
@@ -430,7 +507,9 @@ describe('generateFiles', async () => {
              canInstallDeps: true,
              nodeVersion: NODE_VERSION,
              useYarn: true,
-             appYamlPath: DEFAULT_APP_YAML
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
            },
            expectedDockerignore: DEFAULT_DOCKERIGNORE
          });
@@ -443,11 +522,16 @@ describe('generateFiles', async () => {
         config: {
           canInstallDeps: true,
           npmVersion: NPM_VERSION,
-          useYarn: false,
-          appYamlPath: DEFAULT_APP_YAML
+          nodeVersion: NODE_VERSION,
+          useYarn: true,
+          appYamlPath: DEFAULT_APP_YAML,
+          runtime: RUNTIME,
+          env: ENV
         },
-        expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
-            NPM_INSTALL_PRODUCTION_DEPS + NPM_START
+        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS +
+            getStatsLine(YARN, undefined, NODE_VERSION) + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
 
@@ -457,10 +541,13 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           // Note: npmVersion is not specified
           useYarn: false,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          runtime: RUNTIME,
+          env: ENV
         },
-        expectedDockerfile:
-            BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START
+        expectedDockerfile: BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS +
+            getStatsLine(NPM) + NPM_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
   });
@@ -472,10 +559,14 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           yarnVersion: YARN_VERSION,
           useYarn: true,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          runtime: RUNTIME,
+          env: ENV
         },
-        expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
-            YARN_INSTALL_PRODUCTION_DEPS + YARN_START
+        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS +
+            getStatsLine(YARN, YARN_VERSION, NODE_VERSION) + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
 
@@ -485,42 +576,86 @@ describe('generateFiles', async () => {
           canInstallDeps: true,
           // Note: yarnVersion is not specified
           useYarn: true,
-          appYamlPath: DEFAULT_APP_YAML
+          appYamlPath: DEFAULT_APP_YAML,
+          runtime: RUNTIME,
+          env: ENV
         },
-        expectedDockerfile:
-            BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START
+        expectedDockerfile: BASE + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN) + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
   });
 
-  describe(
-      'should handle simultaneous custom npm and yarn versions', async () => {
-        it('should only install npm if it is being used', async () => {
-          await runTest({
-            config: {
-              canInstallDeps: true,
-              npmVersion: NPM_VERSION,
-              yarnVersion: YARN_VERSION,
-              useYarn: false,
-              appYamlPath: DEFAULT_APP_YAML
-            },
-            expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
-                NPM_INSTALL_PRODUCTION_DEPS + NPM_START
-          });
-        });
+  it('should record the Node and tool versions specified', async () => {
+    await runTest({
+      config: {
+        canInstallDeps: true,
+        nodeVersion: NODE_VERSION,
+        yarnVersion: YARN_VERSION,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML,
+        runtime: RUNTIME,
+        env: ENV
+      },
+      expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
+          YARN_INSTALL_PRODUCTION_DEPS +
+          getStatsLine(YARN, YARN_VERSION, NODE_VERSION) + YARN_START,
+      expectedDockerignore: DEFAULT_DOCKERIGNORE
+    });
+  });
 
-        it('should only install yarn if it is being used', async () => {
-          await runTest({
-            config: {
-              canInstallDeps: true,
-              npmVersion: NPM_VERSION,
-              yarnVersion: YARN_VERSION,
-              useYarn: true,
-              appYamlPath: DEFAULT_APP_YAML
-            },
-            expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
-                YARN_INSTALL_PRODUCTION_DEPS + YARN_START
-          });
-        });
-      });
+  it('should record "None" for the Node and tool versions if not specified',
+     async () => {
+       await runTest({
+         config: {
+           canInstallDeps: true,
+           useYarn: true,
+           appYamlPath: DEFAULT_APP_YAML,
+           runtime: RUNTIME,
+           env: ENV
+         },
+         expectedDockerfile: BASE + COPY_CONTENTS +
+             YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN) + YARN_START,
+         expectedDockerignore: DEFAULT_DOCKERIGNORE
+       });
+     });
+
+  it('should not record the npm version specified if yarn is being used',
+     async () => {
+       await runTest({
+         config: {
+           canInstallDeps: true,
+           npmVersion: NPM_VERSION,
+           yarnVersion: YARN_VERSION,
+           useYarn: true,
+           appYamlPath: DEFAULT_APP_YAML,
+           runtime: RUNTIME,
+           env: ENV
+         },
+         expectedDockerfile: BASE + INSTALL_NPM + INSTALL_YARN + COPY_CONTENTS +
+             YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN, YARN_VERSION) +
+             YARN_START,
+         expectedDockerignore: DEFAULT_DOCKERIGNORE
+       });
+     });
+
+  it('should not record the yarn version specified if npm is being used',
+     async () => {
+       await runTest({
+         config: {
+           canInstallDeps: true,
+           npmVersion: NPM_VERSION,
+           yarnVersion: YARN_VERSION,
+           useYarn: false,
+           appYamlPath: DEFAULT_APP_YAML,
+           runtime: RUNTIME,
+           env: ENV
+         },
+         expectedDockerfile: BASE + INSTALL_NPM + INSTALL_YARN + COPY_CONTENTS +
+             NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM, NPM_VERSION) +
+             NPM_START,
+         expectedDockerignore: DEFAULT_DOCKERIGNORE
+       });
+     });
 });

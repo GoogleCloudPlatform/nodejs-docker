@@ -15,6 +15,7 @@
  */
 
 import {ArgumentParser} from 'argparse';
+import * as uuid from 'uuid';
 
 import {detectSetup} from './detect_setup';
 import {FsView} from './fsview';
@@ -65,7 +66,7 @@ async function generateConfigs(
     Promise<Map<string, string>> {
       try {
         const setup = await detectSetup(logger, appDirView);
-        return await generateFiles(appDirView, setup, baseImage);
+        return await generateFiles(appDirView, setup, baseImage, uuid.v4());
       } catch (e) {
         logger.error(`Application detection failed: ${e}`);
         process.exit(1);
