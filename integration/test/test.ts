@@ -40,7 +40,8 @@ interface TestConfig {
 
 const CONFIGURATIONS: TestConfig[] = [
   {directoryName : 'hello-world', expectedOutput : 'Hello World'},
-  {directoryName : 'custom-npm', expectedOutput : '3.5.0\n'}
+  {directoryName : 'custom-npm-simple', expectedOutput : '2.7.1\n'},
+  {directoryName : 'custom-npm-complex', expectedOutput : '2.7.1\n'}
 ];
 
 const DEBUG = false;

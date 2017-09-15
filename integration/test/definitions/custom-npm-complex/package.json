@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "npm": "3.5.0"
+    "npm": ">2.7.0 <2.7.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
