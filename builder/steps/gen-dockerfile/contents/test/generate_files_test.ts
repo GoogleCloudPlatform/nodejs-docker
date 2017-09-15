@@ -37,9 +37,7 @@ FROM ${BASE_IMAGE}
 
 const UPGRADE_NODE =
     `# Check to see if the the version included in the base runtime satisfies
-# '${
-     NODE_VERSION
-   }' and, if not, install a version of Node.js that does satisfy it.
+# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '${NODE_VERSION}'
 `;
 
@@ -57,7 +55,7 @@ RUN yarn global add npm@'${NPM_VERSION}'
 const INSTALL_YARN =
     `# Install the version of yarn as requested by the engines.yarn field in
 # package.json.
-RUN npm install -g 'yarn@${YARN_VERSION}'
+RUN yarn global add yarn@'${YARN_VERSION}'
 `;
 
 const COPY_CONTENTS = `COPY . /app/\n`;
