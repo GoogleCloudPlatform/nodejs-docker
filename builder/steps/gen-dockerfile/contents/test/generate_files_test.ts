@@ -36,16 +36,19 @@ FROM ${BASE_IMAGE}
 
 const UPGRADE_NODE =
     `# Check to see if the the version included in the base runtime satisfies
-# '${
-     NODE_VERSION
-   }' and, if not, install a version of Node.js that does satisfy it.
+# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '${NODE_VERSION}'
 `;
 
 const INSTALL_NPM =
     `# Install the version of npm as requested by the engines.npm field in
 # package.json.
-RUN npm install -g 'npm@${NPM_VERSION}'
+#
+# The package manager yarn is used to perform the installation because
+# there is a known issue with installing npm globally during a Docker build.
+# See npm issue #9863 at https://github.com/npm/npm/issues/9863 for more
+# information.
+RUN yarn global add npm@'${NPM_VERSION}'
 `;
 
 const COPY_CONTENTS = `COPY . /app/\n`;
