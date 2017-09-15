@@ -23,7 +23,8 @@ import * as request from 'request';
 import * as util from 'util';
 import * as uuid from 'uuid';
 
-const TIMEOUT = 3000;
+const DOCKER_BUILD_TIMEOUT = 10 * 60 * 1000; // ms
+const DOCKER_RUN_TIMEOUT = 3000;
 const PORT = 8080;
 
 const TAG_PREFIX = 'test/nodejs-docker/integration';
@@ -124,7 +125,8 @@ function cleanDirectory(dirPath: string, cb: (err: Error|null) => void): void {
 }
 
 describe('runtime image and builder integration', () => {
-  before((done) => {
+  before(function(done) {
+    this.timeout(DOCKER_BUILD_TIMEOUT);
     dockerBuild(RUNTIME_TAG,
                 path.join(__dirname, '..', '..', '..', 'runtime-image'),
                 (err1) => {
@@ -141,7 +143,8 @@ describe('runtime image and builder integration', () => {
       const appDir = path.join(__dirname, '..', '..', 'test', 'definitions',
                                config.directoryName);
       const tag = `${TAG_PREFIX}/${config.directoryName}`;
-      before((done) => {
+      before(function(done) {
+        this.timeout(DOCKER_BUILD_TIMEOUT);
         cleanDirectory(appDir, (err) => {
           if (err) {
             return done(err);
@@ -163,7 +166,7 @@ describe('runtime image and builder integration', () => {
       });
 
       it(`Should output '${config.expectedOutput}'`, function(done) {
-        this.timeout(2 * TIMEOUT);
+        this.timeout(2 * DOCKER_RUN_TIMEOUT);
         runDocker(tag, containerName, PORT, host => {
           // Wait for the docker container to start
           setTimeout(() => {
@@ -172,7 +175,7 @@ describe('runtime image and builder integration', () => {
               assert.equal(body, config.expectedOutput);
               done();
             });
-          }, TIMEOUT);
+          }, DOCKER_RUN_TIMEOUT);
         });
       });
 
