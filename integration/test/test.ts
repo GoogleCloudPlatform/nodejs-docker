@@ -36,13 +36,40 @@ const GEN_DOCKERFILE_FILE =
 
 interface TestConfig {
   directoryName: string;
-  expectedOutput: string;
+  expectedStdout: string|((text: string) => boolean);
+  expectedStderr: string|((text: string) => boolean);
 }
 
+const NPM_WARNING_TEXT =
+    'fs: re-evaluating native module sources is not ' +
+    'supported. If you are using the graceful-fs module, please update it ' +
+    'to a more recent version.\n';
+
 const CONFIGURATIONS: TestConfig[] = [
-  {directoryName : 'hello-world', expectedOutput : 'Hello World'},
-  {directoryName : 'custom-npm-simple', expectedOutput : '2.7.1\n'},
-  {directoryName : 'custom-npm-complex', expectedOutput : '2.7.1\n'}
+  {
+    directoryName : 'hello-world',
+    expectedStdout : 'Hello World',
+    expectedStderr : ''
+  },
+  {
+    // The installation of npm 2.7.1 is expected to print an message to
+    // standard error when running `npm --version`.  This message is
+    // consistently printed if npm is installed globally both within a
+    // Docker container or on a real system itself.  The fact this message
+    // occurs is documented here to record that the appearance of the message
+    // itself is not an issue with how the installation of npm is done within
+    // a Docker image.
+    directoryName : 'custom-npm-simple',
+    expectedStdout : '2.7.1\n',
+    expectedStderr :
+        (text: string) => { return text.endsWith(NPM_WARNING_TEXT); }
+  },
+  {
+    directoryName : 'custom-npm-complex',
+    expectedStdout : '2.7.1\n',
+    expectedStderr :
+        (text: string) => { return text.endsWith(NPM_WARNING_TEXT); }
+  }
 ];
 
 const DEBUG = false;
@@ -165,14 +192,25 @@ describe('runtime image and builder integration', () => {
         });
       });
 
-      it(`Should output '${config.expectedOutput}'`, function(done) {
+      it(`Should output '${config.expectedStdout}'`, function(done) {
         this.timeout(2 * DOCKER_RUN_TIMEOUT);
         runDocker(tag, containerName, PORT, host => {
+          function verifyText(actual: string,
+                              expected: string|((t: string) => void)): void {
+            if (expected instanceof Function) {
+              assert(expected(actual));
+            } else {
+              assert.strictEqual(actual, expected);
+            }
+          }
+
           // Wait for the docker container to start
           setTimeout(() => {
             request(`http://${host}:${PORT}`, (err, _, body) => {
               assert.ifError(err);
-              assert.equal(body, config.expectedOutput);
+              const result: {stdout: string, stderr: string} = JSON.parse(body);
+              verifyText(result.stdout, config.expectedStdout);
+              verifyText(result.stderr, config.expectedStderr);
               done();
             });
           }, DOCKER_RUN_TIMEOUT);
