@@ -46,10 +46,11 @@ function renderTemplate(template: string, data?: ejs.Data): string {
  */
 async function generateSingleFile(
     writer: Writer, genFiles: Map<string, string>, relPath: string,
-    contents: string): Promise<void> {
-  await writer.write(relPath, contents);
-  genFiles.set(relPath, contents);
-}
+    contents: string):
+    Promise<void> {
+      await writer.write(relPath, contents);
+      genFiles.set(relPath, contents);
+    }
 
 /**
  * Used to generate a Dockerfile and .dockerignore file that can be Docker run
