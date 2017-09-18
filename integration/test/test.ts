@@ -69,6 +69,11 @@ const CONFIGURATIONS: TestConfig[] = [
     expectedStdout : '2.7.1\n',
     expectedStderr :
         (text: string) => { return text.endsWith(NPM_WARNING_TEXT); }
+  },
+  {
+    directoryName : 'custom-npm-5',
+    expectedStdout : '5.3.0\n',
+    expectedStderr : ''
   }
 ];
 
