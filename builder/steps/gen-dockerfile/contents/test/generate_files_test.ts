@@ -26,6 +26,7 @@ const DOCKERIGNORE_NAME = '.dockerignore';
 
 const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
+const NPM_VERSION = '^5.0.2';
 
 const BASE =
     `# Dockerfile extending the generic Node image with application files for a
@@ -39,6 +40,17 @@ const UPGRADE_NODE =
      NODE_VERSION
    }' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '${NODE_VERSION}'
+`;
+
+const INSTALL_NPM =
+    `# Install the version of npm as requested by the engines.npm field in
+# package.json.
+#
+# The package manager yarn is used to perform the installation because
+# there is a known issue with installing npm globally during a Docker build.
+# See npm issue #9863 at https://github.com/npm/npm/issues/9863 for more
+# information.
+RUN yarn global add npm@'${NPM_VERSION}'
 `;
 
 const COPY_CONTENTS = `COPY . /app/\n`;
@@ -401,4 +413,19 @@ describe('generateFiles', async () => {
          expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
        });
      });
+
+  it('should install the requested version of npm', async () => {
+    await runTest({
+      config: {
+        canInstallDeps: true,
+        npmVersion: NPM_VERSION,
+        nodeVersion: NODE_VERSION,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML
+      },
+      expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS +
+          YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+      expectedDockerignore: DEFAULT_DOCKERIGNORE
+    });
+  });
 });

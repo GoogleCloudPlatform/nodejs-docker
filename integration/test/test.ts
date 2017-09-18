@@ -17,12 +17,14 @@
 import * as assert from 'assert';
 import {spawn} from 'child_process';
 import {exec} from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as request from 'request';
 import * as util from 'util';
 import * as uuid from 'uuid';
 
-const TIMEOUT = 3000;
+const DOCKER_BUILD_TIMEOUT = 10 * 60 * 1000; // ms
+const DOCKER_RUN_TIMEOUT = 3000;
 const PORT = 8080;
 
 const TAG_PREFIX = 'test/nodejs-docker/integration';
@@ -33,14 +35,33 @@ const GEN_DOCKERFILE_FILE =
     path.join(GEN_DOCKERFILE_DIR, 'dist', 'src', 'main.js');
 
 interface TestConfig {
+  description: string;
   directoryName: string;
-  expectedOutput: string;
+  expectedStdout: string;
+  expectedStderr: string;
 }
 
-const CONFIGURATIONS: TestConfig[] = [ {
-  directoryName : 'hello-world',
-  expectedOutput : 'Hello World'
-} ];
+const CONFIGURATIONS: TestConfig[] = [
+  {
+    description : 'Should run a basic app',
+    directoryName : 'hello-world',
+    expectedStdout : 'Hello World',
+    expectedStderr : ''
+  },
+  {
+    description : 'Should install the single npm version specified',
+    directoryName : 'custom-npm-simple',
+    expectedStdout : '5.4.1\n',
+    expectedStderr : ''
+  },
+  {
+    description : 'Should install the correct npm version if a complex ' +
+                      'semver string is specified',
+    directoryName : 'custom-npm-complex',
+    expectedStdout : '5.4.1\n',
+    expectedStderr : ''
+  }
+];
 
 const DEBUG = false;
 function log(message: string): void {
@@ -101,8 +122,29 @@ function runDocker(tag: string, name: string, port: number,
   callback(host);
 }
 
+function cleanDirectory(dirPath: string, cb: (err: Error|null) => void): void {
+  const dockerfile = path.join(dirPath, 'Dockerfile');
+  const dockerignore = path.join(dirPath, '.dockerignore');
+  fs.unlink(dockerfile, (err1) => {
+    // It is ok if the file could not be deleted because it doesn't exist.
+    if (err1 && err1.code !== 'ENOENT') {
+      return cb(err1);
+    }
+
+    fs.unlink(dockerignore, (err2) => {
+      // Again it is ok if the file does not exist.
+      if (err2 && err2.code !== 'ENOENT') {
+        return cb(err2);
+      }
+
+      return cb(null);
+    });
+  });
+}
+
 describe('runtime image and builder integration', () => {
-  before((done) => {
+  before(function(done) {
+    this.timeout(DOCKER_BUILD_TIMEOUT);
     dockerBuild(RUNTIME_TAG,
                 path.join(__dirname, '..', '..', '..', 'runtime-image'),
                 (err1) => {
@@ -119,32 +161,41 @@ describe('runtime image and builder integration', () => {
       const appDir = path.join(__dirname, '..', '..', 'test', 'definitions',
                                config.directoryName);
       const tag = `${TAG_PREFIX}/${config.directoryName}`;
-      before((done) => {
-        run('node',
-            [
-              GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG, '--app-dir',
-              appDir
-            ],
-            {stdio : 'inherit', cwd : appDir}, (err) => {
-              if (err) {
-                return done(err);
-              }
+      before(function(done) {
+        this.timeout(DOCKER_BUILD_TIMEOUT);
+        cleanDirectory(appDir, (err) => {
+          if (err) {
+            return done(err);
+          }
 
-              dockerBuild(tag, appDir, done);
-            });
+          run('node',
+              [
+                GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG,
+                '--app-dir', appDir
+              ],
+              {stdio : 'inherit', cwd : appDir}, (err) => {
+                if (err) {
+                  return done(err);
+                }
+
+                dockerBuild(tag, appDir, done);
+              });
+        });
       });
 
-      it(`Should output '${config.expectedOutput}'`, function(done) {
-        this.timeout(2 * TIMEOUT);
+      it(config.description, function(done) {
+        this.timeout(2 * DOCKER_RUN_TIMEOUT);
         runDocker(tag, containerName, PORT, host => {
           // Wait for the docker container to start
           setTimeout(() => {
             request(`http://${host}:${PORT}`, (err, _, body) => {
               assert.ifError(err);
-              assert.equal(body, config.expectedOutput);
+              const result: {stdout: string, stderr: string} = JSON.parse(body);
+              assert.strictEqual(result.stdout, config.expectedStdout);
+              assert.strictEqual(result.stderr, config.expectedStderr);
               done();
             });
-          }, TIMEOUT);
+          }, DOCKER_RUN_TIMEOUT);
         });
       });
 

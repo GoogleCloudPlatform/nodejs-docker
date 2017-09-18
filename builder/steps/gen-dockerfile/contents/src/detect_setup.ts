@@ -40,6 +40,11 @@ export interface Setup {
    */
   canInstallDeps: boolean;
   /**
+   * Specifies the semver expression representing the version of npm to be
+   * installed, as specified by the application's package.json file.
+   */
+  npmVersion?: string;
+  /**
    * Specifies the semver expression representing the version of Node.js used
    * to run the application as specified by the application's package.json file
    */
@@ -54,6 +59,23 @@ export interface Setup {
    * identifies the yaml file used to deploy the application.
    */
   appYamlPath: string;
+}
+
+/**
+ * Uses the `shell-escape` module to escape the given text and ensures that
+ * the returned text is not enclosed in single quotes.  If the supplied text
+ * is `undefined`, then this function simply returns `undefined`.
+ *
+ * @param text The text to process
+ * @return `undefined` if the provided string is `undefined` or the escaped
+ *         version of the text otherwise.
+ */
+function escape(text: string|undefined): string|undefined {
+  if (!text) {
+    return text;
+  }
+
+  return shellEscape([text.trim()]).replace(/^'+/g, '').replace(/'+$/g, '');
 }
 
 /**
@@ -98,6 +120,7 @@ export async function detectSetup(
 
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
+  let npmVersion: string|undefined;
   let nodeVersion: string|undefined;
   let useYarn: boolean;
 
@@ -140,14 +163,11 @@ export async function detectSetup(
     // See if we've got a scripts.start field.
     gotScriptsStart = !!(packageJson.scripts && packageJson.scripts.start);
 
-    // See if a version of node is specified.
-    if (packageJson.engines && packageJson.engines.node) {
+    // Check if the user has specified specific versions of node or npm in the
+    // package.json.
+    if (packageJson.engines) {
       nodeVersion = packageJson.engines.node;
-    } else {
-      nodeVersion = undefined;
-      warn(
-          'node.js checker: ignoring invalid "engines" field in ' +
-          'package.json');
+      npmVersion = packageJson.engines.npm;
     }
 
     if (!nodeVersion) {
@@ -164,19 +184,14 @@ export async function detectSetup(
         'the "server.js" file were found.');
   }
 
-  if (nodeVersion) {
-    nodeVersion = shellEscape([nodeVersion.trim()])
-                      .replace(/^'+/g, '')
-                      .replace(/'+$/g, '');
-  }
-
   // This variable is defined here to allow the Typescript compiler
   // to properly verify it is of type `Setup`.  If its value is directly
   // passed to the `extend` function, the compiler cannot check
   // that the input is of type `Setup` since `extend` takes `Object`s.
   const setup: Setup = {
     canInstallDeps: canInstallDeps,
-    nodeVersion: nodeVersion,
+    npmVersion: escape(npmVersion),
+    nodeVersion: escape(nodeVersion),
     useYarn: useYarn,
     appYamlPath: appYamlPath
   };

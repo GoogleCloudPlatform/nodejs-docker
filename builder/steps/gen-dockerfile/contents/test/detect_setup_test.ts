@@ -168,12 +168,10 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
+      expectedErrors:
+          ['No node version specified.  Please add your node ' +
+           'version, see ' +
+           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -196,12 +194,10 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: true, contents: 'some contents'}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
+      expectedErrors:
+          ['No node version specified.  Please add your node ' +
+           'version, see ' +
+           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -219,12 +215,10 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: true, contents: 'some content'}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
+      expectedErrors:
+          ['No node version specified.  Please add your node ' +
+           'version, see ' +
+           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
       expectedResult: {
         canInstallDeps: true,
         useYarn: true,
@@ -245,12 +239,10 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
+      expectedErrors:
+          ['No node version specified.  Please add your node ' +
+           'version, see ' +
+           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -277,12 +269,10 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: true, contents: 'some contents'}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
+      expectedErrors:
+          ['No node version specified.  Please add your node ' +
+           'version, see ' +
+           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -303,12 +293,10 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: true, contents: 'some content'}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [
-        'node.js checker: ignoring invalid "engines" field in package.json',
-        'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-      ],
+      expectedErrors:
+          ['No node version specified.  Please add your node ' +
+           'version, see ' +
+           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
       expectedResult: {
         canInstallDeps: true,
         useYarn: true,
@@ -368,25 +356,66 @@ describe('detectSetup', () => {
         appYamlPath: DEFAULT_APP_YAML
       }
     });
-  });
 
-  performTest({
-    title: 'should properly detect a Node version specification',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents:
-            JSON.stringify({name: 'some-package', engines: {node: '>=4.3.2'}})
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: false,
-      appYamlPath: DEFAULT_APP_YAML,
-      nodeVersion: '>=4.3.2'
-    }
+    performTest({
+      title: 'should properly detect a Node version specification',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {name: 'some-package', engines: {node: '>=4.3.2'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        nodeVersion: '>=4.3.2'
+      }
+    });
+
+    performTest({
+      title:
+          'should detect node version from the engines field in package.json',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {engines: {node: '^3.3.8'}, scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        nodeVersion: '^3.3.8',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should detect npm version from the engines field in package.json',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {engines: {npm: '5.x'}, scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        npmVersion: '5.x',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
   });
 });

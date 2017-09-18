@@ -8,6 +8,17 @@ FROM <%- baseImage %>
 RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
 
+<% if (config.npmVersion) { %>
+# Install the version of npm as requested by the engines.npm field in
+# package.json.
+#
+# The package manager yarn is used to perform the installation because
+# there is a known issue with installing npm globally during a Docker build.
+# See npm issue #9863 at https://github.com/npm/npm/issues/9863 for more
+# information.
+RUN yarn global add npm@'<%- config.npmVersion %>'
+<% } %>
+
 COPY . /app/
 
 <% if (config.canInstallDeps) { %>
