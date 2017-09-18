@@ -35,44 +35,30 @@ const GEN_DOCKERFILE_FILE =
     path.join(GEN_DOCKERFILE_DIR, 'dist', 'src', 'main.js');
 
 interface TestConfig {
+  description: string;
   directoryName: string;
-  expectedStdout: string|((text: string) => boolean);
-  expectedStderr: string|((text: string) => boolean);
+  expectedStdout: string;
+  expectedStderr: string;
 }
-
-const NPM_WARNING_TEXT =
-    'fs: re-evaluating native module sources is not ' +
-    'supported. If you are using the graceful-fs module, please update it ' +
-    'to a more recent version.\n';
 
 const CONFIGURATIONS: TestConfig[] = [
   {
+    description : 'Should run a basic app',
     directoryName : 'hello-world',
     expectedStdout : 'Hello World',
     expectedStderr : ''
   },
   {
-    // The installation of npm 2.7.1 is expected to print an message to
-    // standard error when running `npm --version`.  This message is
-    // consistently printed if npm is installed globally both within a
-    // Docker container or on a real system itself.  The fact this message
-    // occurs is documented here to record that the appearance of the message
-    // itself is not an issue with how the installation of npm is done within
-    // a Docker image.
+    description : 'Should install the single npm version specified',
     directoryName : 'custom-npm-simple',
-    expectedStdout : '2.7.1\n',
-    expectedStderr :
-        (text: string) => { return text.endsWith(NPM_WARNING_TEXT); }
+    expectedStdout : '5.4.1\n',
+    expectedStderr : ''
   },
   {
+    description : 'Should install the correct npm version if a complex ' +
+                      'semver string is specified',
     directoryName : 'custom-npm-complex',
-    expectedStdout : '2.7.1\n',
-    expectedStderr :
-        (text: string) => { return text.endsWith(NPM_WARNING_TEXT); }
-  },
-  {
-    directoryName : 'custom-npm-5',
-    expectedStdout : '5.3.0\n',
+    expectedStdout : '5.4.1\n',
     expectedStderr : ''
   }
 ];
@@ -197,25 +183,16 @@ describe('runtime image and builder integration', () => {
         });
       });
 
-      it(`Should output '${config.expectedStdout}'`, function(done) {
+      it(config.description, function(done) {
         this.timeout(2 * DOCKER_RUN_TIMEOUT);
         runDocker(tag, containerName, PORT, host => {
-          function verifyText(actual: string,
-                              expected: string|((t: string) => void)): void {
-            if (expected instanceof Function) {
-              assert(expected(actual));
-            } else {
-              assert.strictEqual(actual, expected);
-            }
-          }
-
           // Wait for the docker container to start
           setTimeout(() => {
             request(`http://${host}:${PORT}`, (err, _, body) => {
               assert.ifError(err);
               const result: {stdout: string, stderr: string} = JSON.parse(body);
-              verifyText(result.stdout, config.expectedStdout);
-              verifyText(result.stderr, config.expectedStderr);
+              assert.strictEqual(result.stdout, config.expectedStdout);
+              assert.strictEqual(result.stderr, config.expectedStderr);
               done();
             });
           }, DOCKER_RUN_TIMEOUT);
