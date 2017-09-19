@@ -27,6 +27,7 @@ const DOCKERIGNORE_NAME = '.dockerignore';
 const BASE_IMAGE = 'some-namespace:some-tag';
 const NODE_VERSION = 'v6.10.0';
 const NPM_VERSION = '^5.0.2';
+const YARN_VERSION = '^1.2.3';
 
 const BASE =
     `# Dockerfile extending the generic Node image with application files for a
@@ -51,6 +52,12 @@ const INSTALL_NPM =
 # See npm issue #9863 at https://github.com/npm/npm/issues/9863 for more
 # information.
 RUN yarn global add npm@'${NPM_VERSION}'
+`;
+
+const INSTALL_YARN =
+    `# Install the version of yarn as requested by the engines.yarn field in
+# package.json.
+RUN yarn global add yarn@'${YARN_VERSION}'
 `;
 
 const COPY_CONTENTS = `COPY . /app/\n`;
@@ -413,6 +420,21 @@ describe('generateFiles', async () => {
          expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
        });
      });
+
+  it('should install the requested version of yarn', async () => {
+    await runTest({
+      config: {
+        canInstallDeps: true,
+        yarnVersion: YARN_VERSION,
+        nodeVersion: NODE_VERSION,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML
+      },
+      expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
+          YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+      expectedDockerignore: DEFAULT_DOCKERIGNORE
+    });
+  });
 
   it('should install the requested version of npm', async () => {
     await runTest({

@@ -19,6 +19,12 @@ RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 RUN yarn global add npm@'<%- config.npmVersion %>'
 <% } %>
 
+<% if (config.yarnVersion) { %>
+# Install the version of yarn as requested by the engines.yarn field in
+# package.json.
+RUN yarn global add yarn@'<%- config.yarnVersion %>'
+<% } %>
+
 COPY . /app/
 
 <% if (config.canInstallDeps) { %>
