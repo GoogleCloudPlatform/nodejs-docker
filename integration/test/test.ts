@@ -37,66 +37,88 @@ const GEN_DOCKERFILE_FILE =
 interface TestConfig {
   description: string;
   directoryName: string;
-  expectedStdout: string;
-  expectedStderr: string;
+  expectedRunStdout: string;
+  expectedRunStderr: string;
+  buildStdoutContains?: string;
+  buildStderrContains?: string;
 }
 
 const CONFIGURATIONS: TestConfig[] = [
   {
     description : 'Should run a basic app',
     directoryName : 'hello-world',
-    expectedStdout : 'Hello World',
-    expectedStderr : ''
+    expectedRunStdout : 'Hello World',
+    expectedRunStderr : ''
   },
   {
     description : 'Should install the single npm version specified',
     directoryName : 'custom-npm-simple',
-    expectedStdout : '5.4.1\n',
-    expectedStderr : ''
+    expectedRunStdout : '5.4.1\n',
+    expectedRunStderr : ''
   },
   {
     description : 'Should install the correct npm version if a complex ' +
                       'semver string is specified',
     directoryName : 'custom-npm-complex',
-    expectedStdout : '5.4.1\n',
-    expectedStderr : ''
+    expectedRunStdout : '5.4.1\n',
+    expectedRunStderr : ''
   },
   {
     description : 'Should install the single yarn version specified',
     directoryName : 'custom-yarn-simple',
-    expectedStdout : '0.26.0\n',
-    expectedStderr : ''
+    expectedRunStdout : '0.26.0\n',
+    expectedRunStderr : ''
   },
   {
     description : 'Should install the correct yarn version if a complex ' +
                       'semver string is specified',
     directoryName : 'custom-yarn-complex',
-    expectedStdout : '0.20.4\n',
-    expectedStderr : ''
+    expectedRunStdout : '0.20.4\n',
+    expectedRunStderr : ''
   }
 ];
 
 const DEBUG = false;
 function log(message: string): void {
   if (DEBUG) {
-    console.log(message);
+    process.stdout.write(message);
   }
 }
 
+declare type RunCallback =
+    (err: Error|null, stdout?: string, stderr?: string) => void;
+
 function run(cmd: string, args: string[], options: {[key: string]: any},
-             cb: (err: Error|null) => void): void {
-  spawn(cmd, args, options).on('exit', exitCode => {
+             cb: RunCallback): void {
+  assert(!('stdio' in options),
+         'For the test framework to function correctly, the "stdio" property ' +
+             'cannot be specified when invoking a subprocess.');
+
+  let stdout = '';
+  let stderr = '';
+  const pro = spawn(cmd, args, options);
+  pro.stdout.on('data', data => {
+    const text = data.toString();
+    log(text);
+    stdout += text;
+  });
+  pro.stderr.on('data', data => {
+    const text = data.toString();
+    log(text);
+    stderr += text;
+  });
+  pro.on('exit', exitCode => {
     if (exitCode !== 0) {
       const fullCmd = cmd + ' ' + args.join(' ');
       return cb(new Error(
           `'${fullCmd}' encountered a non-zero exit code: ${exitCode}`));
     }
-    return cb(null);
+    return cb(null, stdout, stderr);
   });
 }
 
-function buildGenDockerfile(cb: (err: Error|null) => void): void {
-  const options = {stdio : 'inherit', cwd : GEN_DOCKERFILE_DIR};
+function buildGenDockerfile(cb: RunCallback): void {
+  const options = {cwd : GEN_DOCKERFILE_DIR};
   run('npm', [ 'install' ], options, (err) => {
     if (err) {
       return cb(err);
@@ -105,9 +127,8 @@ function buildGenDockerfile(cb: (err: Error|null) => void): void {
   });
 }
 
-function dockerBuild(tag: string, baseDir: string,
-                     cb: (err: Error|null) => void): void {
-  run('docker', [ 'build', '-t', tag, baseDir ], {stdio : 'inherit'}, cb);
+function dockerBuild(tag: string, baseDir: string, cb: RunCallback): void {
+  run('docker', [ 'build', '-t', tag, baseDir ], {}, cb);
 }
 
 /**
@@ -119,8 +140,8 @@ function runDocker(tag: string, name: string, port: number,
       'docker',
       [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
 
-  d.stdout.on('data', log);
-  d.stderr.on('data', log);
+  d.stdout.on('data', data => { log(data.toString()); });
+  d.stderr.on('data', data => { log(data.toString()); });
   d.on('error', (err) => {
     log(`Error spawning docker process: ${util.inspect(err)}`);
     assert.ifError(err);
@@ -155,7 +176,7 @@ function cleanDirectory(dirPath: string, cb: (err: Error|null) => void): void {
   });
 }
 
-describe('runtime image and builder integration', () => {
+describe('Runtime image and builder integration', () => {
   before(function(done) {
     this.timeout(DOCKER_BUILD_TIMEOUT);
     dockerBuild(RUNTIME_TAG,
@@ -174,6 +195,8 @@ describe('runtime image and builder integration', () => {
       const appDir = path.join(__dirname, '..', '..', 'test', 'definitions',
                                config.directoryName);
       const tag = `${TAG_PREFIX}/${config.directoryName}`;
+      let buildStdout = '';
+      let buildStderr = '';
       before(function(done) {
         this.timeout(DOCKER_BUILD_TIMEOUT);
         cleanDirectory(appDir, (err) => {
@@ -186,15 +209,35 @@ describe('runtime image and builder integration', () => {
                 GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG,
                 '--app-dir', appDir
               ],
-              {stdio : 'inherit', cwd : appDir}, (err) => {
+              {cwd : appDir}, (err) => {
                 if (err) {
                   return done(err);
                 }
 
-                dockerBuild(tag, appDir, done);
+                dockerBuild(
+                    tag, appDir,
+                    (err: Error|null, stdout: string, stderr: string) => {
+                      if (err) {
+                        return done(err);
+                      }
+
+                      buildStdout = stdout;
+                      buildStderr = stderr;
+
+                      done();
+                    });
               });
         });
       });
+
+      function verifyContains(text: string, contains?: string) {
+        if (contains) {
+          const valid = text.includes(contains);
+          if (!valid) {
+            assert.fail(text, contains, undefined, 'does not contain');
+          }
+        }
+      }
 
       it(config.description, function(done) {
         this.timeout(2 * DOCKER_RUN_TIMEOUT);
@@ -204,8 +247,10 @@ describe('runtime image and builder integration', () => {
             request(`http://${host}:${PORT}`, (err, _, body) => {
               assert.ifError(err);
               const result: {stdout: string, stderr: string} = JSON.parse(body);
-              assert.strictEqual(result.stdout, config.expectedStdout);
-              assert.strictEqual(result.stderr, config.expectedStderr);
+              assert.strictEqual(result.stdout, config.expectedRunStdout);
+              assert.strictEqual(result.stderr, config.expectedRunStderr);
+              verifyContains(buildStdout, config.buildStdoutContains);
+              verifyContains(buildStderr, config.buildStderrContains);
               done();
             });
           }, DOCKER_RUN_TIMEOUT);
