@@ -11,6 +11,9 @@ var server = http.createServer(function(request, response) {
     if (err) {
       throw err;
     }
-    response.end(stdout + stderr);
+    response.end(JSON.stringify({
+      stdout: stdout,
+      stderr: stderr
+    }));
   });
 }).listen(process.env.PORT || 8080);
