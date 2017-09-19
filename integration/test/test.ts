@@ -81,16 +81,12 @@ const CONFIGURATIONS: TestConfig[] = [
 const DEBUG = false;
 function log(message: string): void {
   if (DEBUG) {
-    console.log(message);
+    process.stdout.write(message);
   }
 }
 
 declare type RunCallback =
     (err: Error|null, stdout?: string, stderr?: string) => void;
-
-function trimNewline(text: string): string {
-  return text && text.endsWith('\n') ? text.slice(0, text.length - 1) : text;
-}
 
 function run(cmd: string, args: string[], options: {[key: string]: any},
              cb: RunCallback): void {
@@ -103,12 +99,12 @@ function run(cmd: string, args: string[], options: {[key: string]: any},
   const pro = spawn(cmd, args, options);
   pro.stdout.on('data', data => {
     const text = data.toString();
-    log(trimNewline(text));
+    log(text);
     stdout += text;
   });
   pro.stderr.on('data', data => {
     const text = data.toString();
-    log(trimNewline(text));
+    log(text);
     stderr += text;
   });
   pro.on('exit', exitCode => {
@@ -144,8 +140,8 @@ function runDocker(tag: string, name: string, port: number,
       'docker',
       [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
 
-  d.stdout.on('data', data => { log(trimNewline(data.toString())); });
-  d.stderr.on('data', data => { log(trimNewline(data.toString())); });
+  d.stdout.on('data', data => { log(data.toString()); });
+  d.stderr.on('data', data => { log(data.toString()); });
   d.on('error', (err) => {
     log(`Error spawning docker process: ${util.inspect(err)}`);
     assert.ifError(err);
