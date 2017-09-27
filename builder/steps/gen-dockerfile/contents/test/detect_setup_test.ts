@@ -374,7 +374,7 @@ describe('detectSetup', () => {
 
   describe('should handle custom Node versions', () => {
     performTest({
-      title: 'should properly detect a Node version specification',
+      title: 'should detect the Node version in package.json if specified',
       locations: [
         {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
           path: 'package.json',
@@ -392,12 +392,32 @@ describe('detectSetup', () => {
         nodeVersion: '>=4.3.2'
       }
     });
+
+    performTest({
+      title:
+          'should not detect a Node version in package.json if not specified',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          // Note: package.json does not have an engines.node entry
+          contents: JSON.stringify({name: 'some-package'})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        // Note: nodeVersion is not defined
+      }
+    });
   });
 
   describe('should handle custom npm versions', () => {
     performTest({
-      title:
-          'should detect yarn version from the engines field in package.json',
+      title: 'should detect the yarn version in package.json if specified',
       locations: [
         {
           path: 'package.json',
@@ -415,11 +435,32 @@ describe('detectSetup', () => {
         useYarn: false
       }
     });
+
+    performTest({
+      title:
+          'should not detect a yarn version in package.json if not specified',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          // Note: package.json does not have a engines.yarn entry
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        // Note: yarnVersion is not specified
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
   });
 
   describe('should handle custom yarn versions', () => {
     performTest({
-      title: 'should detect npm version from the engines field in package.json',
+      title: 'should detect the npm version in package.json if specified',
       locations: [
         {
           path: 'package.json',
@@ -433,6 +474,26 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         npmVersion: '5.x',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should not detect a npm version in package.json if not specified',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          // Note: package.json does not have an engines.npm entry
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        // Note: nodeVersion is not specified
         appYamlPath: DEFAULT_APP_YAML,
         useYarn: false
       }
