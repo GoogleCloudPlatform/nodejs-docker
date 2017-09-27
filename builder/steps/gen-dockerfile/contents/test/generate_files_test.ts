@@ -409,9 +409,8 @@ describe('generateFiles', async () => {
        });
   });
 
-  describe('should handle custom app.yaml paths', async () => {
-    it('should generate a .dockerignore file with a custom deployment yaml ' +
-           'path if specified',
+  describe('should handle custom yaml paths', async () => {
+    it('should include a custom yaml path in .dockerignore if specified',
        async () => {
          await runTest({
            config: {
@@ -423,10 +422,23 @@ describe('generateFiles', async () => {
            expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
          });
        });
+
+    it('should not include a custom yaml path in .dockerignore if not specified',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
+       });
   });
 
   describe('should handle custom npm versions', async () => {
-    it('should install the requested version of npm', async () => {
+    it('should install the version of npm if specified', async () => {
       await runTest({
         config: {
           canInstallDeps: true,
@@ -440,10 +452,23 @@ describe('generateFiles', async () => {
         expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
+
+    it('should not install npm if a version is not specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          useYarn: false,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile:
+            BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
+    });
   });
 
   describe('should handle custom yarn versions', async () => {
-    it('should install the requested version of yarn', async () => {
+    it('should install the version of yarn if specified', async () => {
       await runTest({
         config: {
           canInstallDeps: true,
@@ -454,6 +479,19 @@ describe('generateFiles', async () => {
         },
         expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
             YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
+    });
+
+    it('should not install yarn if a version is not specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          useYarn: true,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile:
+            BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
         expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
