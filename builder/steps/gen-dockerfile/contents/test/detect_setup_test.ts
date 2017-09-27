@@ -317,7 +317,7 @@ describe('detectSetup', () => {
         });
       });
 
-  describe('should detect correctly', () => {
+  describe('should handle custom app.yaml paths', () => {
     performTest({
       title: 'should use a custom app.yaml path if specified',
       locations: [
@@ -370,7 +370,9 @@ describe('detectSetup', () => {
         appYamlPath: DEFAULT_APP_YAML
       }
     });
+  });
 
+  describe('should handle custom Node versions', () => {
     performTest({
       title: 'should properly detect a Node version specification',
       locations: [
@@ -390,7 +392,9 @@ describe('detectSetup', () => {
         nodeVersion: '>=4.3.2'
       }
     });
+  });
 
+  describe('should handle custom npm versions', () => {
     performTest({
       title:
           'should detect yarn version from the engines field in package.json',
@@ -411,7 +415,9 @@ describe('detectSetup', () => {
         useYarn: false
       }
     });
+  });
 
+  describe('should handle custom yarn versions', () => {
     performTest({
       title: 'should detect npm version from the engines field in package.json',
       locations: [
