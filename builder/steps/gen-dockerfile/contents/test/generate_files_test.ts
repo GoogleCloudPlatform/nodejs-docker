@@ -159,295 +159,341 @@ async function runTest(testConfig: TestConfig) {
 }
 
 describe('generateFiles', async () => {
-  it('should generate correctly without installing dependencies, without ' +
-         'start script, without Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: undefined,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+  describe('should be consistent with deploys not using the runtime builder', async () => {
+    it('should generate correctly without installing dependencies, without ' +
+           'start script, without Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: undefined,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, without ' +
-         'start script, without Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: undefined,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, without ' +
+           'start script, without Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: undefined,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, without ' +
-         'start script, with Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: NODE_VERSION,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, without ' +
+           'start script, with Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, without ' +
-         'start script, with Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: NODE_VERSION,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, without ' +
+           'start script, with Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, with start ' +
-         'script, without Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: undefined,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, with start ' +
+           'script, without Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: undefined,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + COPY_CONTENTS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, with start ' +
-         'script, without Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: undefined,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, with start ' +
+           'script, without Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: undefined,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + COPY_CONTENTS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, with start ' +
-         'script, with Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: NODE_VERSION,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, with start ' +
+           'script, with Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly without installing dependencies, with start ' +
-         'script, with Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           nodeVersion: NODE_VERSION,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly without installing dependencies, with start ' +
+           'script, with Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, without start ' +
-         'script, without Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: undefined,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile:
-             BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, without start ' +
+           'script, without Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: undefined,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, without start ' +
-         'script, without Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: undefined,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile:
-             BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, without start ' +
+           'script, without Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: undefined,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, without start ' +
-         'script, with Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: NODE_VERSION,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-             NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, without start ' +
+           'script, with Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, without start ' +
-         'script, with Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: NODE_VERSION,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-             YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, without start ' +
+           'script, with Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, with start ' +
-         'script, without Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: undefined,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile:
-             BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, with start ' +
+           'script, without Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: undefined,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, with start ' +
-         'script, without Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: undefined,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile:
-             BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, with start ' +
+           'script, without Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: undefined,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile:
+               BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, with start ' +
-         'script, with Node.version, and using npm',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: NODE_VERSION,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-             NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, with start ' +
+           'script, with Node.version, and using npm',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
 
-  it('should generate correctly with installing dependencies, with start ' +
-         'script, with Node.version, and using yarn',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: NODE_VERSION,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
-             YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should generate correctly with installing dependencies, with start ' +
+           'script, with Node.version, and using yarn',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: BASE + UPGRADE_NODE + COPY_CONTENTS +
+               YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
        });
-     });
+  });
 
-  it('should generate a .dockerignore file with a custom deployment yaml ' +
-         'path if specified',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           nodeVersion: NODE_VERSION,
-           useYarn: true,
-           appYamlPath: 'custom.yaml'
-         },
-         expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
+  describe('should handle custom yaml paths', async () => {
+    it('should include a custom yaml path in .dockerignore if specified',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: 'custom.yaml'
+           },
+           expectedDockerignore: `${BASE_DOCKERIGNORE}\ncustom.yaml\n`
+         });
        });
-     });
 
-  it('should install the requested version of yarn', async () => {
-    await runTest({
-      config: {
-        canInstallDeps: true,
-        yarnVersion: YARN_VERSION,
-        nodeVersion: NODE_VERSION,
-        useYarn: true,
-        appYamlPath: DEFAULT_APP_YAML
-      },
-      expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
-          YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-      expectedDockerignore: DEFAULT_DOCKERIGNORE
+    it('should not include a custom yaml path in .dockerignore if not specified',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             nodeVersion: NODE_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
+       });
+  });
+
+  describe('should handle custom npm versions', async () => {
+    it('should install the version of npm if specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          npmVersion: NPM_VERSION,
+          nodeVersion: NODE_VERSION,
+          useYarn: true,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
+    });
+
+    it('should not install npm if a version is not specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          useYarn: false,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile:
+            BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
     });
   });
 
-  it('should install the requested version of npm', async () => {
-    await runTest({
-      config: {
-        canInstallDeps: true,
-        npmVersion: NPM_VERSION,
-        nodeVersion: NODE_VERSION,
-        useYarn: true,
-        appYamlPath: DEFAULT_APP_YAML
-      },
-      expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS +
-          YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-      expectedDockerignore: DEFAULT_DOCKERIGNORE
+  describe('should handle custom yarn versions', async () => {
+    it('should install the version of yarn if specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          yarnVersion: YARN_VERSION,
+          nodeVersion: NODE_VERSION,
+          useYarn: true,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
+    });
+
+    it('should not install yarn if a version is not specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          useYarn: true,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile:
+            BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
     });
   });
 });

@@ -140,170 +140,184 @@ describe('detectSetup', () => {
     });
   });
 
-  describe('should detect correctly', () => {
-    performTest({
-      title: 'should detect without package.json and with server.js',
-      locations: [
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
-        {path: 'package.json', exists: false},
-        {path: 'server.js', exists: true, contents: 'some content'}
-      ],
-      expectedLogs:
-          ['Checking for Node.js.', 'node.js checker: No package.json file.'],
-      expectedErrors: [],
-      expectedResult: {
-        canInstallDeps: false,
-        useYarn: false,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+  describe(
+      'should be consistent with deploys not using the runtime builder', () => {
+        performTest({
+          title: 'should detect without package.json and with server.js',
+          locations: [
+            {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+            {path: 'package.json', exists: false},
+            {path: 'server.js', exists: true, contents: 'some content'}
+          ],
+          expectedLogs: [
+            'Checking for Node.js.', 'node.js checker: No package.json file.'
+          ],
+          expectedErrors: [],
+          expectedResult: {
+            canInstallDeps: false,
+            useYarn: false,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
 
-    performTest({
-      title: 'should detect with package.json, without yarn.lock, and with ' +
-          'server.js',
-      locations: [
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
-        {path: 'package.json', exists: true, contents: '{}'},
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: false}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors:
-          ['No node version specified.  Please add your node ' +
-           'version, see ' +
-           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-      expectedResult: {
-        canInstallDeps: true,
-        useYarn: false,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+        performTest({
+          title:
+              'should detect with package.json, without yarn.lock, and with ' +
+              'server.js',
+          locations: [
+            {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+            {path: 'package.json', exists: true, contents: '{}'},
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: false}
+          ],
+          expectedLogs: ['Checking for Node.js.'],
+          expectedErrors: [
+            'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+          ],
+          expectedResult: {
+            canInstallDeps: true,
+            useYarn: false,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
 
-    performTest({
-      title:
-          'should detect with package.json, with yarn.lock, with yarn.lock ' +
-          'skipped, and with server.js',
-      locations: [
-        {
-          path: 'app.yaml',
-          exists: true,
-          contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
-        },
-        {path: 'package.json', exists: true, contents: '{}'},
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some contents'}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors:
-          ['No node version specified.  Please add your node ' +
-           'version, see ' +
-           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-      expectedResult: {
-        canInstallDeps: true,
-        useYarn: false,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+        performTest({
+          title:
+              'should detect with package.json, with yarn.lock, with yarn.lock ' +
+              'skipped, and with server.js',
+          locations: [
+            {
+              path: 'app.yaml',
+              exists: true,
+              contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
+            },
+            {path: 'package.json', exists: true, contents: '{}'},
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: true, contents: 'some contents'}
+          ],
+          expectedLogs: ['Checking for Node.js.'],
+          expectedErrors: [
+            'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+          ],
+          expectedResult: {
+            canInstallDeps: true,
+            useYarn: false,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
 
-    performTest({
-      title: 'should detect with package.json, without a start script, ' +
-          'with yarn.lock, and with server.js',
-      locations: [
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
-        {path: 'package.json', exists: true, contents: '{}'},
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some content'}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors:
-          ['No node version specified.  Please add your node ' +
-           'version, see ' +
-           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-      expectedResult: {
-        canInstallDeps: true,
-        useYarn: true,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+        performTest({
+          title: 'should detect with package.json, without a start script, ' +
+              'with yarn.lock, and with server.js',
+          locations: [
+            {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+            {path: 'package.json', exists: true, contents: '{}'},
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: true, contents: 'some content'}
+          ],
+          expectedLogs: ['Checking for Node.js.'],
+          expectedErrors: [
+            'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+          ],
+          expectedResult: {
+            canInstallDeps: true,
+            useYarn: true,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
 
-    performTest({
-      title: 'should detect with package.json, without yarn.lock, ' +
-          'and with server.js',
-      locations: [
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-          path: 'package.json',
-          exists: true,
-          contents: JSON.stringify({scripts: {start: 'npm start'}})
-        },
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: false}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors:
-          ['No node version specified.  Please add your node ' +
-           'version, see ' +
-           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-      expectedResult: {
-        canInstallDeps: true,
-        useYarn: false,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+        performTest({
+          title: 'should detect with package.json, without yarn.lock, ' +
+              'and with server.js',
+          locations: [
+            {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+            {
+              path: 'package.json',
+              exists: true,
+              contents: JSON.stringify({scripts: {start: 'npm start'}})
+            },
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: false}
+          ],
+          expectedLogs: ['Checking for Node.js.'],
+          expectedErrors: [
+            'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+          ],
+          expectedResult: {
+            canInstallDeps: true,
+            useYarn: false,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
 
-    performTest({
-      title:
-          'should detect with package.json, with yarn.lock, with yarn.lock ' +
-          'skipped, and without server.js',
-      locations: [
-        {
-          path: 'app.yaml',
-          exists: true,
-          contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
-        },
-        {
-          path: 'package.json',
-          exists: true,
-          contents: JSON.stringify({scripts: {start: 'npm start'}})
-        },
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some contents'}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors:
-          ['No node version specified.  Please add your node ' +
-           'version, see ' +
-           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-      expectedResult: {
-        canInstallDeps: true,
-        useYarn: false,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+        performTest({
+          title:
+              'should detect with package.json, with yarn.lock, with yarn.lock ' +
+              'skipped, and without server.js',
+          locations: [
+            {
+              path: 'app.yaml',
+              exists: true,
+              contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
+            },
+            {
+              path: 'package.json',
+              exists: true,
+              contents: JSON.stringify({scripts: {start: 'npm start'}})
+            },
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: true, contents: 'some contents'}
+          ],
+          expectedLogs: ['Checking for Node.js.'],
+          expectedErrors: [
+            'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+          ],
+          expectedResult: {
+            canInstallDeps: true,
+            useYarn: false,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
 
-    performTest({
-      title: 'should detect with package.json, with yarn.lock, and without ' +
-          'server.js',
-      locations: [
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-          path: 'package.json',
-          exists: true,
-          contents: JSON.stringify({scripts: {start: 'npm start'}})
-        },
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some content'}
-      ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors:
-          ['No node version specified.  Please add your node ' +
-           'version, see ' +
-           'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'],
-      expectedResult: {
-        canInstallDeps: true,
-        useYarn: true,
-        appYamlPath: DEFAULT_APP_YAML
-      }
-    });
+        performTest({
+          title:
+              'should detect with package.json, with yarn.lock, and without ' +
+              'server.js',
+          locations: [
+            {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+            {
+              path: 'package.json',
+              exists: true,
+              contents: JSON.stringify({scripts: {start: 'npm start'}})
+            },
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: true, contents: 'some content'}
+          ],
+          expectedLogs: ['Checking for Node.js.'],
+          expectedErrors: [
+            'No node version specified.  Please add your node ' +
+            'version, see ' +
+            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
+          ],
+          expectedResult: {
+            canInstallDeps: true,
+            useYarn: true,
+            appYamlPath: DEFAULT_APP_YAML
+          }
+        });
+      });
 
+  describe('should handle custom app.yaml paths', () => {
     performTest({
       title: 'should use a custom app.yaml path if specified',
       locations: [
@@ -356,9 +370,11 @@ describe('detectSetup', () => {
         appYamlPath: DEFAULT_APP_YAML
       }
     });
+  });
 
+  describe('should handle custom Node versions', () => {
     performTest({
-      title: 'should properly detect a Node version specification',
+      title: 'should detect the Node version in package.json if specified',
       locations: [
         {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
           path: 'package.json',
@@ -379,7 +395,29 @@ describe('detectSetup', () => {
 
     performTest({
       title:
-          'should detect yarn version from the engines field in package.json',
+          'should not detect a Node version in package.json if not specified',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          // Note: package.json does not have an engines.node entry
+          contents: JSON.stringify({name: 'some-package'})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        // Note: nodeVersion is not defined
+      }
+    });
+  });
+
+  describe('should handle custom npm versions', () => {
+    performTest({
+      title: 'should detect the yarn version in package.json if specified',
       locations: [
         {
           path: 'package.json',
@@ -399,7 +437,30 @@ describe('detectSetup', () => {
     });
 
     performTest({
-      title: 'should detect npm version from the engines field in package.json',
+      title:
+          'should not detect a yarn version in package.json if not specified',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          // Note: package.json does not have a engines.yarn entry
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        // Note: yarnVersion is not specified
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+  });
+
+  describe('should handle custom yarn versions', () => {
+    performTest({
+      title: 'should detect the npm version in package.json if specified',
       locations: [
         {
           path: 'package.json',
@@ -413,6 +474,26 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         npmVersion: '5.x',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should not detect a npm version in package.json if not specified',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          // Note: package.json does not have an engines.npm entry
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        // Note: nodeVersion is not specified
         appYamlPath: DEFAULT_APP_YAML,
         useYarn: false
       }
