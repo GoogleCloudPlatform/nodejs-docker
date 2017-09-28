@@ -8,7 +8,7 @@ FROM <%- baseImage %>
 RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
 
-<% if (config.npmVersion) { %>
+<% if (config.npmVersion && !config.useYarn) { %>
 # Install the version of npm as requested by the engines.npm field in
 # package.json.
 #
@@ -19,7 +19,7 @@ RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 RUN yarn global add npm@'<%- config.npmVersion %>'
 <% } %>
 
-<% if (config.yarnVersion) { %>
+<% if (config.yarnVersion && config.useYarn) { %>
 # Install the version of yarn as requested by the engines.yarn field in
 # package.json.
 RUN yarn global add yarn@'<%- config.yarnVersion %>'
