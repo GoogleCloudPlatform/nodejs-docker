@@ -499,4 +499,54 @@ describe('detectSetup', () => {
       }
     });
   });
+
+  describe('should handle simultaneous custom npm and yarn versions', () => {
+    performTest({
+      title: 'should detect both the npm version and yarn version if ' +
+          'specified if npm is being used',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({
+            engines: {npm: '1.x', yarn: '2.x'},
+            scripts: {start: 'npm start'}
+          })
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        npmVersion: '1.x',
+        yarnVersion: '2.x',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should detect both the npm version and yarn version if ' +
+          'specified if yarn is being used',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({
+            engines: {npm: '1.x', yarn: '2.x'},
+            scripts: {start: 'npm start'}
+          })
+        },
+        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'yarn.lock', exists: true}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        npmVersion: '1.x',
+        yarnVersion: '2.x',
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: true
+      }
+    });
+  });
 });

@@ -443,13 +443,11 @@ describe('generateFiles', async () => {
         config: {
           canInstallDeps: true,
           npmVersion: NPM_VERSION,
-          nodeVersion: NODE_VERSION,
-          useYarn: true,
+          useYarn: false,
           appYamlPath: DEFAULT_APP_YAML
         },
-        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS +
-            YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-        expectedDockerignore: DEFAULT_DOCKERIGNORE
+        expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
+            NPM_INSTALL_PRODUCTION_DEPS + NPM_START
       });
     });
 
@@ -457,12 +455,12 @@ describe('generateFiles', async () => {
       await runTest({
         config: {
           canInstallDeps: true,
+          // Note: npmVersion is not specified
           useYarn: false,
           appYamlPath: DEFAULT_APP_YAML
         },
         expectedDockerfile:
-            BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START,
-        expectedDockerignore: DEFAULT_DOCKERIGNORE
+            BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START
       });
     });
   });
@@ -473,13 +471,11 @@ describe('generateFiles', async () => {
         config: {
           canInstallDeps: true,
           yarnVersion: YARN_VERSION,
-          nodeVersion: NODE_VERSION,
           useYarn: true,
           appYamlPath: DEFAULT_APP_YAML
         },
-        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
-            YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-        expectedDockerignore: DEFAULT_DOCKERIGNORE
+        expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS + YARN_START
       });
     });
 
@@ -487,13 +483,44 @@ describe('generateFiles', async () => {
       await runTest({
         config: {
           canInstallDeps: true,
+          // Note: yarnVersion is not specified
           useYarn: true,
           appYamlPath: DEFAULT_APP_YAML
         },
         expectedDockerfile:
-            BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START,
-        expectedDockerignore: DEFAULT_DOCKERIGNORE
+            BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START
       });
     });
   });
+
+  describe(
+      'should handle simultaneous custom npm and yarn versions', async () => {
+        it('should only install npm if it is being used', async () => {
+          await runTest({
+            config: {
+              canInstallDeps: true,
+              npmVersion: NPM_VERSION,
+              yarnVersion: YARN_VERSION,
+              useYarn: false,
+              appYamlPath: DEFAULT_APP_YAML
+            },
+            expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
+                NPM_INSTALL_PRODUCTION_DEPS + NPM_START
+          });
+        });
+
+        it('should only install yarn if it is being used', async () => {
+          await runTest({
+            config: {
+              canInstallDeps: true,
+              npmVersion: NPM_VERSION,
+              yarnVersion: YARN_VERSION,
+              useYarn: true,
+              appYamlPath: DEFAULT_APP_YAML
+            },
+            expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
+                YARN_INSTALL_PRODUCTION_DEPS + YARN_START
+          });
+        });
+      });
 });
