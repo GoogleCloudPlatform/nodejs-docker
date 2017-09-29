@@ -42,6 +42,7 @@ const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs'
 const DEFAULT_APP_YAML = 'app.yaml';
 
 const SERVER_JS_CONTENTS = 'echo(\'Hello world\')';
+const YARN_LOCK_CONTENTS = '# a yarn.lock file';
 
 interface TestConfig {
   title: string;
@@ -153,7 +154,7 @@ describe('detectSetup', () => {
           locations: [
             {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
             {path: 'package.json', exists: false},
-            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
@@ -177,7 +178,7 @@ describe('detectSetup', () => {
           locations: [
             {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
             {path: 'package.json', exists: true, contents: '{}'},
-            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
@@ -207,8 +208,8 @@ describe('detectSetup', () => {
               contents: VALID_APP_YAML_CONTENTS_SKIP_YARN
             },
             {path: 'package.json', exists: true, contents: '{}'},
-            {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some contents'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+            {path: 'yarn.lock', exists: true, contents: YARN_LOCK_CONTENTS},
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
@@ -232,8 +233,8 @@ describe('detectSetup', () => {
           locations: [
             {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
             {path: 'package.json', exists: true, contents: '{}'},
-            {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some content'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+            {path: 'yarn.lock', exists: true, contents: YARN_LOCK_CONTENTS},
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
@@ -261,7 +262,7 @@ describe('detectSetup', () => {
               exists: true,
               contents: JSON.stringify({scripts: {start: 'npm start'}})
             },
-            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
@@ -295,8 +296,8 @@ describe('detectSetup', () => {
               exists: true,
               contents: JSON.stringify({scripts: {start: 'npm start'}})
             },
-            {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some contents'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+            {path: 'yarn.lock', exists: true, contents: YARN_LOCK_CONTENTS},
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
@@ -325,8 +326,8 @@ describe('detectSetup', () => {
               exists: true,
               contents: JSON.stringify({scripts: {start: 'npm start'}})
             },
-            {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some content'},
+            {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+            {path: 'yarn.lock', exists: true, contents: YARN_LOCK_CONTENTS},
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
@@ -356,8 +357,8 @@ describe('detectSetup', () => {
           exists: true,
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'yarn.lock', exists: true, contents: YARN_LOCK_CONTENTS},
         {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
@@ -395,8 +396,8 @@ describe('detectSetup', () => {
           exists: true,
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
-        {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'yarn.lock', exists: true, contents: YARN_LOCK_CONTENTS},
         {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
@@ -419,7 +420,7 @@ describe('detectSetup', () => {
           contents: JSON.stringify(
               {name: 'some-package', engines: {node: '>=4.3.2'}})
         },
-        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
@@ -443,7 +444,7 @@ describe('detectSetup', () => {
           // Note: package.json does not have an engines.node entry
           contents: JSON.stringify({name: 'some-package'})
         },
-        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
@@ -562,7 +563,7 @@ describe('detectSetup', () => {
           // Note: package.json does not have an engines.npm entry
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
-        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
@@ -590,7 +591,7 @@ describe('detectSetup', () => {
             scripts: {start: 'npm start'}
           })
         },
-        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
@@ -599,7 +600,9 @@ describe('detectSetup', () => {
         npmVersion: '1.x',
         yarnVersion: '2.x',
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
@@ -615,7 +618,7 @@ describe('detectSetup', () => {
             scripts: {start: 'npm start'}
           })
         },
-        {path: 'app.yaml', exists: true, contents: 'some contents'},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
         {path: 'yarn.lock', exists: true},
         {path: 'package-lock.json', exists: false}
       ],
@@ -624,7 +627,9 @@ describe('detectSetup', () => {
         npmVersion: '1.x',
         yarnVersion: '2.x',
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
   });

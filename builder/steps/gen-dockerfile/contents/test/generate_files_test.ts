@@ -522,15 +522,14 @@ describe('generateFiles', async () => {
         config: {
           canInstallDeps: true,
           npmVersion: NPM_VERSION,
-          nodeVersion: NODE_VERSION,
-          useYarn: true,
+          useYarn: false,
           appYamlPath: DEFAULT_APP_YAML,
           runtime: RUNTIME,
           env: ENV
         },
-        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_NPM + COPY_CONTENTS +
-            YARN_INSTALL_PRODUCTION_DEPS +
-            getStatsLine(YARN, undefined, NODE_VERSION) + YARN_START,
+        expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
+            NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM, NPM_VERSION) +
+            NPM_START,
         expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
@@ -563,9 +562,9 @@ describe('generateFiles', async () => {
           runtime: RUNTIME,
           env: ENV
         },
-        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
-            YARN_INSTALL_PRODUCTION_DEPS +
-            getStatsLine(YARN, YARN_VERSION, NODE_VERSION) + YARN_START,
+        expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN, YARN_VERSION) +
+            YARN_START,
         expectedDockerignore: DEFAULT_DOCKERIGNORE
       });
     });
@@ -633,7 +632,7 @@ describe('generateFiles', async () => {
            runtime: RUNTIME,
            env: ENV
          },
-         expectedDockerfile: BASE + INSTALL_NPM + INSTALL_YARN + COPY_CONTENTS +
+         expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
              YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN, YARN_VERSION) +
              YARN_START,
          expectedDockerignore: DEFAULT_DOCKERIGNORE
@@ -652,7 +651,7 @@ describe('generateFiles', async () => {
            runtime: RUNTIME,
            env: ENV
          },
-         expectedDockerfile: BASE + INSTALL_NPM + INSTALL_YARN + COPY_CONTENTS +
+         expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
              NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM, NPM_VERSION) +
              NPM_START,
          expectedDockerignore: DEFAULT_DOCKERIGNORE
