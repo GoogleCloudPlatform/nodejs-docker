@@ -37,11 +37,26 @@ export interface Location {
 }
 
 export class MockView implements Reader, Writer, Locator {
+  readonly configs: ReadonlyArray<Location>;
   readonly pathsRead: Location[] = [];
   readonly pathsLocated: Location[] = [];
   readonly pathsWritten: Location[] = [];
 
-  constructor(private configs: ReadonlyArray<Location>) {}
+  constructor(configurations: ReadonlyArray<Location>) {
+    const paths = new Set<string>();
+    const uniqueConfigs: Location[] = [];
+    for (let conf of configurations) {
+      if (paths.has(conf.path)) {
+        throw new Error(
+            `Cannot specify the same path twice: ${
+                                                   JSON.stringify(conf, null, 2)
+                                                 }`);
+      }
+      paths.add(conf.path);
+      uniqueConfigs.push(conf);
+    }
+    this.configs = uniqueConfigs;
+  }
 
   private findLocation(path: string): Location|undefined {
     const resolvedPath = path.replace(/\.\//g, '');
