@@ -586,75 +586,77 @@ describe('generateFiles', async () => {
     });
   });
 
-  it('should record the Node and tool versions specified', async () => {
-    await runTest({
-      config: {
-        canInstallDeps: true,
-        nodeVersion: NODE_VERSION,
-        yarnVersion: YARN_VERSION,
-        useYarn: true,
-        appYamlPath: DEFAULT_APP_YAML,
-        runtime: RUNTIME,
-        env: ENV
-      },
-      expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
-          YARN_INSTALL_PRODUCTION_DEPS +
-          getStatsLine(YARN, YARN_VERSION, NODE_VERSION) + YARN_START,
-      expectedDockerignore: DEFAULT_DOCKERIGNORE
+  describe('should report metadata', () => {
+    it('should report the Node and tool versions specified', async () => {
+      await runTest({
+        config: {
+          canInstallDeps: true,
+          nodeVersion: NODE_VERSION,
+          yarnVersion: YARN_VERSION,
+          useYarn: true,
+          appYamlPath: DEFAULT_APP_YAML,
+          runtime: RUNTIME,
+          env: ENV
+        },
+        expectedDockerfile: BASE + UPGRADE_NODE + INSTALL_YARN + COPY_CONTENTS +
+            YARN_INSTALL_PRODUCTION_DEPS +
+            getStatsLine(YARN, YARN_VERSION, NODE_VERSION) + YARN_START,
+        expectedDockerignore: DEFAULT_DOCKERIGNORE
+      });
     });
+
+    it('should report "None" for the Node and tool versions if not specified',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
+           },
+           expectedDockerfile: BASE + COPY_CONTENTS +
+               YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN) + YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
+       });
+
+    it('should not report the npm version specified if yarn is being used',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             npmVersion: NPM_VERSION,
+             yarnVersion: YARN_VERSION,
+             useYarn: true,
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
+           },
+           expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
+               YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN, YARN_VERSION) +
+               YARN_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
+       });
+
+    it('should not report the yarn version specified if npm is being used',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             npmVersion: NPM_VERSION,
+             yarnVersion: YARN_VERSION,
+             useYarn: false,
+             appYamlPath: DEFAULT_APP_YAML,
+             runtime: RUNTIME,
+             env: ENV
+           },
+           expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
+               NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM, NPM_VERSION) +
+               NPM_START,
+           expectedDockerignore: DEFAULT_DOCKERIGNORE
+         });
+       });
   });
-
-  it('should record "None" for the Node and tool versions if not specified',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML,
-           runtime: RUNTIME,
-           env: ENV
-         },
-         expectedDockerfile: BASE + COPY_CONTENTS +
-             YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN) + YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
-       });
-     });
-
-  it('should not record the npm version specified if yarn is being used',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           npmVersion: NPM_VERSION,
-           yarnVersion: YARN_VERSION,
-           useYarn: true,
-           appYamlPath: DEFAULT_APP_YAML,
-           runtime: RUNTIME,
-           env: ENV
-         },
-         expectedDockerfile: BASE + INSTALL_YARN + COPY_CONTENTS +
-             YARN_INSTALL_PRODUCTION_DEPS + getStatsLine(YARN, YARN_VERSION) +
-             YARN_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
-       });
-     });
-
-  it('should not record the yarn version specified if npm is being used',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           npmVersion: NPM_VERSION,
-           yarnVersion: YARN_VERSION,
-           useYarn: false,
-           appYamlPath: DEFAULT_APP_YAML,
-           runtime: RUNTIME,
-           env: ENV
-         },
-         expectedDockerfile: BASE + INSTALL_NPM + COPY_CONTENTS +
-             NPM_INSTALL_PRODUCTION_DEPS + getStatsLine(NPM, NPM_VERSION) +
-             NPM_START,
-         expectedDockerignore: DEFAULT_DOCKERIGNORE
-       });
-     });
 });
