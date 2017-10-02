@@ -542,28 +542,6 @@ describe('detectSetup', () => {
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
         {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
-        {path: 'yarn.lock', exists: false}
-      ],
-      expectedResult: {
-        canInstallDeps: true,
-        // Note: nodeVersion is not specified
-        appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false,
-        runtime: RUNTIME,
-        env: ENV
-      }
-    });
-
-    performTest({
-      title: 'should not detect a npm version in package.json if not specified',
-      locations: [
-        {
-          path: 'package.json',
-          exists: true,
-          // Note: package.json does not have an engines.npm entry
-          contents: JSON.stringify({scripts: {start: 'npm start'}})
-        },
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
@@ -648,7 +626,9 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
@@ -665,7 +645,9 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
@@ -682,7 +664,9 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
@@ -699,7 +683,9 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
@@ -716,7 +702,9 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
@@ -733,7 +721,9 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        runtime: RUNTIME,
+        env: ENV
       }
     });
 
