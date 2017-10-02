@@ -38,6 +38,8 @@ const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs'
 
 const DEFAULT_APP_YAML = 'app.yaml';
 
+const SERVER_JS_CONTENTS = 'echo(\'Hello world\')';
+
 interface TestConfig {
   title: string;
   locations: Location[];
@@ -127,7 +129,8 @@ describe('detectSetup', () => {
       locations: [
         {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
         {path: 'package.json', exists: false},
-        {path: 'server.js', exists: false}
+        {path: 'server.js', exists: false}, {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedLogs:
           ['Checking for Node.js.', 'node.js checker: No package.json file.'],
@@ -147,7 +150,9 @@ describe('detectSetup', () => {
           locations: [
             {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
             {path: 'package.json', exists: false},
-            {path: 'server.js', exists: true, contents: 'some content'}
+            {path: 'server.js', exists: true, contents: 'some content'},
+            {path: 'yarn.lock', exists: false},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: [
             'Checking for Node.js.', 'node.js checker: No package.json file.'
@@ -168,7 +173,8 @@ describe('detectSetup', () => {
             {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
             {path: 'package.json', exists: true, contents: '{}'},
             {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: false}
+            {path: 'yarn.lock', exists: false},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
           expectedErrors: [
@@ -195,7 +201,8 @@ describe('detectSetup', () => {
             },
             {path: 'package.json', exists: true, contents: '{}'},
             {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some contents'}
+            {path: 'yarn.lock', exists: true, contents: 'some contents'},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
           expectedErrors: [
@@ -217,7 +224,8 @@ describe('detectSetup', () => {
             {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
             {path: 'package.json', exists: true, contents: '{}'},
             {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some content'}
+            {path: 'yarn.lock', exists: true, contents: 'some content'},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
           expectedErrors: [
@@ -243,7 +251,8 @@ describe('detectSetup', () => {
               contents: JSON.stringify({scripts: {start: 'npm start'}})
             },
             {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: false}
+            {path: 'yarn.lock', exists: false},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
           expectedErrors: [
@@ -274,7 +283,8 @@ describe('detectSetup', () => {
               contents: JSON.stringify({scripts: {start: 'npm start'}})
             },
             {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some contents'}
+            {path: 'yarn.lock', exists: true, contents: 'some contents'},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
           expectedErrors: [
@@ -301,7 +311,8 @@ describe('detectSetup', () => {
               contents: JSON.stringify({scripts: {start: 'npm start'}})
             },
             {path: 'server.js', exists: true, contents: 'some content'},
-            {path: 'yarn.lock', exists: true, contents: 'some content'}
+            {path: 'yarn.lock', exists: true, contents: 'some content'},
+            {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
           expectedErrors: [
@@ -329,7 +340,8 @@ describe('detectSetup', () => {
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
         {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some content'}
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult:
           {canInstallDeps: true, useYarn: true, appYamlPath: 'custom.yaml'},
@@ -362,7 +374,8 @@ describe('detectSetup', () => {
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
         {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: true, contents: 'some content'}
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -383,7 +396,8 @@ describe('detectSetup', () => {
               {name: 'some-package', engines: {node: '>=4.3.2'}})
         },
         {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -404,7 +418,8 @@ describe('detectSetup', () => {
           contents: JSON.stringify({name: 'some-package'})
         },
         {path: 'server.js', exists: true, contents: 'some content'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -426,7 +441,8 @@ describe('detectSetup', () => {
               {engines: {yarn: '5.x'}, scripts: {start: 'npm start'}})
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -447,7 +463,8 @@ describe('detectSetup', () => {
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -469,7 +486,8 @@ describe('detectSetup', () => {
               {engines: {npm: '5.x'}, scripts: {start: 'npm start'}})
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -489,7 +507,8 @@ describe('detectSetup', () => {
           contents: JSON.stringify({scripts: {start: 'npm start'}})
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -514,7 +533,8 @@ describe('detectSetup', () => {
           })
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
-        {path: 'yarn.lock', exists: false}
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -538,7 +558,8 @@ describe('detectSetup', () => {
           })
         },
         {path: 'app.yaml', exists: true, contents: 'some contents'},
-        {path: 'yarn.lock', exists: true}
+        {path: 'yarn.lock', exists: true},
+        {path: 'package-lock.json', exists: false}
       ],
       expectedResult: {
         canInstallDeps: true,
@@ -547,6 +568,149 @@ describe('detectSetup', () => {
         appYamlPath: DEFAULT_APP_YAML,
         useYarn: true
       }
+    });
+  });
+
+  describe('should detect the correct package manager', () => {
+    performTest({
+      title: 'should detect npm if neither yarn.lock nor ' +
+          'package-lock.json exist and package.json exists',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should detect npm if neither yarn.lock nor ' +
+          'package-lock.json exist and package.json does not exist',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should detect npm if yarn.lock does not exist and ' +
+          'package-lock.json exists and package.json exists',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: true}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should detect npm if yarn.lock does not exist and ' +
+          'package-lock.json exists and package.json does not exist',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: true}
+      ],
+      expectedResult: {
+        canInstallDeps: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: false
+      }
+    });
+
+    performTest({
+      title: 'should detect yarn if yarn.lock exists and ' +
+          'package-lock.json does not exist and package.json exists',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: true},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: true
+      }
+    });
+
+    performTest({
+      title: 'should detect yarn if yarn.lock exists and ' +
+          'package-lock.json does not exist and package.json does not exist',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: true},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: false,
+        appYamlPath: DEFAULT_APP_YAML,
+        useYarn: true
+      }
+    });
+
+    performTest({
+      title: 'should throw an error if both yarn.lock and ' +
+          'package-lock.json exist and package.json exists',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: true},
+        {path: 'package-lock.json', exists: true}
+      ],
+      expectedResult: undefined,
+      expectedThrownErrMessage: new RegExp(
+          'The presence of yarn.lock ' +
+          'indicates that yarn should be used, but the presence of ' +
+          'package-lock.json indicates npm should be used.  Use the skip_files ' +
+          'section of app.yaml to ignore the appropriate file to indicate ' +
+          'which package manager to use.')
+    });
+
+    performTest({
+      title: 'should throw an error if both yarn.lock and ' +
+          'package-lock.json exist and package.json does not exist',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: true},
+        {path: 'package-lock.json', exists: true}
+      ],
+      expectedResult: undefined,
+      expectedThrownErrMessage: new RegExp(
+          '^Cannot determine which package manager to use as both yarn.lock ' +
+          'and package-lock.json files were detected.  The presence of ' +
+          'yarn.lock indicates that yarn should be used, but the presence ' +
+          'of package-lock.json indicates npm should be used.  Use the ' +
+          'skip_files section of app.yaml to ignore the appropriate file ' +
+          'to indicate which package manager to use.$')
     });
   });
 });

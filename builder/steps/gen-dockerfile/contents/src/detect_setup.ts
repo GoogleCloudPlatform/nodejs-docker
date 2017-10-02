@@ -28,6 +28,13 @@ import {Logger} from './logger';
 const DEFAULT_APP_YAML = 'app.yaml';
 const PACKAGE_JSON = './package.json';
 const YARN_LOCK = 'yarn.lock';
+const PACKAGE_LOCK_JSON = 'package-lock.json';
+const CANNOT_RESOLVE_PACKAGE_MANAGER = 'Cannot determine which package ' +
+    'manager to use as both yarn.lock and package-lock.json files ' +
+    'were detected.  The presence of yarn.lock indicates that yarn should be ' +
+    'used, but the presence of package-lock.json indicates npm should be ' +
+    'used.  Use the skip_files section of app.yaml to ignore the appropriate ' +
+    'file to indicate which package manager to use.';
 
 /**
  * Encapsulates the information about the Node.js application detected by
@@ -123,34 +130,39 @@ export async function detectSetup(
 
   logger.log('Checking for Node.js.');
 
+  // Consider a file as present if and only if the file exists and is not
+  // specified as being skipped in the deploment yaml file.
+  let skipFiles = config.skip_files || [];
+  if (!Array.isArray(skipFiles)) {
+    skipFiles = [skipFiles];
+  }
+
+  function isSkipped(filename: string): boolean {
+    return skipFiles.some(
+        (pattern: string) => {return new RegExp(pattern).test(filename)});
+  }
+
+  const yarnLockExists: boolean =
+      !isSkipped(YARN_LOCK) && await fsview.exists(YARN_LOCK);
+  const packageLockExists: boolean =
+      !isSkipped(PACKAGE_LOCK_JSON) && await fsview.exists(PACKAGE_LOCK_JSON);
+  if (yarnLockExists && packageLockExists) {
+    throw new Error(CANNOT_RESOLVE_PACKAGE_MANAGER);
+  }
+
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
   let npmVersion: string|undefined;
   let yarnVersion: string|undefined;
   let nodeVersion: string|undefined;
-  let useYarn: boolean;
 
   if (!(await fsview.exists(PACKAGE_JSON))) {
     logger.log('node.js checker: No package.json file.');
     canInstallDeps = false;
     gotScriptsStart = false;
     nodeVersion = undefined;
-    useYarn = false;
   } else {
     canInstallDeps = true;
-
-    // Consider the yarn.lock file as present if and only if the yarn.lock
-    // file exists and is not specified as being skipped in the deploment yaml
-    // file.
-    let skipFiles = config.skip_files || [];
-    if (!Array.isArray(skipFiles)) {
-      skipFiles = [skipFiles];
-    }
-
-    const yarnLockExists: boolean = await fsview.exists(YARN_LOCK);
-    const yarnLockSkipped = skipFiles.some(
-        (pattern: string) => new RegExp(pattern).test(YARN_LOCK));
-    useYarn = yarnLockExists && !yarnLockSkipped;
 
     // Try to read the package.json file.
     let packageJson;
@@ -200,7 +212,7 @@ export async function detectSetup(
     npmVersion: escape(npmVersion),
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
-    useYarn: useYarn,
+    useYarn: yarnLockExists,
     appYamlPath: appYamlPath
   };
 
