@@ -138,7 +138,7 @@ export async function detectSetup(
 
   function isSkipped(filename: string): boolean {
     return skipFiles.some(
-        (pattern: string) => new RegExp(pattern).test(filename));
+        (pattern: string) => {new RegExp(pattern).test(filename)});
   }
 
   const yarnLockExists: boolean =
