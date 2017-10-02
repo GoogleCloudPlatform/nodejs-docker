@@ -705,11 +705,12 @@ describe('detectSetup', () => {
       ],
       expectedResult: undefined,
       expectedThrownErrMessage: new RegExp(
-          'The presence of yarn.lock ' +
-          'indicates that yarn should be used, but the presence of ' +
-          'package-lock.json indicates npm should be used.  Use the skip_files ' +
-          'section of app.yaml to ignore the appropriate file to indicate ' +
-          'which package manager to use.')
+          '^Cannot determine which package manager to use as both yarn.lock ' +
+          'and package-lock.json files were detected.  The presence of ' +
+          'yarn.lock indicates that yarn should be used, but the presence ' +
+          'of package-lock.json indicates npm should be used.  Use the ' +
+          'skip_files section of app.yaml to ignore the appropriate file ' +
+          'to indicate which package manager to use.$')
     });
   });
 });

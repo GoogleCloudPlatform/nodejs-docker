@@ -29,11 +29,12 @@ const DEFAULT_APP_YAML = 'app.yaml';
 const PACKAGE_JSON = './package.json';
 const YARN_LOCK = 'yarn.lock';
 const PACKAGE_LOCK_JSON = 'package-lock.json';
-const CANNOT_RESOLVE_PACKAGE_MANAGER = 'The presence of yarn.lock ' +
-    'indicates that yarn should be used, but the presence of ' +
-    'package-lock.json indicates npm should be used.  Use the skip_files ' +
-    'section of app.yaml to ignore the appropriate file to indicate ' +
-    'which package manager to use.';
+const CANNOT_RESOLVE_PACKAGE_MANAGER = 'Cannot determine which package ' +
+    'manager to use as both yarn.lock and package-lock.json files ' +
+    'were detected.  The presence of yarn.lock indicates that yarn should be ' +
+    'used, but the presence of package-lock.json indicates npm should be ' +
+    'used.  Use the skip_files section of app.yaml to ignore the appropriate ' +
+    'file to indicate which package manager to use.';
 
 /**
  * Encapsulates the information about the Node.js application detected by
@@ -138,7 +139,7 @@ export async function detectSetup(
 
   function isSkipped(filename: string): boolean {
     return skipFiles.some(
-        (pattern: string) => {new RegExp(pattern).test(filename)});
+        (pattern: string) => {return new RegExp(pattern).test(filename)});
   }
 
   const yarnLockExists: boolean =
