@@ -174,7 +174,6 @@ export async function detectSetup(
   let npmVersion: string|undefined;
   let yarnVersion: string|undefined;
   let nodeVersion: string|undefined;
-  let useYarn: boolean;
   let hasBuildCommand = false;
 
   if (!(await fsview.exists(PACKAGE_JSON))) {
