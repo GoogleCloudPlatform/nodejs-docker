@@ -764,109 +764,113 @@ describe('detectSetup', () => {
     });
   });
 
-  performTest({
-    title: 'should detect a build command if present',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify(
-            {scripts: {start: 'npm start', 'gcp-build': 'npm run build'}})
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'},
-      {path: 'package-lock.json', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: true,
-      hasBuildCommand: true,
-      appYamlPath: DEFAULT_APP_YAML
-    }
-  });
+  describe('should handle build commands', () => {
+    performTest({
+      title: 'should detect a build command if present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {scripts: {start: 'npm start', 'gcp-build': 'npm run build'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
 
-  performTest({
-    title: 'should detect a double quoted build command if present',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify(
-            {scripts: {start: 'npm start', 'gcp-build': '"npm run build"'}})
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'},
-      {path: 'package-lock.json', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: true,
-      hasBuildCommand: true,
-      appYamlPath: DEFAULT_APP_YAML
-    }
-  });
+    performTest({
+      title: 'should detect a double quoted build command if present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {scripts: {start: 'npm start', 'gcp-build': '"npm run build"'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
 
-  performTest({
-    title: 'should detect a single quoted build command if present',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify(
-            {scripts: {start: 'npm start', 'gcp-build': '\'npm run build\''}})
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'},
-      {path: 'package-lock.json', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: true,
-      hasBuildCommand: true,
-      appYamlPath: DEFAULT_APP_YAML
-    }
-  });
+    performTest({
+      title: 'should detect a single quoted build command if present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({
+            scripts: {start: 'npm start', 'gcp-build': '\'npm run build\''}
+          })
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
 
-  performTest({
-    title: 'should not detect a build command if not present',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify({scripts: {start: 'npm start'}})
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'},
-      {path: 'package-lock.json', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: true,
-      appYamlPath: DEFAULT_APP_YAML,
-      hasBuildCommand: false
-    }
-  });
+    performTest({
+      title: 'should not detect a build command if not present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML,
+        hasBuildCommand: false
+      }
+    });
 
-  performTest({
-    title: 'should detect a build command with newlines',
-    locations: [
-      {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
-        path: 'package.json',
-        exists: true,
-        contents: JSON.stringify({
-          scripts: {start: 'npm start', 'gcp-build': 'npm \nrun\n build\n'}
-        })
-      },
-      {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'},
-      {path: 'package-lock.json', exists: false}
-    ],
-    expectedResult: {
-      canInstallDeps: true,
-      useYarn: true,
-      hasBuildCommand: true,
-      appYamlPath: DEFAULT_APP_YAML
-    }
+    performTest({
+      title: 'should detect a build command with newlines',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({
+            scripts:
+                {start: 'npm start', 'gcp-build': 'npm \nrun\n build\n'}
+          })
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
   });
 
   describe('should issue warnings', () => {
