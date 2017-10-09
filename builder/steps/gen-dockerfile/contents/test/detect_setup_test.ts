@@ -629,7 +629,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -646,7 +647,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -663,7 +665,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -680,7 +683,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -697,7 +701,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        hasBuildCommand: false
       }
     });
 
@@ -714,7 +719,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        hasBuildCommand: false
       }
     });
 
@@ -756,6 +762,7 @@ describe('detectSetup', () => {
           'skip_files section of app.yaml to ignore the appropriate file ' +
           'to indicate which package manager to use.$')
     });
+  });
 
   performTest({
     title: 'should detect a build command if present',
@@ -767,7 +774,8 @@ describe('detectSetup', () => {
             {scripts: {start: 'npm start', 'gcp-build': 'npm run build'}})
       },
       {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'}
+      {path: 'yarn.lock', exists: true, contents: 'some content'},
+      {path: 'package-lock.json', exists: false}
     ],
     expectedResult: {
       canInstallDeps: true,
@@ -787,7 +795,8 @@ describe('detectSetup', () => {
             {scripts: {start: 'npm start', 'gcp-build': '"npm run build"'}})
       },
       {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'}
+      {path: 'yarn.lock', exists: true, contents: 'some content'},
+      {path: 'package-lock.json', exists: false}
     ],
     expectedResult: {
       canInstallDeps: true,
@@ -807,7 +816,8 @@ describe('detectSetup', () => {
             {scripts: {start: 'npm start', 'gcp-build': '\'npm run build\''}})
       },
       {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'}
+      {path: 'yarn.lock', exists: true, contents: 'some content'},
+      {path: 'package-lock.json', exists: false}
     ],
     expectedResult: {
       canInstallDeps: true,
@@ -826,7 +836,8 @@ describe('detectSetup', () => {
         contents: JSON.stringify({scripts: {start: 'npm start'}})
       },
       {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'}
+      {path: 'yarn.lock', exists: true, contents: 'some content'},
+      {path: 'package-lock.json', exists: false}
     ],
     expectedResult: {
       canInstallDeps: true,
@@ -847,7 +858,8 @@ describe('detectSetup', () => {
         })
       },
       {path: 'server.js', exists: true, contents: 'some content'},
-      {path: 'yarn.lock', exists: true, contents: 'some content'}
+      {path: 'yarn.lock', exists: true, contents: 'some content'},
+      {path: 'package-lock.json', exists: false}
     ],
     expectedResult: {
       canInstallDeps: true,
