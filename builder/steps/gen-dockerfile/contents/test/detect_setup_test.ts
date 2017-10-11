@@ -60,10 +60,18 @@ interface TestConfig {
   // indicates that the setup detection didn't return a value (For example,
   // it failed with an exception thrown).
   expectedResult: Setup|undefined;
-  expectedLogs?: string[];
-  expectedErrors?: string[];
+  expectedLogs?: StringArrayVerifier;
+  expectedErrors?: StringArrayVerifier;
   expectedThrownErrMessage?: RegExp;
   env?: {[key: string]: string};
+}
+
+declare type StringArrayVerifier = (logs: string[]) => void;
+
+function exactly(expectedLogs: string[]): StringArrayVerifier {
+  return (logs: string[]) => {
+    assert.deepStrictEqual(logs, expectedLogs);
+  };
 }
 
 describe('detectSetup', () => {
@@ -95,11 +103,11 @@ describe('detectSetup', () => {
       assert.deepStrictEqual(setup, testConfig.expectedResult);
 
       if (testConfig.expectedLogs) {
-        assert.deepStrictEqual(logger.logs, testConfig.expectedLogs);
+        testConfig.expectedLogs(logger.logs);
       }
 
       if (testConfig.expectedErrors) {
-        assert.deepStrictEqual(logger.errors, testConfig.expectedErrors);
+        testConfig.expectedErrors(logger.errors);
       }
 
       if (testConfig.env) {
@@ -117,8 +125,8 @@ describe('detectSetup', () => {
     performTest({
       title: 'should fail without app.yaml',
       locations: [{path: 'app.yaml', exists: false}],
-      expectedLogs: [],
-      expectedErrors: [],
+      expectedLogs: exactly([]),
+      expectedErrors: exactly([]),
       expectedResult: undefined,
       expectedThrownErrMessage: /The file app.yaml does not exist/
     });
@@ -128,8 +136,8 @@ describe('detectSetup', () => {
       locations: [
         {path: 'app.yaml', exists: true, contents: INVALID_APP_YAML_CONTENTS}
       ],
-      expectedLogs: [],
-      expectedErrors: [],
+      expectedLogs: exactly([]),
+      expectedErrors: exactly([]),
       expectedResult: undefined,
       expectedThrownErrMessage:
           /unexpected end of the stream within a single quoted scalar.*/
@@ -143,9 +151,9 @@ describe('detectSetup', () => {
         {path: 'server.js', exists: false}, {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedLogs:
-          ['Checking for Node.js.', 'node.js checker: No package.json file.'],
-      expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+      expectedLogs: exactly(
+          ['Checking for Node.js.', 'node.js checker: No package.json file.']),
+      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
       expectedResult: undefined,
       expectedThrownErrMessage: new RegExp(
           'node.js checker: Neither "start" in the ' +
@@ -165,10 +173,11 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: [
+          expectedLogs: exactly([
             'Checking for Node.js.', 'node.js checker: No package.json file.'
-          ],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          ]),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: false,
             useYarn: false,
@@ -187,8 +196,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -211,8 +221,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some contents'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -230,8 +241,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some content'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -253,8 +265,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -281,8 +294,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some contents'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -305,8 +319,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some content'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -711,8 +726,8 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+      expectedLogs: exactly(['Checking for Node.js.']),
+      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -730,9 +745,9 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedLogs:
-          ['Checking for Node.js.', 'node.js checker: No package.json file.'],
-      expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+      expectedLogs: exactly(
+          ['Checking for Node.js.', 'node.js checker: No package.json file.']),
+      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
