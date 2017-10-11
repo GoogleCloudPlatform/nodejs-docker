@@ -40,6 +40,11 @@ const DEFAULT_APP_YAML = 'app.yaml';
 
 const SERVER_JS_CONTENTS = 'echo(\'Hello world\')';
 
+const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
+    'a supported node.js version.  Please pin your application to a major ' +
+    'version of the node.js runtime.  To learn more, visit ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+
 interface TestConfig {
   title: string;
   locations: Location[];
@@ -177,11 +182,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedErrors: [NODE_VERSION_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -205,11 +206,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedErrors: [NODE_VERSION_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -228,11 +225,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedErrors: [NODE_VERSION_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -255,11 +248,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedErrors: [NODE_VERSION_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -287,11 +276,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedErrors: [NODE_VERSION_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -315,11 +300,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedErrors: [NODE_VERSION_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -711,6 +692,26 @@ describe('detectSetup', () => {
           'of package-lock.json indicates npm should be used.  Use the ' +
           'skip_files section of app.yaml to ignore the appropriate file ' +
           'to indicate which package manager to use.$')
+    });
+  });
+
+  describe('should issue warnings', () => {
+    performTest({
+      title: 'should warn if not pinned to a node version',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedLogs: ['Checking for Node.js.'],
+      expectedErrors: [NODE_VERSION_WARNING],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
   });
 });

@@ -35,6 +35,10 @@ const CANNOT_RESOLVE_PACKAGE_MANAGER = 'Cannot determine which package ' +
     'used, but the presence of package-lock.json indicates npm should be ' +
     'used.  Use the skip_files section of app.yaml to ignore the appropriate ' +
     'file to indicate which package manager to use.';
+const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
+    'a supported node.js version.  Please pin your application to a major ' +
+    'version of the node.js runtime.  To learn more, visit ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 /**
  * Encapsulates the information about the Node.js application detected by
@@ -190,9 +194,7 @@ export async function detectSetup(
     }
 
     if (!nodeVersion) {
-      warn(
-          'No node version specified.  Please add your node version, see ' +
-          'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime');
+      warn(NODE_VERSION_WARNING);
     }
   }
 
