@@ -39,6 +39,12 @@ const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
     'a supported node.js version.  Please pin your application to a major ' +
     'version of the node.js runtime.  To learn more, visit ' +
     'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const NODE_TO_UPDATE_WARNING = 'WARNING: On October 31, 2017, the runtime ' +
+    'will be updated to use Node 8 by default (instead of Node 6).  Since ' +
+    'you have not pinned your application to a major version of the node.js ' +
+    'runtime, your application will, at that time, automatically use Node 8. ' +
+    'To learn how to pin to a version of the node.js runtime see ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 /**
  * Encapsulates the information about the Node.js application detected by
@@ -195,6 +201,11 @@ export async function detectSetup(
 
     if (!nodeVersion) {
       warn(NODE_VERSION_WARNING);
+      // This warning should be printed until October 31, 2017 at which point
+      // the warning should be updated to state that the runtime has been
+      // updated to use Node 8 instead of Node 6.  That warning message should
+      // persist for a month after the change to Node 8.
+      warn(NODE_TO_UPDATE_WARNING);
     }
   }
 

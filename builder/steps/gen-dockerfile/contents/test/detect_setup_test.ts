@@ -44,6 +44,12 @@ const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
     'a supported node.js version.  Please pin your application to a major ' +
     'version of the node.js runtime.  To learn more, visit ' +
     'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const NODE_TO_UPDATE_WARNING = 'WARNING: On October 31, 2017, the runtime ' +
+    'will be updated to use Node 8 by default (instead of Node 6).  Since ' +
+    'you have not pinned your application to a major version of the node.js ' +
+    'runtime, your application will, at that time, automatically use Node 8. ' +
+    'To learn how to pin to a version of the node.js runtime see ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 interface TestConfig {
   title: string;
@@ -182,7 +188,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -206,7 +212,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -225,7 +231,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -248,7 +254,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -276,7 +282,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -300,7 +306,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [NODE_VERSION_WARNING],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -697,7 +703,7 @@ describe('detectSetup', () => {
 
   describe('should issue warnings', () => {
     performTest({
-      title: 'should warn if not pinned to a node version',
+      title: 'should warn if not pinned to a node version with package.json',
       locations: [
         {path: 'package.json', exists: true, contents: '{}'},
         {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
@@ -706,7 +712,7 @@ describe('detectSetup', () => {
         {path: 'package-lock.json', exists: false}
       ],
       expectedLogs: ['Checking for Node.js.'],
-      expectedErrors: [NODE_VERSION_WARNING],
+      expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
