@@ -198,15 +198,15 @@ export async function detectSetup(
       npmVersion = packageJson.engines.npm;
       yarnVersion = packageJson.engines.yarn;
     }
+  }
 
-    if (!nodeVersion) {
-      warn(NODE_VERSION_WARNING);
-      // This warning should be printed until October 31, 2017 at which point
-      // the warning should be updated to state that the runtime has been
-      // updated to use Node 8 instead of Node 6.  That warning message should
-      // persist for a month after the change to Node 8.
-      warn(NODE_TO_UPDATE_WARNING);
-    }
+  if (!nodeVersion) {
+    warn(NODE_VERSION_WARNING);
+    // This warning should be printed until October 31, 2017 at which point
+    // the warning should be updated to state that the runtime has been
+    // updated to use Node 8 instead of Node 6.  That warning message should
+    // persist for a month after the change to Node 8.
+    warn(NODE_TO_UPDATE_WARNING);
   }
 
   if (!gotScriptsStart && !(await fsview.exists('server.js'))) {

@@ -145,7 +145,7 @@ describe('detectSetup', () => {
       ],
       expectedLogs:
           ['Checking for Node.js.', 'node.js checker: No package.json file.'],
-      expectedErrors: [],
+      expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
       expectedResult: undefined,
       expectedThrownErrMessage: new RegExp(
           'node.js checker: Neither "start" in the ' +
@@ -168,7 +168,7 @@ describe('detectSetup', () => {
           expectedLogs: [
             'Checking for Node.js.', 'node.js checker: No package.json file.'
           ],
-          expectedErrors: [],
+          expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
           expectedResult: {
             canInstallDeps: false,
             useYarn: false,
@@ -715,6 +715,26 @@ describe('detectSetup', () => {
       expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
       expectedResult: {
         canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title:
+          'should warn if not pinned to a node version without a package.json',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedLogs:
+          ['Checking for Node.js.', 'node.js checker: No package.json file.'],
+      expectedErrors: [NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING],
+      expectedResult: {
+        canInstallDeps: false,
         useYarn: false,
         appYamlPath: DEFAULT_APP_YAML
       }
