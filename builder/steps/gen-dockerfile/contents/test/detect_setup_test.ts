@@ -74,6 +74,17 @@ function exactly(expectedLogs: string[]): StringArrayVerifier {
   };
 }
 
+function eachOf(expectedLogs: string[]): StringArrayVerifier {
+  return (logs: string[]) => {
+    const expected = new Set(expectedLogs);
+    for (let actual of logs) {
+      expected.delete(actual);
+    }
+
+    assert.deepStrictEqual(Array.from(expected), []);
+  };
+}
+
 describe('detectSetup', () => {
   function performTest(testConfig: TestConfig) {
     it(testConfig.title, async () => {
@@ -726,8 +737,7 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedLogs: exactly(['Checking for Node.js.']),
-      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+      expectedErrors: eachOf([NODE_VERSION_WARNING]),
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -745,9 +755,41 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedLogs: exactly(
-          ['Checking for Node.js.', 'node.js checker: No package.json file.']),
-      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+      expectedErrors: eachOf([NODE_VERSION_WARNING]),
+      expectedResult: {
+        canInstallDeps: false,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should warn of upcoming Node version update with package.json',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should warn of upcoming Node version update without package.json',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
