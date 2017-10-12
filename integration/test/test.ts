@@ -199,9 +199,9 @@ describe('Runtime image and builder integration', () => {
       let buildStderr = '';
       before(function(done) {
         this.timeout(DOCKER_BUILD_TIMEOUT);
-        cleanDirectory(appDir, (err) => {
-          if (err) {
-            return done(err);
+        cleanDirectory(appDir, (err1) => {
+          if (err1) {
+            return done(err1);
           }
 
           run('node',
@@ -209,16 +209,16 @@ describe('Runtime image and builder integration', () => {
                 GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG,
                 '--app-dir', appDir
               ],
-              {cwd : appDir}, (err) => {
-                if (err) {
-                  return done(err);
+              {cwd : appDir}, (err2) => {
+                if (err2) {
+                  return done(err2);
                 }
 
                 dockerBuild(
                     tag, appDir,
-                    (err: Error|null, stdout: string, stderr: string) => {
-                      if (err) {
-                        return done(err);
+                    (err3: Error|null, stdout: string, stderr: string) => {
+                      if (err3) {
+                        return done(err3);
                       }
 
                       buildStdout = stdout;
