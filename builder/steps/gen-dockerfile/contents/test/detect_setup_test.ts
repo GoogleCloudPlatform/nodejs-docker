@@ -41,15 +41,14 @@ const DEFAULT_APP_YAML = 'app.yaml';
 const SERVER_JS_CONTENTS = 'echo(\'Hello world\')';
 
 const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
-    'a supported node.js version.  Please pin your application to a major ' +
-    'version of the node.js runtime.  To learn more, visit ' +
+    'a supported Node.js version.  Please pin your application to a major ' +
+    'version of the Node.js runtime.  To learn more, visit ' +
     'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
-const NODE_TO_UPDATE_WARNING = 'WARNING: Shortly after Node.js 8 enters ' +
-    'Long Term Support, the runtime will be updated to use Node 8 by ' +
-    'default (instead of Node 6).  Since you have not pinned your ' +
-    'application to a major version of the node.js runtime, your ' +
-    'application will, at that time, automatically use Node 8. ' +
-    'To learn how to pin to a version of the node.js runtime see ' +
+const NODE_TO_UPDATE_WARNING = 'WARNING: The default Node.js version will be ' +
+    'updated to version 8 shortly after Node 8 enters Long Term Support.  ' +
+    'Since you have not pinned your application to a major version of the ' +
+    'Node.js runtime, your application will, at that time, automatically use ' +
+    'Node 8.  To learn how to pin to a version of the Node.js runtime see ' +
     'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 interface TestConfig {
