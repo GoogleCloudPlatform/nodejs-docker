@@ -9,6 +9,6 @@ ADD contents/ /opt/nodejs-runtime-builder
 ENV NODE_ENV=development
 
 # Setup the runtime builder code
-RUN cd /opt/nodejs-runtime-builder && npm install && gulp
+RUN cd /opt/nodejs-runtime-builder && npm install
 
 ENTRYPOINT ["node", "/opt/nodejs-runtime-builder/dist/src/main.js", "--app-dir", "/workspace"]
