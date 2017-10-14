@@ -30,8 +30,8 @@ pushd $(dirname $0)/.. > /dev/null
       docker build -t test/gen-dockerfile .
       ../../bin/${EXT_RUN_SH} -i test/gen-dockerfile -v --config test_config.yaml
       pushd contents/ > /dev/null
-        yarn install
-        yarn test
+        npm install
+        npm test
       popd > /dev/null
     popd > /dev/null
   popd > /dev/null
