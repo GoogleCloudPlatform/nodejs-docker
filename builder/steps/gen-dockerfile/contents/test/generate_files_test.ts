@@ -37,7 +37,9 @@ FROM ${BASE_IMAGE}
 
 const UPGRADE_NODE =
     `# Check to see if the the version included in the base runtime satisfies
-# '${NODE_VERSION}' and, if not, install a version of Node.js that does satisfy it.
+# '${
+     NODE_VERSION
+   }' and, if not, install a version of Node.js that does satisfy it.
 RUN /usr/local/bin/install_node '${NODE_VERSION}'
 `;
 
