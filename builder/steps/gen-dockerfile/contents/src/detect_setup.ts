@@ -35,6 +35,16 @@ const CANNOT_RESOLVE_PACKAGE_MANAGER = 'Cannot determine which package ' +
     'used, but the presence of package-lock.json indicates npm should be ' +
     'used.  Use the skip_files section of app.yaml to ignore the appropriate ' +
     'file to indicate which package manager to use.';
+const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
+    'a supported Node.js version.  Please pin your application to a major ' +
+    'version of the Node.js runtime.  To learn more, visit ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const NODE_TO_UPDATE_WARNING = 'WARNING: The default Node.js version will be ' +
+    'updated to version 8 shortly after Node 8 enters Long Term Support.  ' +
+    'Since you have not pinned your application to a major version of the ' +
+    'Node.js runtime, your application will, at that time, automatically use ' +
+    'Node 8.  To learn how to pin to a version of the Node.js runtime see ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 /**
  * Encapsulates the information about the Node.js application detected by
@@ -188,12 +198,16 @@ export async function detectSetup(
       npmVersion = packageJson.engines.npm;
       yarnVersion = packageJson.engines.yarn;
     }
+  }
 
-    if (!nodeVersion) {
-      warn(
-          'No node version specified.  Please add your node version, see ' +
-          'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime');
-    }
+  if (!nodeVersion) {
+    warn(NODE_VERSION_WARNING);
+    // This warning should be printed until the runtime has been updated to
+    // use Node 8 by default.  At that time, the warning should be updated
+    // to state that the runtime has been updated to use Node 8 instead of
+    // Node 6.  That warning message should persist for a month after the
+    // change to Node 8.
+    warn(NODE_TO_UPDATE_WARNING);
   }
 
   if (!gotScriptsStart && !(await fsview.exists('server.js'))) {

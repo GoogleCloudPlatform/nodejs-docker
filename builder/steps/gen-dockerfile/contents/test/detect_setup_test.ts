@@ -40,6 +40,17 @@ const DEFAULT_APP_YAML = 'app.yaml';
 
 const SERVER_JS_CONTENTS = 'echo(\'Hello world\')';
 
+const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
+    'a supported Node.js version.  Please pin your application to a major ' +
+    'version of the Node.js runtime.  To learn more, visit ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const NODE_TO_UPDATE_WARNING = 'WARNING: The default Node.js version will be ' +
+    'updated to version 8 shortly after Node 8 enters Long Term Support.  ' +
+    'Since you have not pinned your application to a major version of the ' +
+    'Node.js runtime, your application will, at that time, automatically use ' +
+    'Node 8.  To learn how to pin to a version of the Node.js runtime see ' +
+    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+
 interface TestConfig {
   title: string;
   locations: Location[];
@@ -49,10 +60,29 @@ interface TestConfig {
   // indicates that the setup detection didn't return a value (For example,
   // it failed with an exception thrown).
   expectedResult: Setup|undefined;
-  expectedLogs?: string[];
-  expectedErrors?: string[];
+  expectedLogs?: StringArrayVerifier;
+  expectedErrors?: StringArrayVerifier;
   expectedThrownErrMessage?: RegExp;
   env?: {[key: string]: string};
+}
+
+declare type StringArrayVerifier = (logs: string[]) => void;
+
+function exactly(expectedLogs: string[]): StringArrayVerifier {
+  return (logs: string[]) => {
+    assert.deepStrictEqual(logs, expectedLogs);
+  };
+}
+
+function eachOf(expectedLogs: string[]): StringArrayVerifier {
+  return (logs: string[]) => {
+    const expected = new Set(expectedLogs);
+    for (let actual of logs) {
+      expected.delete(actual);
+    }
+
+    assert.deepStrictEqual(Array.from(expected), []);
+  };
 }
 
 describe('detectSetup', () => {
@@ -84,11 +114,11 @@ describe('detectSetup', () => {
       assert.deepStrictEqual(setup, testConfig.expectedResult);
 
       if (testConfig.expectedLogs) {
-        assert.deepStrictEqual(logger.logs, testConfig.expectedLogs);
+        testConfig.expectedLogs(logger.logs);
       }
 
       if (testConfig.expectedErrors) {
-        assert.deepStrictEqual(logger.errors, testConfig.expectedErrors);
+        testConfig.expectedErrors(logger.errors);
       }
 
       if (testConfig.env) {
@@ -106,8 +136,8 @@ describe('detectSetup', () => {
     performTest({
       title: 'should fail without app.yaml',
       locations: [{path: 'app.yaml', exists: false}],
-      expectedLogs: [],
-      expectedErrors: [],
+      expectedLogs: exactly([]),
+      expectedErrors: exactly([]),
       expectedResult: undefined,
       expectedThrownErrMessage: /The file app.yaml does not exist/
     });
@@ -117,8 +147,8 @@ describe('detectSetup', () => {
       locations: [
         {path: 'app.yaml', exists: true, contents: INVALID_APP_YAML_CONTENTS}
       ],
-      expectedLogs: [],
-      expectedErrors: [],
+      expectedLogs: exactly([]),
+      expectedErrors: exactly([]),
       expectedResult: undefined,
       expectedThrownErrMessage:
           /unexpected end of the stream within a single quoted scalar.*/
@@ -132,9 +162,9 @@ describe('detectSetup', () => {
         {path: 'server.js', exists: false}, {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedLogs:
-          ['Checking for Node.js.', 'node.js checker: No package.json file.'],
-      expectedErrors: [],
+      expectedLogs: exactly(
+          ['Checking for Node.js.', 'node.js checker: No package.json file.']),
+      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
       expectedResult: undefined,
       expectedThrownErrMessage: new RegExp(
           'node.js checker: Neither "start" in the ' +
@@ -154,10 +184,11 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: [
+          expectedLogs: exactly([
             'Checking for Node.js.', 'node.js checker: No package.json file.'
-          ],
-          expectedErrors: [],
+          ]),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: false,
             useYarn: false,
@@ -176,12 +207,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -204,12 +232,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some contents'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -227,12 +252,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some content'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -254,12 +276,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: false},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -286,12 +305,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some contents'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -314,12 +330,9 @@ describe('detectSetup', () => {
             {path: 'yarn.lock', exists: true, contents: 'some content'},
             {path: 'package-lock.json', exists: false}
           ],
-          expectedLogs: ['Checking for Node.js.'],
-          expectedErrors: [
-            'No node version specified.  Please add your node ' +
-            'version, see ' +
-            'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime'
-          ],
+          expectedLogs: exactly(['Checking for Node.js.']),
+          expectedErrors:
+              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -711,6 +724,77 @@ describe('detectSetup', () => {
           'of package-lock.json indicates npm should be used.  Use the ' +
           'skip_files section of app.yaml to ignore the appropriate file ' +
           'to indicate which package manager to use.$')
+    });
+  });
+
+  describe('should issue warnings', () => {
+    performTest({
+      title: 'should warn if not pinned to a node version with package.json',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: eachOf([NODE_VERSION_WARNING]),
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title:
+          'should warn if not pinned to a node version without a package.json',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: eachOf([NODE_VERSION_WARNING]),
+      expectedResult: {
+        canInstallDeps: false,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should warn of upcoming Node version update with package.json',
+      locations: [
+        {path: 'package.json', exists: true, contents: '{}'},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should warn of upcoming Node version update without package.json',
+      locations: [
+        {path: 'package.json', exists: false},
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
+      expectedResult: {
+        canInstallDeps: false,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
     });
   });
 });
