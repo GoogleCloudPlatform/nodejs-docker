@@ -18,6 +18,7 @@ RUN apt-get update -y && \
 # Add the files necessary for verifying and installing node.
 ADD contents/ /opt/gcp/runtime/
 RUN ln -s /opt/gcp/runtime/install_node /usr/local/bin/install_node
+RUN ln -s /opt/gcp/runtime/timer /usr/local/bin/timer
 
 # Install the latest LTS release of nodejs directly from nodejs.org
 # with the installation aborting if verification of the nodejs binaries fails.

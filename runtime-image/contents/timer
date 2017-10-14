@@ -1,0 +1,147 @@
+#!/usr/bin/env node
+
+var os = require('os');
+var path = require('path');
+var fs = require('fs');
+var spawn = require('child_process').spawn;
+
+const RECORD = 'record';
+const READ = 'read';
+const CLEAN = 'clean';
+
+function getTimerDir() {
+  return path.join(os.tmpdir(), 'timer');
+}
+
+function getTimerFile(tag) {
+  return path.join(getTimerDir(), tag);
+}
+
+function deleteRecursiveSync(fileOrDir) {
+  if (!fs.existsSync(fileOrDir)) {
+    return;
+  }
+
+  if (!fs.statSync(fileOrDir).isDirectory()) {
+    return fs.unlinkSync(fileOrDir);
+  }
+
+  fs.readdirSync(fileOrDir).forEach(function(item) {
+    if (item) {
+      deleteRecursiveSync(path.join(fileOrDir, item));
+    }
+  });
+
+  fs.rmdirSync(fileOrDir);
+}
+
+function clean() {
+  deleteRecursiveSync(getTimerDir());
+}
+
+function readTime(tag, cb) {
+  fs.readFile(getTimerFile(tag), 'utf8', function(err, time) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return cb(null, 'None');
+      }
+      return cb(err);
+    }
+    cb(null, time);
+  });
+}
+
+function init(cb) {
+  fs.mkdir(getTimerDir(), function(err) {
+    if (err && err.code !== 'EEXIST') {
+      return cb(err);
+    }
+    return cb(null);
+  });
+}
+
+function reset(tag, cb) {
+  fs.unlink(getTimerFile(tag), function(err1) {
+    if (err1 && err1.code !== 'ENOENT') {
+      return cb(err1);
+    }
+    return cb(null);
+  });
+}
+
+function getTime() {
+  // The number of milliseconds since the epoch
+  return Date.now();
+}
+
+function writeTime(time, tag, cb) {
+  reset(tag, function(err1) {
+    if (err1) {
+      return cb(err1);
+    }
+
+    init(function(err2) {
+      if (err2) {
+        return cb(err2);
+      }
+
+      var file = getTimerFile(tag);
+      fs.writeFile(file, time, 'utf8', function(err3) {
+        if (err3) {
+          return cb(err3);
+        }
+        return cb(null);
+      });
+    });
+  });
+}
+
+function printUsage() {
+  console.log('Usage: ' + path.basename(process.argv[1]) +
+    ' <' + RECORD + '|' + READ + '|' + CLEAN + '> <tag> <cmd> <args>');
+}
+
+function main(args) {
+  var action = args[0];
+  var tag = args[1];
+  var cmd = args[2];
+  var cmdArgs = args.slice(3);
+
+  if ((action !== RECORD && action !== READ && action !== CLEAN) ||
+      (action === RECORD && (!tag || !cmd)) ||
+      (action === READ && !tag)) {
+    printUsage();
+    return;
+  }
+
+  if (action === RECORD) {
+    var start = getTime();
+    spawn(cmd, cmdArgs, {
+      stdio: 'inherit'
+    }).on('exit', function(exitCode) {
+      var end = getTime();
+      writeTime((end - start)/1000, tag, function(err) {
+        if (err) {
+          return console.error(err);
+        }
+        process.exit(exitCode);
+      });
+    });
+  }
+  else if (action === READ) {
+    readTime(tag, function(err, time) {
+      if (err) {
+        return console.error(err);
+      }
+      console.log(time);
+    });
+  }
+  else if (action === CLEAN) {
+    clean();
+  }
+  else {
+    printUsage();
+  }
+}
+
+main(process.argv.slice(2));

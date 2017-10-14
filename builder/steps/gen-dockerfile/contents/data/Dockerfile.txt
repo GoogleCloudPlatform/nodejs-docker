@@ -4,8 +4,10 @@ FROM <%- baseImage %>
 
 <% if (config.nodeVersion) { %>
 # Check to see if the the version included in the base runtime satisfies
-# '<%- config.nodeVersion %>' and, if not, install a version of Node.js that does satisfy it.
-RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
+# '<%- config.nodeVersion %>' and, if not, install a version of Node.js that
+# does satisfy it.
+RUN timer record install.node.<%- uuid %> \
+    /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
 
 <% if (config.npmVersion && !config.useYarn) { %>
@@ -29,10 +31,12 @@ COPY . /app/
 
 <% if (config.canInstallDeps) { %>
   <% if (config.useYarn) { %>
-RUN yarn install --production || \
-  ((if [ -f yarn-error.log ]; then \
-      cat yarn-error.log; \
-    fi) && false)
+RUN timer record install.deps.<%- uuid %> \
+    yarn install --production || \
+    ((if [ -f yarn-error.log ]; then \
+        cat yarn-error.log; \
+      fi) \
+      && false)
   <% } else { %>
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
@@ -41,11 +45,27 @@ RUN yarn install --production || \
 # as well.
 # This command will also cat the npm-debug.log file after the
 # build, if it exists.
-RUN npm install --unsafe-perm || \
-  ((if [ -f npm-debug.log ]; then \
-      cat npm-debug.log; \
-    fi) && false)
+RUN timer record install.deps.<%- uuid %> \
+    npm install --unsafe-perm || \
+    ((if [ -f npm-debug.log ]; then \
+        cat npm-debug.log; \
+      fi) \
+      && false)
   <% } %>
 <% } %>
+
+RUN echo "\
+DEPLOYMENT:METADATA:\
+ENV=<%- config.env %>,\
+RUNTIME=<%- config.runtime %>,\
+RUNTIME_IMAGE=<%- baseImage %>,\
+LATENCY.INSTALL.NODE=$(timer read install.node.<%- uuid %>),\
+LATENCY.INSTALL.DEPENDENCIES=$(timer read install.deps.<%- uuid %>),\
+PACKAGE_MANAGER=<%- tool %>,\
+PACKAGE_MANAGER.REQUESTED_VERSION=<%- toolVersion || 'None' %>,\
+PACKAGE_MANAGER.RESOLVED_VERSION=$(<%- tool %> --version),\
+NODE.REQUESTED_VERSION=<%- config.nodeVersion || 'None' %>,\
+NODE.RESOLVED_VERSION=$(node --version)" \
+&& timer clean
 
 CMD <%- tool %> start

@@ -81,6 +81,14 @@ export interface Setup {
    * identifies the yaml file used to deploy the application.
    */
   appYamlPath: string;
+  /**
+   * The environment specified in the yaml file used to deploy the application.
+   */
+  env: string;
+  /**
+   * The runtime specified in the yaml file used to deploy the application.
+   */
+  runtime: string;
 }
 
 /**
@@ -227,7 +235,9 @@ export async function detectSetup(
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
     useYarn: yarnLockExists,
-    appYamlPath: appYamlPath
+    appYamlPath: appYamlPath,
+    env: config.env,
+    runtime: config.runtime
   };
 
   // extend filters out undefined properties.
