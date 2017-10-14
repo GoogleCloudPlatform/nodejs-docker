@@ -47,10 +47,8 @@ export class MockView implements Reader, Writer, Locator {
     const uniqueConfigs: Location[] = [];
     for (let conf of configurations) {
       if (paths.has(conf.path)) {
-        throw new Error(
-            `Cannot specify the same path twice: ${
-                                                   JSON.stringify(conf, null, 2)
-                                                 }`);
+        throw new Error(`Cannot specify the same path twice: ${
+            JSON.stringify(conf, null, 2)}`);
       }
       paths.add(conf.path);
       uniqueConfigs.push(conf);
