@@ -126,7 +126,7 @@ function buildGenDockerfile(cb: RunCallback): void {
     if (err) {
       return cb(err);
     }
-    run('npm', [ 'run', 'compile' ], options, cb);
+    run('npm', ['run', 'compile'], options, cb);
   });
 }
 
