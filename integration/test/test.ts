@@ -32,7 +32,7 @@ const RUNTIME_TAG = `${TAG_PREFIX}/runtime`;
 const GEN_DOCKERFILE_DIR = path.join(__dirname, '..', '..', '..', 'builder',
                                      'steps', 'gen-dockerfile', 'contents');
 const GEN_DOCKERFILE_FILE =
-    path.join(GEN_DOCKERFILE_DIR, 'dist', 'src', 'main.js');
+    path.join(GEN_DOCKERFILE_DIR, 'build', 'src', 'main.js');
 
 interface TestConfig {
   description: string;
@@ -123,7 +123,7 @@ function buildGenDockerfile(cb: RunCallback): void {
     if (err) {
       return cb(err);
     }
-    run('npm', [ 'run', 'prepublish' ], options, cb);
+    run('npm', [ 'run', 'compile' ], options, cb);
   });
 }
 
