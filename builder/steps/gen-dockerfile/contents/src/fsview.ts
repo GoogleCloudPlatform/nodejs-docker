@@ -35,7 +35,7 @@ export interface Reader {
    * @return A {@link Promise} so that this method can be used with
    *         async/await.
    */
-  read(path: string): Promise<string>
+  read(path: string): Promise<string>;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface Writer {
    * @return A {@link Promise} so that this method can be used with
    *         async/await.
    */
-  write(path: string, contents: string): Promise<void>
+  write(path: string, contents: string): Promise<void>;
 }
 
 /**
@@ -77,7 +77,7 @@ export interface Locator {
    * @return A {@link Promise} so that this method can be used with
    *         async/await.
    */
-  exists(path: string): Promise<boolean>
+  exists(path: string): Promise<boolean>;
 }
 
 /**
@@ -102,17 +102,17 @@ export class FsView implements Reader, Writer, Locator {
   }
 
   /** @inheritdoc */
-  async read(path: string) {
-    return pify(fs.readFile)(this.resolvePath(path), 'utf8');
+  async read(p: string) {
+    return pify(fs.readFile)(this.resolvePath(p), 'utf8');
   }
 
   /** @inheritdoc */
-  async write(path: string, contents: string) {
-    return pify(fs.writeFile)(this.resolvePath(path), contents, 'utf8');
+  async write(p: string, contents: string) {
+    return pify(fs.writeFile)(this.resolvePath(p), contents, 'utf8');
   }
 
   /** @inheritdoc */
-  async exists(path: string) {
-    return fs.existsSync(this.resolvePath(path));
+  async exists(p: string) {
+    return fs.existsSync(this.resolvePath(p));
   }
 }

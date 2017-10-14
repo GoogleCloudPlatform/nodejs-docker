@@ -32,7 +32,7 @@ const VALID_APP_YAML_CONTENTS_SKIP_YARN =
 - ^yarn\.lock$
 `;
 
-const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs'
+const INVALID_APP_YAML_CONTENTS = 'runtime: \'nodejs';
 //         ^
 //         +-- This is intentionally unclosed
 
@@ -91,7 +91,9 @@ describe('detectSetup', () => {
       const backupEnv = Object.assign({}, process.env);
       if (testConfig.env) {
         for (let key in testConfig.env) {
-          process.env[key] = testConfig.env[key];
+          if (key) {
+            process.env[key] = testConfig.env[key];
+          }
         }
       }
 
@@ -123,9 +125,11 @@ describe('detectSetup', () => {
 
       if (testConfig.env) {
         for (let key in testConfig.env) {
-          delete process.env[key];
-          if (backupEnv[key]) {
-            process.env[key] = backupEnv[key];
+          if (key) {
+            delete process.env[key];
+            if (backupEnv[key]) {
+              process.env[key] = backupEnv[key];
+            }
           }
         }
       }

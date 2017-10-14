@@ -61,17 +61,17 @@ const LOGGER = {
  * @param baseImage {@see generateFiles}
  */
 async function generateConfigs(
-    logger: Logger, appDirView: FsView, baseImage: string):
-    Promise<Map<string, string>> {
-      try {
-        const setup = await detectSetup(logger, appDirView);
-        return await generateFiles(appDirView, setup, baseImage);
-      } catch (e) {
-        logger.error(`Application detection failed: ${e}`);
-        process.exit(1);
-        return Promise.reject(new Map<string, string>());
-      }
-    }
+    logger: Logger, appDirView: FsView,
+    baseImage: string): Promise<Map<string, string>> {
+  try {
+    const setup = await detectSetup(logger, appDirView);
+    return await generateFiles(appDirView, setup, baseImage);
+  } catch (e) {
+    logger.error(`Application detection failed: ${e}`);
+    process.exit(1);
+    return Promise.reject(new Map<string, string>());
+  }
+}
 
 // exported for testing
 /**
@@ -81,15 +81,14 @@ async function generateConfigs(
  * @param args The arguments to parse
  * @return The application directory and runtime image specified in the args
  */
-export function
-parseArgs(args?: string[]):
+export function parseArgs(args?: string[]):
     {appDir: string, runtimeImage: string} {
-      let parsedArgs = PARSER.parseArgs(args);
-      return {
-        appDir: parsedArgs.app_dir[0],
-        runtimeImage: parsedArgs.runtime_image[0]
-      };
-    }
+  let parsedArgs = PARSER.parseArgs(args);
+  return {
+    appDir: parsedArgs.app_dir[0],
+    runtimeImage: parsedArgs.runtime_image[0]
+  };
+}
 
 // Only run the code if this file was invoked from the command line
 // (i.e. not required).
