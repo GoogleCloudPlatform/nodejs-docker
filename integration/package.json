@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test"
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc -p .",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run check",
+    "test": "mocha -r source-map-support/register build/test/**/*.js --reporter spec --timeout 25000"
   },
   "author": "",
   "license": "ISC",
@@ -13,18 +20,12 @@
     "@types/node": "^8.0.26",
     "@types/request": "^2.0.3",
     "@types/uuid": "^3.4.1",
-    "clang-format": "^1.0.55",
-    "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-clang-format": "^1.0.23",
-    "gulp-mocha": "^4.3.1",
-    "gulp-sourcemaps": "^2.6.1",
-    "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^3.2.2",
+    "gts": "latest",
+    "mocha": "^4.0.1",
     "request": "^2.81.0",
     "source-map-support": "^0.4.16",
     "tslint": "^5.7.0",
-    "typescript": "^2.5.2",
+    "typescript": "^2.5.3",
     "uuid": "^3.1.0"
   }
 }

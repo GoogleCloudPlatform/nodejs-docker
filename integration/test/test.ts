@@ -23,14 +23,15 @@ import * as request from 'request';
 import * as util from 'util';
 import * as uuid from 'uuid';
 
-const DOCKER_BUILD_TIMEOUT = 10 * 60 * 1000; // ms
+const DOCKER_BUILD_TIMEOUT = 10 * 60 * 1000;  // ms
 const DOCKER_RUN_TIMEOUT = 3000;
 const PORT = 8080;
 
 const TAG_PREFIX = 'test/nodejs-docker/integration';
 const RUNTIME_TAG = `${TAG_PREFIX}/runtime`;
-const GEN_DOCKERFILE_DIR = path.join(__dirname, '..', '..', '..', 'builder',
-                                     'steps', 'gen-dockerfile', 'contents');
+const GEN_DOCKERFILE_DIR = path.join(
+    __dirname, '..', '..', '..', 'builder', 'steps', 'gen-dockerfile',
+    'contents');
 const GEN_DOCKERFILE_FILE =
     path.join(GEN_DOCKERFILE_DIR, 'build', 'src', 'main.js');
 
@@ -45,36 +46,36 @@ interface TestConfig {
 
 const CONFIGURATIONS: TestConfig[] = [
   {
-    description : 'Should run a basic app',
-    directoryName : 'hello-world',
-    expectedRunStdout : 'Hello World',
-    expectedRunStderr : ''
+    description: 'Should run a basic app',
+    directoryName: 'hello-world',
+    expectedRunStdout: 'Hello World',
+    expectedRunStderr: ''
   },
   {
-    description : 'Should install the single npm version specified',
-    directoryName : 'custom-npm-simple',
-    expectedRunStdout : '5.4.1\n',
-    expectedRunStderr : ''
+    description: 'Should install the single npm version specified',
+    directoryName: 'custom-npm-simple',
+    expectedRunStdout: '5.4.1\n',
+    expectedRunStderr: ''
   },
   {
-    description : 'Should install the correct npm version if a complex ' +
-                      'semver string is specified',
-    directoryName : 'custom-npm-complex',
-    expectedRunStdout : '5.4.1\n',
-    expectedRunStderr : ''
+    description: 'Should install the correct npm version if a complex ' +
+        'semver string is specified',
+    directoryName: 'custom-npm-complex',
+    expectedRunStdout: '5.4.1\n',
+    expectedRunStderr: ''
   },
   {
-    description : 'Should install the single yarn version specified',
-    directoryName : 'custom-yarn-simple',
-    expectedRunStdout : '0.26.0\n',
-    expectedRunStderr : ''
+    description: 'Should install the single yarn version specified',
+    directoryName: 'custom-yarn-simple',
+    expectedRunStdout: '0.26.0\n',
+    expectedRunStderr: ''
   },
   {
-    description : 'Should install the correct yarn version if a complex ' +
-                      'semver string is specified',
-    directoryName : 'custom-yarn-complex',
-    expectedRunStdout : '0.20.4\n',
-    expectedRunStderr : ''
+    description: 'Should install the correct yarn version if a complex ' +
+        'semver string is specified',
+    directoryName: 'custom-yarn-complex',
+    expectedRunStdout: '0.20.4\n',
+    expectedRunStderr: ''
   }
 ];
 
@@ -88,11 +89,13 @@ function log(message: string): void {
 declare type RunCallback =
     (err: Error|null, stdout?: string, stderr?: string) => void;
 
-function run(cmd: string, args: string[], options: {[key: string]: any},
-             cb: RunCallback): void {
-  assert(!('stdio' in options),
-         'For the test framework to function correctly, the "stdio" property ' +
-             'cannot be specified when invoking a subprocess.');
+function run(
+    cmd: string, args: string[], options: {[key: string]: any},
+    cb: RunCallback): void {
+  assert(
+      !('stdio' in options),
+      'For the test framework to function correctly, the "stdio" property ' +
+          'cannot be specified when invoking a subprocess.');
 
   let stdout = '';
   let stderr = '';
@@ -118,30 +121,34 @@ function run(cmd: string, args: string[], options: {[key: string]: any},
 }
 
 function buildGenDockerfile(cb: RunCallback): void {
-  const options = {cwd : GEN_DOCKERFILE_DIR};
-  run('npm', [ 'install' ], options, (err) => {
+  const options = {cwd: GEN_DOCKERFILE_DIR};
+  run('npm', ['install'], options, (err) => {
     if (err) {
       return cb(err);
     }
-    run('npm', [ 'run', 'compile' ], options, cb);
+    run('npm', ['run', 'compile'], options, cb);
   });
 }
 
 function dockerBuild(tag: string, baseDir: string, cb: RunCallback): void {
-  run('docker', [ 'build', '-t', tag, baseDir ], {}, cb);
+  run('docker', ['build', '-t', tag, baseDir], {}, cb);
 }
 
 /**
  * Start a docker process for the given test
  */
-function runDocker(tag: string, name: string, port: number,
-                   callback: (host: string) => void) {
+function runDocker(
+    tag: string, name: string, port: number, callback: (host: string) => void) {
   let d = spawn(
       'docker',
-      [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
+      ['run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag]);
 
-  d.stdout.on('data', data => { log(data.toString()); });
-  d.stderr.on('data', data => { log(data.toString()); });
+  d.stdout.on('data', data => {
+    log(data.toString());
+  });
+  d.stderr.on('data', data => {
+    log(data.toString());
+  });
   d.on('error', (err) => {
     log(`Error spawning docker process: ${util.inspect(err)}`);
     assert.ifError(err);
@@ -179,29 +186,29 @@ function cleanDirectory(dirPath: string, cb: (err: Error|null) => void): void {
 describe('Runtime image and builder integration', () => {
   before(function(done) {
     this.timeout(DOCKER_BUILD_TIMEOUT);
-    dockerBuild(RUNTIME_TAG,
-                path.join(__dirname, '..', '..', '..', 'runtime-image'),
-                (err1) => {
-                  if (err1) {
-                    return done(err1);
-                  }
-                  buildGenDockerfile(done);
-                });
+    dockerBuild(
+        RUNTIME_TAG, path.join(__dirname, '..', '..', '..', 'runtime-image'),
+        (err1) => {
+          if (err1) {
+            return done(err1);
+          }
+          buildGenDockerfile(done);
+        });
   });
 
   CONFIGURATIONS.forEach((config) => {
     describe(`For directory ${config.directoryName}`, () => {
       const containerName = uuid.v4();
-      const appDir = path.join(__dirname, '..', '..', 'test', 'definitions',
-                               config.directoryName);
+      const appDir = path.join(
+          __dirname, '..', '..', 'test', 'definitions', config.directoryName);
       const tag = `${TAG_PREFIX}/${config.directoryName}`;
       let buildStdout = '';
       let buildStderr = '';
       before(function(done) {
         this.timeout(DOCKER_BUILD_TIMEOUT);
-        cleanDirectory(appDir, (err) => {
-          if (err) {
-            return done(err);
+        cleanDirectory(appDir, (err1) => {
+          if (err1) {
+            return done(err1);
           }
 
           run('node',
@@ -209,16 +216,16 @@ describe('Runtime image and builder integration', () => {
                 GEN_DOCKERFILE_FILE, '--runtime-image', RUNTIME_TAG,
                 '--app-dir', appDir
               ],
-              {cwd : appDir}, (err) => {
-                if (err) {
-                  return done(err);
+              {cwd: appDir}, (err2) => {
+                if (err2) {
+                  return done(err2);
                 }
 
                 dockerBuild(
                     tag, appDir,
-                    (err: Error|null, stdout: string, stderr: string) => {
-                      if (err) {
-                        return done(err);
+                    (err3: Error|null, stdout: string, stderr: string) => {
+                      if (err3) {
+                        return done(err3);
                       }
 
                       buildStdout = stdout;
