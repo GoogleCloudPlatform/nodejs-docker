@@ -85,6 +85,20 @@ function eachOf(expectedLogs: string[]): StringArrayVerifier {
   };
 }
 
+function noneOf(givenLogs: string[]): StringArrayVerifier {
+  return (acutalLogs: string[]) => {
+    const notExpected = new Set(givenLogs);
+    const found = new Set();
+    for (let actual of acutalLogs) {
+      if (notExpected.has(actual)) {
+        found.add(actual);
+      }
+    }
+
+    assert.deepEqual(Array.from(found), []);
+  };
+}
+
 describe('detectSetup', () => {
   function performTest(testConfig: TestConfig) {
     it(testConfig.title, async () => {
@@ -768,6 +782,28 @@ describe('detectSetup', () => {
     });
 
     performTest({
+      title: 'should not warn of node version if pinned to a node version',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({engines: {node: 'something'}})
+        },
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: noneOf([NODE_VERSION_WARNING]),
+      expectedResult: {
+        canInstallDeps: true,
+        nodeVersion: 'something',
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
       title: 'should warn of upcoming Node version update with package.json',
       locations: [
         {path: 'package.json', exists: true, contents: '{}'},
@@ -796,6 +832,29 @@ describe('detectSetup', () => {
       expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
       expectedResult: {
         canInstallDeps: false,
+        useYarn: false,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should not warn of upcoming Node version update if pinned ' +
+          'to a node version',
+      locations: [
+        {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({engines: {node: 'something'}})
+        },
+        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
+        {path: 'yarn.lock', exists: false},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedErrors: noneOf([NODE_TO_UPDATE_WARNING]),
+      expectedResult: {
+        canInstallDeps: true,
+        nodeVersion: 'something',
         useYarn: false,
         appYamlPath: DEFAULT_APP_YAML
       }
