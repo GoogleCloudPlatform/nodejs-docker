@@ -137,6 +137,12 @@ function exactly(expected: string): StringVerifier {
   };
 }
 
+function notContains(expected: string): StringVerifier {
+  return (actual?: string) => {
+    return actual !== undefined && !actual.includes(expected);
+  };
+}
+
 async function runTest(testConfig: TestConfig) {
   const appView = new MockView([]);
   const files = await generateFiles(appView, testConfig.config, BASE_IMAGE);
@@ -622,6 +628,18 @@ COPY --from=build_step /app .
 CMD npm start
 `),
          expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
+       });
+     });
+
+     it('should not generate for a build command if not specified', async () => {
+       await runTest({
+        config: {
+          canInstallDeps: true,
+          useYarn: false,
+          hasBuildCommand: false,
+          appYamlPath: DEFAULT_APP_YAML
+        },
+        expectedDockerfile: notContains(BUILD_COMMAND)
        });
      });
   });
