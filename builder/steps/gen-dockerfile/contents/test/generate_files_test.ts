@@ -127,7 +127,7 @@ interface VerifiableLocation {
 function hasLocation(locationArr: Location[], location: VerifiableLocation) {
   return locationArr.findIndex(loc => {
     return loc && loc.exists === location.exists &&
-      loc.path === location.path && location.contents(loc.contents);
+        loc.path === location.path && location.contents(loc.contents);
   }) !== -1;
 }
 
@@ -220,7 +220,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START),
+           expectedDockerfile:
+               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -236,7 +237,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START),
+           expectedDockerfile:
+               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -284,7 +286,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START),
+           expectedDockerfile:
+               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -300,7 +303,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START),
+           expectedDockerfile:
+               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -316,8 +320,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile:
-             exactly(BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
+           expectedDockerfile: exactly(
+               BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -333,8 +337,9 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile:
-             exactly(BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START),
+           expectedDockerfile: exactly(
+               BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS +
+               YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -350,7 +355,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS +
+           expectedDockerfile: exactly(
+               BASE + UPGRADE_NODE + COPY_CONTENTS +
                NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -367,7 +373,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS +
+           expectedDockerfile: exactly(
+               BASE + UPGRADE_NODE + COPY_CONTENTS +
                YARN_INSTALL_PRODUCTION_DEPS + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -384,8 +391,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile:
-             exactly(BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
+           expectedDockerfile: exactly(
+               BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -401,8 +408,9 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile:
-             exactly(BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START),
+           expectedDockerfile: exactly(
+               BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS +
+               YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -418,7 +426,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS +
+           expectedDockerfile: exactly(
+               BASE + UPGRADE_NODE + COPY_CONTENTS +
                NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -435,7 +444,8 @@ describe('generateFiles', async () => {
              appYamlPath: DEFAULT_APP_YAML,
              hasBuildCommand: false
            },
-           expectedDockerfile: exactly(BASE + UPGRADE_NODE + COPY_CONTENTS +
+           expectedDockerfile: exactly(
+               BASE + UPGRADE_NODE + COPY_CONTENTS +
                YARN_INSTALL_PRODUCTION_DEPS + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -482,8 +492,9 @@ describe('generateFiles', async () => {
           appYamlPath: DEFAULT_APP_YAML,
           hasBuildCommand: false
         },
-        expectedDockerfile: exactly(BASE + INSTALL_NPM + COPY_CONTENTS +
-            NPM_INSTALL_PRODUCTION_DEPS + NPM_START)
+        expectedDockerfile: exactly(
+            BASE + INSTALL_NPM + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS +
+            NPM_START)
       });
     });
 
@@ -496,8 +507,8 @@ describe('generateFiles', async () => {
           appYamlPath: DEFAULT_APP_YAML,
           hasBuildCommand: false
         },
-        expectedDockerfile:
-          exactly(BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START)
+        expectedDockerfile: exactly(
+            BASE + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS + NPM_START)
       });
     });
   });
@@ -512,8 +523,9 @@ describe('generateFiles', async () => {
           appYamlPath: DEFAULT_APP_YAML,
           hasBuildCommand: false
         },
-        expectedDockerfile: exactly(BASE + INSTALL_YARN + COPY_CONTENTS +
-            YARN_INSTALL_PRODUCTION_DEPS + YARN_START)
+        expectedDockerfile: exactly(
+            BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS +
+            YARN_START)
       });
     });
 
@@ -526,8 +538,8 @@ describe('generateFiles', async () => {
           appYamlPath: DEFAULT_APP_YAML,
           hasBuildCommand: false
         },
-        expectedDockerfile:
-          exactly(BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START)
+        expectedDockerfile: exactly(
+            BASE + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS + YARN_START)
       });
     });
   });
@@ -544,7 +556,8 @@ describe('generateFiles', async () => {
               appYamlPath: DEFAULT_APP_YAML,
               hasBuildCommand: false
             },
-            expectedDockerfile: exactly(BASE + INSTALL_NPM + COPY_CONTENTS +
+            expectedDockerfile: exactly(
+                BASE + INSTALL_NPM + COPY_CONTENTS +
                 NPM_INSTALL_PRODUCTION_DEPS + NPM_START)
           });
         });
@@ -559,7 +572,8 @@ describe('generateFiles', async () => {
               appYamlPath: DEFAULT_APP_YAML,
               hasBuildCommand: false
             },
-            expectedDockerfile: exactly(BASE + INSTALL_YARN + COPY_CONTENTS +
+            expectedDockerfile: exactly(
+                BASE + INSTALL_YARN + COPY_CONTENTS +
                 YARN_INSTALL_PRODUCTION_DEPS + YARN_START)
           });
         });
@@ -606,9 +620,9 @@ RUN npm install --unsafe-perm || \\
     fi) && false)
 CMD npm start
 `),
-         expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
+           expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
+         });
        });
-     });
 
     it('should generate correctly with a build command specified and cannot ' +
            'install deps',
@@ -627,12 +641,12 @@ FROM build_step
 COPY --from=build_step /app .
 CMD npm start
 `),
-         expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
+           expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
+         });
        });
-     });
 
-     it('should not generate for a build command if not specified', async () => {
-       await runTest({
+    it('should not generate for a build command if not specified', async () => {
+      await runTest({
         config: {
           canInstallDeps: true,
           useYarn: false,
@@ -640,7 +654,7 @@ CMD npm start
           appYamlPath: DEFAULT_APP_YAML
         },
         expectedDockerfile: notContains(BUILD_COMMAND)
-       });
-     });
+      });
+    });
   });
 });
