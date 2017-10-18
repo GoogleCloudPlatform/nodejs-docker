@@ -887,6 +887,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -905,6 +906,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -927,6 +929,7 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         nodeVersion: 'something',
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -944,6 +947,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -961,6 +965,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -984,6 +989,7 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         nodeVersion: 'something',
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
