@@ -548,17 +548,18 @@ describe('generateFiles', async () => {
         });
       });
 
-  it('should generate correctly with a build command specified and can ' +
-         'install deps',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: true,
-           useYarn: false,
-           hasBuildCommand: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: `FROM ${BASE_IMAGE} as build_step
+  describe('should handle build commands', async () => {
+    it('should generate correctly with a build command specified and can ' +
+           'install deps',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: true,
+             useYarn: false,
+             hasBuildCommand: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: `FROM ${BASE_IMAGE} as build_step
 COPY . /app/
 # You have to specify "--unsafe-perm" with npm install
 # when running as root.  Failing to do this can cause
@@ -592,17 +593,17 @@ CMD npm start
        });
      });
 
-  it('should generate correctly with a build command specified and cannot ' +
-         'install deps',
-     async () => {
-       await runTest({
-         config: {
-           canInstallDeps: false,
-           useYarn: false,
-           hasBuildCommand: true,
-           appYamlPath: DEFAULT_APP_YAML
-         },
-         expectedDockerfile: `FROM ${BASE_IMAGE} as build_step
+    it('should generate correctly with a build command specified and cannot ' +
+           'install deps',
+       async () => {
+         await runTest({
+           config: {
+             canInstallDeps: false,
+             useYarn: false,
+             hasBuildCommand: true,
+             appYamlPath: DEFAULT_APP_YAML
+           },
+           expectedDockerfile: `FROM ${BASE_IMAGE} as build_step
 COPY . /app/
 RUN ${BUILD_COMMAND}
 FROM build_step
@@ -612,4 +613,5 @@ CMD npm start
          expectedDockerignore: DEFAULT_DOCKERIGNORE
        });
      });
+  });
 });
