@@ -24,7 +24,4 @@ pushd $(dirname $0)/.. > /dev/null
 npm install
 npm test
 
-EXT_RUN_SH=./bin/ext_run.sh
-curl https://raw.githubusercontent.com/GoogleCloudPlatform/runtimes-common/master/structure_tests/ext_run.sh > ${EXT_RUN_SH}
-chmod +x ${EXT_RUN_SH}
-${EXT_RUN_SH} -i test/nodejs -v --config test/test_config.yaml
+./bin/ext_run.sh -i test/nodejs -v --config test/test_config.yaml
