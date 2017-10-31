@@ -1,0 +1,6 @@
+FROM debian:8
+
+WORKDIR /workspace
+CMD ./bin/gen_keys.sh && \
+    (cat ./contents/KEYS | gpg --dearmor > /tmp/keys) && \
+    gpg --keyring /tmp/keys --list-keys --keyid-format long
