@@ -44,12 +44,12 @@ const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
     'a supported Node.js version.  Please pin your application to a major ' +
     'version of the Node.js runtime.  To learn more, visit ' +
     'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
-const NODE_TO_UPDATE_WARNING = 'WARNING: The default Node.js version will be ' +
-    'updated to version 8 shortly after Node 8 enters Long Term Support.  ' +
-    'Since you have not pinned your application to a major version of the ' +
-    'Node.js runtime, your application will, at that time, automatically use ' +
-    'Node 8.  To learn how to pin to a version of the Node.js runtime see ' +
-    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const NODE_UPDATED_WARNING = 'WARNING: The default Node.js major version ' +
+    'is now Node 8 (instead of Node 6) because Node 8 has entered Long Term ' +
+    'Support.  Since you have not pinned your application to a major ' +
+    'version of the Node.js runtime, your application will automatically ' +
+    'use Node 8.  To learn how to pin to a version of the Node.js runtime ' +
+    'see https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 interface TestConfig {
   title: string;
@@ -182,7 +182,7 @@ describe('detectSetup', () => {
       ],
       expectedLogs: exactly(
           ['Checking for Node.js.', 'node.js checker: No package.json file.']),
-      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+      expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
       expectedResult: undefined,
       expectedThrownErrMessage: new RegExp(
           'node.js checker: Neither "start" in the ' +
@@ -205,8 +205,7 @@ describe('detectSetup', () => {
           expectedLogs: exactly([
             'Checking for Node.js.', 'node.js checker: No package.json file.'
           ]),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: false,
             useYarn: false,
@@ -226,8 +225,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: exactly(['Checking for Node.js.']),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -251,8 +249,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: exactly(['Checking for Node.js.']),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -271,8 +268,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: exactly(['Checking for Node.js.']),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -295,8 +291,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: exactly(['Checking for Node.js.']),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -324,8 +319,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: exactly(['Checking for Node.js.']),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
@@ -349,8 +343,7 @@ describe('detectSetup', () => {
             {path: 'package-lock.json', exists: false}
           ],
           expectedLogs: exactly(['Checking for Node.js.']),
-          expectedErrors:
-              exactly([NODE_VERSION_WARNING, NODE_TO_UPDATE_WARNING]),
+          expectedErrors: exactly([NODE_VERSION_WARNING, NODE_UPDATED_WARNING]),
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
@@ -812,7 +805,7 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
+      expectedErrors: eachOf([NODE_UPDATED_WARNING]),
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
@@ -829,7 +822,7 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedErrors: eachOf([NODE_TO_UPDATE_WARNING]),
+      expectedErrors: eachOf([NODE_UPDATED_WARNING]),
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
@@ -851,7 +844,7 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: false},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedErrors: noneOf([NODE_TO_UPDATE_WARNING]),
+      expectedErrors: noneOf([NODE_UPDATED_WARNING]),
       expectedResult: {
         canInstallDeps: true,
         nodeVersion: 'something',

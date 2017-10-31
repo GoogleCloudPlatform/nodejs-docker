@@ -10,11 +10,11 @@ commandTests:
 
 - name: 'Node Version'
   command: ['node', '-v']
-  expectedOutput: ['v6.11.5\n']
+  expectedOutput: ['v8.9.0\n']
 
 - name: 'Custom Node Version'
   setup: [['install_node', 'v5.9.0']]
-  teardown: [['install_node', 'v6.11.5']]
+  teardown: [['install_node', 'v8.9.0']]
   command: ['node', '-v']
   expectedOutput: ['v5.9.0\n']
 

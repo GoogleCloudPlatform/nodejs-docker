@@ -39,12 +39,12 @@ const NODE_VERSION_WARNING = 'WARNING:  Your package.json does not specify ' +
     'a supported Node.js version.  Please pin your application to a major ' +
     'version of the Node.js runtime.  To learn more, visit ' +
     'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
-const NODE_TO_UPDATE_WARNING = 'WARNING: The default Node.js version will be ' +
-    'updated to version 8 shortly after Node 8 enters Long Term Support.  ' +
-    'Since you have not pinned your application to a major version of the ' +
-    'Node.js runtime, your application will, at that time, automatically use ' +
-    'Node 8.  To learn how to pin to a version of the Node.js runtime see ' +
-    'https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const NODE_UPDATED_WARNING = 'WARNING: The default Node.js major version ' +
+    'is now Node 8 (instead of Node 6) because Node 8 has entered Long Term ' +
+    'Support.  Since you have not pinned your application to a major ' +
+    'version of the Node.js runtime, your application will automatically ' +
+    'use Node 8.  To learn how to pin to a version of the Node.js runtime ' +
+    'see https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
 
 /**
  * Encapsulates the information about the Node.js application detected by
@@ -203,12 +203,7 @@ export async function detectSetup(
 
   if (!nodeVersion) {
     warn(NODE_VERSION_WARNING);
-    // This warning should be printed until the runtime has been updated to
-    // use Node 8 by default.  At that time, the warning should be updated
-    // to state that the runtime has been updated to use Node 8 instead of
-    // Node 6.  That warning message should persist for a month after the
-    // change to Node 8.
-    warn(NODE_TO_UPDATE_WARNING);
+    warn(NODE_UPDATED_WARNING);
   }
 
   if (!gotScriptsStart && !(await fsview.exists('server.js'))) {
