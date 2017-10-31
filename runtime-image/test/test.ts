@@ -18,11 +18,6 @@ const PORT = 8080;
 
 const GPG_KEYS = `/tmp/keys
 ---------
-pub   2048R/C273792F7D83545D 2013-11-18
-uid                          Rod Vagg <rod@vagg.org>
-uid                          Rod Vagg <r@va.gg>
-sub   2048R/1BDC911B8B6AED76 2013-11-18
-
 pub   4096R/7434390BDBE9B9C5 2015-07-21 [expires: 2019-07-21]
 uid                          Colin Ihrig <cjihrig@gmail.com>
 sub   4096R/4FEC3ECC9B596CE2 2015-07-21 [expires: 2019-07-21]
@@ -38,6 +33,11 @@ uid                          James M Snell <jasnell@gmail.com>
 uid                          James M Snell <jasnell@us.ibm.com>
 sub   2048R/7341B15C070877AC 2014-11-10 [expires: 2022-11-08]
 sub   2048R/8975BA8B6100C6B1 2014-11-10 [expires: 2022-11-08]
+
+pub   2048R/C273792F7D83545D 2013-11-18
+uid                          Rod Vagg <rod@vagg.org>
+uid                          Rod Vagg <r@va.gg>
+sub   2048R/1BDC911B8B6AED76 2013-11-18
 
 pub   4096R/E73BC641CC11F4C8 2016-01-12
 uid                          Myles Borins <myles.borins@gmail.com>
@@ -72,7 +72,11 @@ pub   1024D/7D33FF9D0246406D 2006-01-18 [expired: 2016-03-26]
 uid                          Timothy J Fontaine (Personal) <tjfontaine@gmail.com>
 uid                          Timothy J Fontaine (OFTC) <tjfontaine@oftc.net>
 uid                          Timothy J Fontaine (Work) <tj.fontaine@joyent.com>
-uid                          Timothy J Fontaine (Personal Key) <tjfontaine@atxconsulting.com>`;
+uid                          Timothy J Fontaine (Personal Key) <tjfontaine@atxconsulting.com>
+
+pub   4096R/B01FBB92821C587A 2016-10-07
+uid                          Gibson Fahnestock <gibfahn@gmail.com>
+sub   4096R/919AC8A92C482931 2016-10-07`;
 
 interface TestConfig {
   description: string;

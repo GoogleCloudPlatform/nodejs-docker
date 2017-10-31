@@ -223,13 +223,13 @@ describe('Runtime image and builder integration', () => {
 
                 dockerBuild(
                     tag, appDir,
-                    (err3: Error|null, stdout: string, stderr: string) => {
+                    (err3: Error|null, stdout?: string, stderr?: string) => {
                       if (err3) {
                         return done(err3);
                       }
 
-                      buildStdout = stdout;
-                      buildStderr = stderr;
+                      buildStdout = stdout || '';
+                      buildStderr = stderr || '';
 
                       done();
                     });
