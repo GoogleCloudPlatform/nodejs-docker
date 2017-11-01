@@ -5,6 +5,7 @@
     "test": "gulp test"
   },
   "devDependencies": {
+    "@types/async": "^2.0.45",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
     "@types/node-uuid": "0.0.28",

@@ -88,51 +88,14 @@ gulp.task('test.compile', [ 'compile' ], () => {
       .pipe(gulp.dest(`${outDir}/`));
 });
 
-function dockerBuild(tag, baseDir, cb) {
-  spawn('docker', [ 'build', '-t', tag, baseDir ], {
-    stdio : 'inherit'
-  }).on('close', cb);
-}
-
-gulp.task('test.prepare',
-          [ 'test.compile', 'test.check-format', 'test.check-lint' ], cb => {
-            const baseDir = __dirname;
-            const testDir = path.join(baseDir, 'test', 'definitions');
-            dockerBuild('test/nodejs', baseDir, () => {
-              fs.readdir(testDir, 'utf8', (err, items) => {
-                if (err) {
-                  return cb(err);
-                }
-
-                const buildDirs =
-                    items
-                        .filter(pathname => {
-                          // TODO: When the infrastructure is available, update
-                          //       the tests so that integration testing is
-                          //       also done.
-                          return pathname !== 'integration' &&
-                                 fs.lstatSync(path.join(testDir, pathname))
-                                     .isDirectory();
-                        })
-                        .map(pathname => {
-                          return (cb) => {
-                            dockerBuild(`test/definitions/${pathname}`,
-                                        path.join(testDir, pathname), cb);
-                          };
-                        });
-
-                async.series(buildDirs, (err) => { cb(err); });
-              });
-            });
+gulp.task('test.unit',
+          [ 'test.compile', 'test.check-format', 'test.check-lint' ], () => {
+            return gulp.src([ `${outDir}/test/**/*.js` ]).pipe(mocha({
+              reporter : 'spec',
+              timeout : 25000,
+              require : 'source-map-support/register'
+            }));
           });
-
-gulp.task('test.unit', [ 'test.prepare' ], () => {
-  return gulp.src([ `${outDir}/test/**/*.js` ]).pipe(mocha({
-    reporter : 'spec',
-    timeout : 25000,
-    require : 'source-map-support/register'
-  }));
-});
 
 gulp.task('watch', () => {
   exitOnError = false;

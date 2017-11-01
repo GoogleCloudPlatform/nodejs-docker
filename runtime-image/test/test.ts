@@ -1,8 +1,11 @@
 
 import * as assert from 'assert';
+import * as async from 'async';
 import {spawn} from 'child_process';
 import {exec} from 'child_process';
+import * as fs from 'fs';
 import * as uuid from 'node-uuid';
+import * as path from 'path';
 import * as request from 'request';
 import * as util from 'util';
 
@@ -139,29 +142,33 @@ const CONFIGURATIONS: TestConfig[] = [
   }
 ];
 
-CONFIGURATIONS.forEach(config => {
-  describe(`nodejs-docker: Image ${config.tag}`, () => {
-    const containerName = uuid.v4();
-    it(config.description, function(done) {
-      this.timeout(2 * TIMEOUT);
-      runDocker(config.tag, containerName, PORT, host => {
-        // Wait for the docker container to start
-        setTimeout(() => {
-          request(`http://${host}:${PORT}`, (err, _, body) => {
-            assert.ifError(err);
-            assert.equal(body, config.expectedOutput);
-            done();
-          });
-        }, TIMEOUT);
-      });
-    });
+describe('runtime-image', () => {
+  before((done) => { prepareTest(done); });
 
-    after(done => {
-      exec(`docker stop ${containerName}`, (err, stdout, stderr) => {
-        log(stdout);
-        log(stderr);
-        assert.ifError(err);
-        done();
+  CONFIGURATIONS.forEach(config => {
+    describe(`nodejs-docker: Image ${config.tag}`, () => {
+      const containerName = uuid.v4();
+      it(config.description, function(done) {
+        this.timeout(2 * TIMEOUT);
+        runDocker(config.tag, containerName, PORT, host => {
+          // Wait for the docker container to start
+          setTimeout(() => {
+            request(`http://${host}:${PORT}`, (err, _, body) => {
+              assert.ifError(err);
+              assert.equal(body, config.expectedOutput);
+              done();
+            });
+          }, TIMEOUT);
+        });
+      });
+
+      after(done => {
+        exec(`docker stop ${containerName}`, (err, stdout, stderr) => {
+          log(stdout);
+          log(stderr);
+          assert.ifError(err);
+          done();
+        });
       });
     });
   });
@@ -190,4 +197,41 @@ function runDocker(tag: string, name: string, port: number,
   }
 
   callback(host);
+}
+
+function dockerBuild(tag: string, baseDir: string,
+                     cb: (err: Error|null) => void): void {
+  spawn('docker', [ 'build', '-t', tag, baseDir ], {
+    stdio : 'inherit'
+  }).on('close', cb);
+}
+
+function prepareTest(cb: (err1: Error|null) => void): void {
+  const baseDir = path.join(__dirname, '..', '..');
+  const testDir = path.join(baseDir, 'test', 'definitions');
+  dockerBuild('test/nodejs', baseDir, () => {
+    fs.readdir(testDir, 'utf8', (err2, items) => {
+      if (err2) {
+        return cb(err2);
+      }
+
+      const buildDirs =
+          items
+              .filter(pathname => {
+                // TODO: When the infrastructure is available, update
+                //       the tests so that integration testing is
+                //       also done.
+                return pathname !== 'integration' &&
+                       fs.lstatSync(path.join(testDir, pathname)).isDirectory();
+              })
+              .map(pathname => {
+                return () => {
+                  dockerBuild(`test/definitions/${pathname}`,
+                              path.join(testDir, pathname), cb);
+                };
+              });
+
+      async.series(buildDirs, (err3: Error|null) => { cb(err3); });
+    });
+  });
 }
