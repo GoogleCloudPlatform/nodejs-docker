@@ -27,7 +27,11 @@ if [ -z "${BUILDER_NAMESPACE}" -o -z "${BUILDER_TAG}" -o -z "${UPLOAD_TO_STAGING
 fi
 
 if [ "${BUILDER_TAG}" = "new" ]; then
-  BUILDER_TAG=$(date +%Y-%m-%d_%H_%M)
+  if [ -n "${TAG}" ]; then
+    BUILDER_TAG=${TAG}
+  else
+    BUILDER_TAG=$(date +%Y-%m-%d_%H_%M)
+  fi
 fi
 
 # Enter the steps directory so that all paths can be relative to that directory
