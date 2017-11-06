@@ -1,20 +1,19 @@
 
 import * as assert from 'assert';
-import {spawn} from 'child_process';
-import {exec} from 'child_process';
-import * as uuid from 'node-uuid';
 import * as request from 'request';
-import * as util from 'util';
-
-const DEBUG = false;
-function log(message: string): void {
-  if (DEBUG) {
-    console.log(message);
-  }
-}
+import * as Docker from 'dockerode';
 
 const TIMEOUT = 3000;
 const PORT = 8080;
+
+let host = 'localhost';
+if (process.env.DOCKER_HOST) {
+  host = process.env.DOCKER_HOST.split('//')[1].split(':')[0];
+}
+
+const docker = new Docker({
+  socketPath: process.env.DOCKER_SOCKET || '/var/run/docker.sock'
+});
 
 const GPG_KEYS = `/tmp/keys
 ---------
@@ -141,53 +140,55 @@ const CONFIGURATIONS: TestConfig[] = [
 
 CONFIGURATIONS.forEach(config => {
   describe(`nodejs-docker: Image ${config.tag}`, () => {
-    const containerName = uuid.v4();
-    it(config.description, function(done) {
-      this.timeout(2 * TIMEOUT);
-      runDocker(config.tag, containerName, PORT, host => {
-        // Wait for the docker container to start
-        setTimeout(() => {
-          request(`http://${host}:${PORT}`, (err, _, body) => {
-            assert.ifError(err);
-            assert.equal(body, config.expectedOutput);
-            done();
-          });
-        }, TIMEOUT);
-      });
+    let container: Docker.Container|undefined = undefined;
+    before(async (done) => {
+      container = await runDocker(config.tag, PORT);
+      done();
     });
 
-    after(done => {
-      exec(`docker stop ${containerName}`, (err, stdout, stderr) => {
-        log(stdout);
-        log(stderr);
-        assert.ifError(err);
-        done();
-      });
+    it(config.description, async function(done) {
+      this.timeout(2 * TIMEOUT);
+      setTimeout(() => {
+        request(`http://${host}:${PORT}`, (err, _, body) => {
+          assert.ifError(err);
+          assert.equal(body, config.expectedOutput);
+          done();
+        });
+      },TIMEOUT);
+    });
+
+    after(async (done) => {
+      if (container) {
+        await container.stop();
+        await container.remove();
+      }
+      done();
     });
   });
 });
 
-/**
- * Start a docker process for the given test
- */
-function runDocker(tag: string, name: string, port: number,
-                   callback: (host: string) => void) {
-  let d = spawn(
-      'docker',
-      [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
-
-  d.stdout.on('data', log);
-  d.stderr.on('data', log);
-  d.on('error', (err) => {
-    log(`Error spawning docker process: ${util.inspect(err)}`);
+function runDocker(tag: string, port: number): Promise<Docker.Container> {
+  return docker.createContainer({
+    Image: tag,
+    AttachStdin: false,
+    AttachStdout: true,
+    AttachStderr: true,
+    Tty: true,
+    ExposedPorts: {
+      [`${port}/tcp`]: {}
+    },
+    HostConfig: {
+      PortBindings: {
+        [`${port}/tcp`]: [
+          {
+            HostPort: `${port}`
+          }
+        ]
+      }
+    }
+  }).then((container) => {
+    return container.start();
+  }).catch((err) => {
     assert.ifError(err);
   });
-
-  // if using docker-machine, grab the hostname
-  let host = 'localhost';
-  if (process.env.DOCKER_HOST) {
-    host = process.env.DOCKER_HOST.split('//')[1].split(':')[0];
-  }
-
-  callback(host);
 }
