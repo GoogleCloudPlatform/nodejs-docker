@@ -192,9 +192,9 @@ describe('runtime image', () => {
 });
 
 function buildDocker(dir: string, tag: string): Promise<any> {
-  const stream = tar.pack(dir);
+  const tarStream = tar.pack(dir);
   return new Promise<any>((resolve, reject) => {
-    DOCKER.buildImage(stream, {t : tag}, (err1, stream) => {
+    DOCKER.buildImage(tarStream, {t : tag}, (err1, stream) => {
       if (err1) {
         return reject(err1);
       }
