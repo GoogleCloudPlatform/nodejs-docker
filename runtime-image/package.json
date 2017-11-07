@@ -8,7 +8,6 @@
     "@types/dockerode": "^2.5.1",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
-    "@types/node-uuid": "0.0.28",
     "@types/request": "0.0.45",
     "clang-format": "^1.0.50",
     "del": "^2.2.2",
@@ -23,6 +22,7 @@
     "mocha": "^2.4.5",
     "request": "^2.69.0",
     "source-map-support": "^0.4.15",
+    "tar-fs": "^1.16.0",
     "tslint": "^5.2.0",
     "typescript": "^2.3.2"
   }

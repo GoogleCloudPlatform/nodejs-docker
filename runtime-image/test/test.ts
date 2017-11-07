@@ -1,9 +1,13 @@
 
 import * as assert from 'assert';
-import * as request from 'request';
 import * as Docker from 'dockerode';
+import * as path from 'path';
+import * as request from 'request';
 
-const TIMEOUT = 3000;
+const tar: { pack: (dir: string) => any } = require('tar-fs');
+
+const RUN_TIMEOUT = 3000;
+const BUILD_TIMEOUT = 5*60*1000;
 const PORT = 8080;
 
 let host = 'localhost';
@@ -11,9 +15,17 @@ if (process.env.DOCKER_HOST) {
   host = process.env.DOCKER_HOST.split('//')[1].split(':')[0];
 }
 
-const docker = new Docker({
-  socketPath: process.env.DOCKER_SOCKET || '/var/run/docker.sock'
-});
+const DOCKER = new Docker(
+    {socketPath : process.env.DOCKER_SOCKET || '/var/run/docker.sock'});
+
+const ROOT = path.join(__dirname, '..', '..');
+
+const DEBUG = false;
+function log(message?: string): void {
+  if (DEBUG && message) {
+    process.stdout.write(message.endsWith('\n') ? message : message + '\n');
+  }
+}
 
 const GPG_KEYS = `/tmp/keys
 ---------
@@ -138,57 +150,86 @@ const CONFIGURATIONS: TestConfig[] = [
   }
 ];
 
-CONFIGURATIONS.forEach(config => {
-  describe(`nodejs-docker: Image ${config.tag}`, () => {
-    let container: Docker.Container|undefined = undefined;
-    before(async (done) => {
-      container = await runDocker(config.tag, PORT);
-      done();
-    });
+describe('runtime image', () => {
+  before(async function() {
+    this.timeout(BUILD_TIMEOUT);
+    await buildDocker(ROOT, 'test/nodejs');
+    const dir = path.join(ROOT, 'test', 'definitions', 'base-install-node');
+    await buildDocker(dir, 'test/definitions/base-install-node');
+  });
 
-    it(config.description, async function(done) {
-      this.timeout(2 * TIMEOUT);
-      setTimeout(() => {
-        request(`http://${host}:${PORT}`, (err, _, body) => {
-          assert.ifError(err);
-          assert.equal(body, config.expectedOutput);
-          done();
-        });
-      },TIMEOUT);
-    });
+  CONFIGURATIONS.forEach(config => {
+    describe(`Image ${config.tag}`, () => {
+      let container: Docker.Container|undefined = undefined;
+      before(async function() {
+        this.timeout(BUILD_TIMEOUT);
+        // converts a/b/c to a/b/c on Unix and a\b\c on Windows
+        const sysDepPath = path.join.apply(null, config.tag.split('/'));
+        const dir = path.join(ROOT, sysDepPath);
+        await buildDocker(dir, config.tag);
+        container = await runDocker(config.tag, PORT);
+      });
 
-    after(async (done) => {
-      if (container) {
-        await container.stop();
-        await container.remove();
-      }
-      done();
+      it(config.description, function(done) {
+        this.timeout(2 * RUN_TIMEOUT);
+        setTimeout(() => {
+          request(`http://${host}:${PORT}`, (err, _, body) => {
+            assert.ifError(err);
+            assert.equal(body, config.expectedOutput);
+            done();
+          });
+        }, RUN_TIMEOUT);
+      });
+
+      after(async () => {
+        if (container) {
+          await container.stop();
+          await container.remove();
+        }
+      });
     });
   });
 });
 
-function runDocker(tag: string, port: number): Promise<Docker.Container> {
-  return docker.createContainer({
-    Image: tag,
-    AttachStdin: false,
-    AttachStdout: true,
-    AttachStderr: true,
-    Tty: true,
-    ExposedPorts: {
-      [`${port}/tcp`]: {}
-    },
-    HostConfig: {
-      PortBindings: {
-        [`${port}/tcp`]: [
-          {
-            HostPort: `${port}`
-          }
-        ]
+function buildDocker(dir: string, tag: string): Promise<any> {
+  const stream = tar.pack(dir);
+  return new Promise<any>((resolve, reject) => {
+    DOCKER.buildImage(stream, { t: tag }, (err1, stream) => {
+      if (err1) {
+        return reject(err1);
       }
-    }
-  }).then((container) => {
-    return container.start();
-  }).catch((err) => {
-    assert.ifError(err);
+
+      function onFinished(err2: Error, output: any) {
+        if (err2) {
+          return reject(err2);
+        }
+
+        resolve(output);
+      }
+
+      function onProgress(event: any) {
+        log(event.stream);
+        log(event.status);
+        log(event.progress);
+      }
+
+      DOCKER.modem.followProgress(stream, onFinished, onProgress);
+    });
   });
+}
+
+function runDocker(tag: string, port: number): Promise<Docker.Container> {
+  return DOCKER
+      .createContainer({
+        Image : tag,
+        AttachStdin : false,
+        AttachStdout : true,
+        AttachStderr : true,
+        Tty : true,
+        ExposedPorts : {[`${port}/tcp`] : {}},
+        HostConfig :
+            {PortBindings : {[`${port}/tcp`] : [ {HostPort : `${port}`} ]}}
+      })
+      .then((container) => { return container.start(); })
+      .catch((err) => { assert.ifError(err); });
 }
