@@ -93,13 +93,14 @@ function dockerBuild(tag, baseDir, cb) {
   }).on('close', cb);
 }
 
-gulp.task('test.unit', [ 'test.compile', 'test.check-format', 'test.check-lint' ], () => {
-  return gulp.src([ `${outDir}/test/**/*.js` ]).pipe(mocha({
-    reporter : 'spec',
-    timeout : 25000,
-    require : 'source-map-support/register'
-  }));
-});
+gulp.task('test.unit',
+          [ 'test.compile', 'test.check-format', 'test.check-lint' ], () => {
+            return gulp.src([ `${outDir}/test/**/*.js` ]).pipe(mocha({
+              reporter : 'spec',
+              timeout : 25000,
+              require : 'source-map-support/register'
+            }));
+          });
 
 gulp.task('watch', () => {
   exitOnError = false;

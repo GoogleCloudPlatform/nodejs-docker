@@ -4,10 +4,10 @@ import * as Docker from 'dockerode';
 import * as path from 'path';
 import * as request from 'request';
 
-const tar: { pack: (dir: string) => any } = require('tar-fs');
+const tar: {pack: (dir: string) => any} = require('tar-fs');
 
 const RUN_TIMEOUT = 3000;
-const BUILD_TIMEOUT = 5*60*1000;
+const BUILD_TIMEOUT = 5 * 60 * 1000;
 const PORT = 8080;
 
 let host = 'localhost';
@@ -194,7 +194,7 @@ describe('runtime image', () => {
 function buildDocker(dir: string, tag: string): Promise<any> {
   const stream = tar.pack(dir);
   return new Promise<any>((resolve, reject) => {
-    DOCKER.buildImage(stream, { t: tag }, (err1, stream) => {
+    DOCKER.buildImage(stream, {t : tag}, (err1, stream) => {
       if (err1) {
         return reject(err1);
       }
