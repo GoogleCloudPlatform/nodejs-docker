@@ -1,20 +1,30 @@
 
 import * as assert from 'assert';
-import {spawn} from 'child_process';
-import {exec} from 'child_process';
-import * as uuid from 'node-uuid';
+import * as Docker from 'dockerode';
+import * as path from 'path';
 import * as request from 'request';
-import * as util from 'util';
+
+const tar: {pack: (dir: string) => any} = require('tar-fs');
+
+const RUN_TIMEOUT_MS = 3000;
+const BUILD_TIMEOUT_MS = 5 * 60 * 1000;
+const PORT = 8080;
+
+const host = process.env.DOCKER_HOST
+                 ? process.env.DOCKER_HOST.split('//')[1].split(':')[0]
+                 : 'localhost';
+
+const DOCKER = new Docker(
+    {socketPath : process.env.DOCKER_SOCKET || '/var/run/docker.sock'});
+
+const ROOT = path.join(__dirname, '..', '..');
 
 const DEBUG = false;
-function log(message: string): void {
-  if (DEBUG) {
-    console.log(message);
+function log(message?: string): void {
+  if (DEBUG && message) {
+    process.stdout.write(message.endsWith('\n') ? message : message + '\n');
   }
 }
-
-const TIMEOUT = 3000;
-const PORT = 8080;
 
 const GPG_KEYS = `/tmp/keys
 ---------
@@ -139,55 +149,86 @@ const CONFIGURATIONS: TestConfig[] = [
   }
 ];
 
-CONFIGURATIONS.forEach(config => {
-  describe(`nodejs-docker: Image ${config.tag}`, () => {
-    const containerName = uuid.v4();
-    it(config.description, function(done) {
-      this.timeout(2 * TIMEOUT);
-      runDocker(config.tag, containerName, PORT, host => {
-        // Wait for the docker container to start
+describe('runtime image', () => {
+  before(async function() {
+    this.timeout(BUILD_TIMEOUT_MS);
+    await buildDocker(ROOT, 'test/nodejs');
+    const dir = path.join(ROOT, 'test', 'definitions', 'base-install-node');
+    await buildDocker(dir, 'test/definitions/base-install-node');
+  });
+
+  CONFIGURATIONS.forEach(config => {
+    describe(`Image ${config.tag}`, () => {
+      let container: Docker.Container|undefined;
+      before(async function() {
+        this.timeout(BUILD_TIMEOUT_MS);
+        // converts a/b/c to a/b/c on Unix and a\b\c on Windows
+        const sysDepPath = path.join.apply(null, config.tag.split('/'));
+        const dir = path.join(ROOT, sysDepPath);
+        await buildDocker(dir, config.tag);
+        container = await runDocker(config.tag, PORT);
+      });
+
+      it(config.description, function(done) {
+        this.timeout(2 * RUN_TIMEOUT_MS);
         setTimeout(() => {
           request(`http://${host}:${PORT}`, (err, _, body) => {
             assert.ifError(err);
             assert.equal(body, config.expectedOutput);
             done();
           });
-        }, TIMEOUT);
+        }, RUN_TIMEOUT_MS);
       });
-    });
 
-    after(done => {
-      exec(`docker stop ${containerName}`, (err, stdout, stderr) => {
-        log(stdout);
-        log(stderr);
-        assert.ifError(err);
-        done();
+      after(async () => {
+        if (container) {
+          await container.stop();
+          await container.remove();
+        }
       });
     });
   });
 });
 
-/**
- * Start a docker process for the given test
- */
-function runDocker(tag: string, name: string, port: number,
-                   callback: (host: string) => void) {
-  let d = spawn(
-      'docker',
-      [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
+function buildDocker(dir: string, tag: string): Promise<any> {
+  const tarStream = tar.pack(dir);
+  return new Promise<any>((resolve, reject) => {
+    DOCKER.buildImage(tarStream, {t : tag}, (err1, stream) => {
+      if (err1) {
+        return reject(err1);
+      }
 
-  d.stdout.on('data', log);
-  d.stderr.on('data', log);
-  d.on('error', (err) => {
-    log(`Error spawning docker process: ${util.inspect(err)}`);
-    assert.ifError(err);
+      function onFinished(err2: Error, output: any) {
+        if (err2) {
+          return reject(err2);
+        }
+
+        resolve(output);
+      }
+
+      function onProgress(event: any) {
+        log(event.stream);
+        log(event.status);
+        log(event.progress);
+      }
+
+      DOCKER.modem.followProgress(stream, onFinished, onProgress);
+    });
   });
+}
 
-  // if using docker-machine, grab the hostname
-  let host = 'localhost';
-  if (process.env.DOCKER_HOST) {
-    host = process.env.DOCKER_HOST.split('//')[1].split(':')[0];
-  }
-
-  callback(host);
+function runDocker(tag: string, port: number): Promise<Docker.Container> {
+  return DOCKER
+      .createContainer({
+        Image : tag,
+        AttachStdin : false,
+        AttachStdout : true,
+        AttachStderr : true,
+        Tty : true,
+        ExposedPorts : {[`${port}/tcp`] : {}},
+        HostConfig :
+            {PortBindings : {[`${port}/tcp`] : [ {HostPort : `${port}`} ]}}
+      })
+      .then((container) => { return container.start(); })
+      .catch((err) => { assert.ifError(err); });
 }
