@@ -236,8 +236,8 @@ export async function detectSetup(
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
     useYarn: yarnLockExists,
-    hasBuildCommand: hasBuildCommand,
-    appYamlPath: appYamlPath
+    hasBuildCommand,
+    appYamlPath
   };
 
   // extend filters out undefined properties.
