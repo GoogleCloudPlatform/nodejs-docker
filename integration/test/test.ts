@@ -71,22 +71,20 @@ const CONFIGURATIONS: TestConfig[] = [
     expectedRunStderr: ''
   },
   {
-    description : 'Should install the correct yarn version if a complex ' +
-                      'semver string is specified',
-    directoryName : 'custom-yarn-complex',
-    expectedRunStdout : '0.20.4\n',
-    expectedRunStderr : ''
+    description: 'Should install the correct yarn version if a complex ' +
+        'semver string is specified',
+    directoryName: 'custom-yarn-complex',
+    expectedRunStdout: '0.20.4\n',
+    expectedRunStderr: ''
   },
   {
-    description : 'Should use a build command if specified',
-    directoryName : 'build-command',
-    expectedRunStdout : 'cp not-server.js server.js',
-    expectedRunStderr : '',
-    buildStdoutContains : [
-      `FROM ${RUNTIME_TAG} as build_step`,
-      'RUN npm run gcp-build',
-      'FROM build_step',
-      'COPY --from=build_step'
+    description: 'Should use a build command if specified',
+    directoryName: 'build-command',
+    expectedRunStdout: 'cp not-server.js server.js',
+    expectedRunStderr: '',
+    buildStdoutContains: [
+      `FROM ${RUNTIME_TAG} as build_step`, 'RUN npm run gcp-build',
+      'FROM build_step', 'COPY --from=build_step'
     ]
   }
 ];
@@ -251,7 +249,7 @@ describe('Runtime image and builder integration', () => {
 
       function verifyContains(text: string, contains?: string[]) {
         if (contains) {
-          for (let c of contains) {
+          for (const c of contains) {
             const index = text.indexOf(c);
             if (index < 0) {
               assert.fail(text, c, undefined, 'does not contain');
