@@ -218,12 +218,12 @@ export async function detectSetup(
   // passed to the `extend` function, the compiler cannot check
   // that the input is of type `Setup` since `extend` takes `Object`s.
   const setup: Setup = {
-    canInstallDeps: canInstallDeps,
+    canInstallDeps,
     npmVersion: escape(npmVersion),
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
     useYarn: yarnLockExists,
-    appYamlPath: appYamlPath
+    appYamlPath
   };
 
   // extend filters out undefined properties.

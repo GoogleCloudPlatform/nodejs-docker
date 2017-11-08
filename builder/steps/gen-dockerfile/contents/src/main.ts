@@ -21,7 +21,7 @@ import {FsView} from './fsview';
 import {generateFiles} from './generate_files';
 import {Logger} from './logger';
 
-let PARSER = new ArgumentParser({
+const PARSER = new ArgumentParser({
   version: require('../package.json').version,
   addHelp: true,
   description: 'Generates Dockerfile and .dockerignore files that can be ' +
@@ -83,7 +83,7 @@ async function generateConfigs(
  */
 export function parseArgs(args?: string[]):
     {appDir: string, runtimeImage: string} {
-  let parsedArgs = PARSER.parseArgs(args);
+  const parsedArgs = PARSER.parseArgs(args);
   return {
     appDir: parsedArgs.app_dir[0],
     runtimeImage: parsedArgs.runtime_image[0]

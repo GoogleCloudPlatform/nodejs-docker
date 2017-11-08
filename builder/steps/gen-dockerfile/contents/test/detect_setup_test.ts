@@ -77,7 +77,7 @@ function exactly(expectedLogs: string[]): StringArrayVerifier {
 function eachOf(expectedLogs: string[]): StringArrayVerifier {
   return (logs: string[]) => {
     const expected = new Set(expectedLogs);
-    for (let actual of logs) {
+    for (const actual of logs) {
       expected.delete(actual);
     }
 
@@ -89,7 +89,7 @@ function noneOf(givenLogs: string[]): StringArrayVerifier {
   return (acutalLogs: string[]) => {
     const notExpected = new Set(givenLogs);
     const found = new Set();
-    for (let actual of acutalLogs) {
+    for (const actual of acutalLogs) {
       if (notExpected.has(actual)) {
         found.add(actual);
       }
@@ -104,7 +104,7 @@ describe('detectSetup', () => {
     it(testConfig.title, async () => {
       const backupEnv = Object.assign({}, process.env);
       if (testConfig.env) {
-        for (let key in testConfig.env) {
+        for (const key in testConfig.env) {
           if (key) {
             process.env[key] = testConfig.env[key];
           }
@@ -138,7 +138,7 @@ describe('detectSetup', () => {
       }
 
       if (testConfig.env) {
-        for (let key in testConfig.env) {
+        for (const key in testConfig.env) {
           if (key) {
             delete process.env[key];
             if (backupEnv[key]) {

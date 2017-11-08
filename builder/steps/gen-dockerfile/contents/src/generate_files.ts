@@ -77,14 +77,12 @@ export async function generateFiles(
 
   // Generate the Dockerfile and remove any empty lines
   const dockerfileTemplate = await dataDirReader.read('Dockerfile.txt');
-  const dockerfile = renderTemplate(dockerfileTemplate, {
-    baseImage: baseImage,
-    tool: config.useYarn ? 'yarn' : 'npm',
-    config: config
-  });
+  const dockerfile = renderTemplate(
+      dockerfileTemplate,
+      {baseImage, tool: config.useYarn ? 'yarn' : 'npm', config});
 
   const dockerignoreTemplate = await dataDirReader.read('dockerignore');
-  const dockerignore = renderTemplate(dockerignoreTemplate, {config: config});
+  const dockerignore = renderTemplate(dockerignoreTemplate, {config});
 
   // Generate the Dockerfile and .dockerignore files
   await generateSingleFile(appDirWriter, genFiles, 'Dockerfile', dockerfile);
