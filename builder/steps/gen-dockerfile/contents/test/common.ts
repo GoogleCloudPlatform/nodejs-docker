@@ -45,7 +45,7 @@ export class MockView implements Reader, Writer, Locator {
   constructor(configurations: ReadonlyArray<Location>) {
     const paths = new Set<string>();
     const uniqueConfigs: Location[] = [];
-    for (let conf of configurations) {
+    for (const conf of configurations) {
       if (paths.has(conf.path)) {
         throw new Error(`Cannot specify the same path twice: ${
             JSON.stringify(conf, null, 2)}`);
@@ -87,6 +87,6 @@ export class MockView implements Reader, Writer, Locator {
   }
 
   async write(path: string, contents: string): Promise<void> {
-    this.pathsWritten.push({path: path, exists: true, contents: contents});
+    this.pathsWritten.push({path, exists: true, contents});
   }
 }

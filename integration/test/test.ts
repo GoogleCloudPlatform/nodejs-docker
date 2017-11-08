@@ -90,7 +90,7 @@ declare type RunCallback =
     (err: Error|null, stdout?: string, stderr?: string) => void;
 
 function run(
-    cmd: string, args: string[], options: {[key: string]: any},
+    cmd: string, args: string[], options: {[key: string]: {}},
     cb: RunCallback): void {
   assert(
       !('stdio' in options),
@@ -139,7 +139,7 @@ function dockerBuild(tag: string, baseDir: string, cb: RunCallback): void {
  */
 function runDocker(
     tag: string, name: string, port: number, callback: (host: string) => void) {
-  let d = spawn(
+  const d = spawn(
       'docker',
       ['run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag]);
 
