@@ -6,14 +6,13 @@ import * as request from 'request';
 
 const tar: {pack: (dir: string) => any} = require('tar-fs');
 
-const RUN_TIMEOUT = 3000;
-const BUILD_TIMEOUT = 5 * 60 * 1000;
+const RUN_TIMEOUT_MS = 3000;
+const BUILD_TIMEOUT_MS = 5 * 60 * 1000;
 const PORT = 8080;
 
-let host = 'localhost';
-if (process.env.DOCKER_HOST) {
-  host = process.env.DOCKER_HOST.split('//')[1].split(':')[0];
-}
+const host = process.env.DOCKER_HOST
+                 ? process.env.DOCKER_HOST.split('//')[1].split(':')[0]
+                 : 'localhost';
 
 const DOCKER = new Docker(
     {socketPath : process.env.DOCKER_SOCKET || '/var/run/docker.sock'});
@@ -152,7 +151,7 @@ const CONFIGURATIONS: TestConfig[] = [
 
 describe('runtime image', () => {
   before(async function() {
-    this.timeout(BUILD_TIMEOUT);
+    this.timeout(BUILD_TIMEOUT_MS);
     await buildDocker(ROOT, 'test/nodejs');
     const dir = path.join(ROOT, 'test', 'definitions', 'base-install-node');
     await buildDocker(dir, 'test/definitions/base-install-node');
@@ -160,9 +159,9 @@ describe('runtime image', () => {
 
   CONFIGURATIONS.forEach(config => {
     describe(`Image ${config.tag}`, () => {
-      let container: Docker.Container|undefined = undefined;
+      let container: Docker.Container|undefined;
       before(async function() {
-        this.timeout(BUILD_TIMEOUT);
+        this.timeout(BUILD_TIMEOUT_MS);
         // converts a/b/c to a/b/c on Unix and a\b\c on Windows
         const sysDepPath = path.join.apply(null, config.tag.split('/'));
         const dir = path.join(ROOT, sysDepPath);
@@ -171,14 +170,14 @@ describe('runtime image', () => {
       });
 
       it(config.description, function(done) {
-        this.timeout(2 * RUN_TIMEOUT);
+        this.timeout(2 * RUN_TIMEOUT_MS);
         setTimeout(() => {
           request(`http://${host}:${PORT}`, (err, _, body) => {
             assert.ifError(err);
             assert.equal(body, config.expectedOutput);
             done();
           });
-        }, RUN_TIMEOUT);
+        }, RUN_TIMEOUT_MS);
       });
 
       after(async () => {
