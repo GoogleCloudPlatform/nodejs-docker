@@ -1,8 +1,11 @@
 
 import * as assert from 'assert';
+import * as async from 'async';
 import {spawn} from 'child_process';
 import {exec} from 'child_process';
+import * as fs from 'fs';
 import * as uuid from 'node-uuid';
+import * as path from 'path';
 import * as request from 'request';
 import * as util from 'util';
 
@@ -86,82 +89,85 @@ interface TestConfig {
 
 const CONFIGURATIONS: TestConfig[] = [
   {
-    description : `serves traffic on port ${PORT}`,
-    tag : 'test/definitions/express',
-    expectedOutput : 'Hello World!'
+    description: `serves traffic on port ${PORT}`,
+    tag: 'test/definitions/express',
+    expectedOutput: 'Hello World!'
   },
   {
-    description : 'can install yarn locally',
-    tag : 'test/definitions/yarn-local',
-    expectedOutput : '0.18.0\n'
+    description: 'can install yarn locally',
+    tag: 'test/definitions/yarn-local',
+    expectedOutput: '0.18.0\n'
   },
   {
-    description : 'can install yarn globally',
-    tag : 'test/definitions/yarn-global',
-    expectedOutput : '0.18.0\n'
+    description: 'can install yarn globally',
+    tag: 'test/definitions/yarn-global',
+    expectedOutput: '0.18.0\n'
   },
   {
-    description : 'install_node installs and verifies verifiable Node versions',
-    tag : 'test/definitions/verifiable-node',
-    expectedOutput : 'v6.0.0'
+    description: 'install_node installs and verifies verifiable Node versions',
+    tag: 'test/definitions/verifiable-node',
+    expectedOutput: 'v6.0.0'
   },
   {
-    description :
-        'install_node still installs Node even if it cannot ' +
-            'be verified if --ingore-verification-failure is specified',
-    tag : 'test/definitions/unverifiable-node',
-    expectedOutput : 'v0.10.7'
+    description: 'install_node still installs Node even if it cannot ' +
+        'be verified if --ingore-verification-failure is specified',
+    tag: 'test/definitions/unverifiable-node',
+    expectedOutput: 'v0.10.7'
   },
   {
-    description :
-        'install_node aborts the installation if verification fails ' +
-            'and --ingore-verification-failure is not specified',
-    tag : 'test/definitions/verify-fail-aborts-install',
-    expectedOutput : 'v6.10.3'
+    description: 'install_node aborts the installation if verification fails ' +
+        'and --ingore-verification-failure is not specified',
+    tag: 'test/definitions/verify-fail-aborts-install',
+    expectedOutput: 'v6.10.3'
   },
   {
-    description :
-        'verify_node has a non-zero exit code if it is not supplied ' +
-            'the files it need for verification',
-    tag : 'test/definitions/verify-fail-without-files',
-    expectedOutput : 'Correctly failed verification'
+    description: 'verify_node has a non-zero exit code if it is not supplied ' +
+        'the files it need for verification',
+    tag: 'test/definitions/verify-fail-without-files',
+    expectedOutput: 'Correctly failed verification'
   },
   {
-    description : 'verify_node has a non-zero exit code if the checksum ' +
-                      'check fails',
-    tag : 'test/definitions/verify-fail-on-invalid-data',
-    expectedOutput : 'Correctly failed verification'
+    description: 'verify_node has a non-zero exit code if the checksum ' +
+        'check fails',
+    tag: 'test/definitions/verify-fail-on-invalid-data',
+    expectedOutput: 'Correctly failed verification'
   },
   {
-    description : 'verify the set of keys in the keyring',
-    tag : 'test/definitions/verify-gpg-keyring',
-    expectedOutput : GPG_KEYS
+    description: 'verify the set of keys in the keyring',
+    tag: 'test/definitions/verify-gpg-keyring',
+    expectedOutput: GPG_KEYS
   }
 ];
 
-CONFIGURATIONS.forEach(config => {
-  describe(`nodejs-docker: Image ${config.tag}`, () => {
-    const containerName = uuid.v4();
-    it(config.description, function(done) {
-      this.timeout(2 * TIMEOUT);
-      runDocker(config.tag, containerName, PORT, host => {
-        // Wait for the docker container to start
-        setTimeout(() => {
-          request(`http://${host}:${PORT}`, (err, _, body) => {
-            assert.ifError(err);
-            assert.equal(body, config.expectedOutput);
-            done();
-          });
-        }, TIMEOUT);
-      });
-    });
+describe('runtime-image', () => {
+  before((done) => {
+    prepareTest(done);
+  });
 
-    after(done => {
-      exec(`docker stop ${containerName}`, (err, stdout, stderr) => {
-        log(stdout);
-        log(stderr);
-        assert.ifError(err);
-        done();
+  CONFIGURATIONS.forEach(config => {
+    describe(`nodejs-docker: Image ${config.tag}`, () => {
+      const containerName = uuid.v4();
+      it(config.description, function(done) {
+        this.timeout(2 * TIMEOUT);
+        runDocker(config.tag, containerName, PORT, host => {
+          // Wait for the docker container to start
+          setTimeout(() => {
+            request(`http://${host}:${PORT}`, (err, _, body) => {
+              assert.ifError(err);
+              assert.equal(body, config.expectedOutput);
+              done();
+            });
+          }, TIMEOUT);
+        });
+      });
+
+      after(done => {
+        exec(`docker stop ${containerName}`, (err, stdout, stderr) => {
+          log(stdout);
+          log(stderr);
+          assert.ifError(err);
+          done();
+        });
       });
     });
   });
@@ -170,11 +176,11 @@ CONFIGURATIONS.forEach(config => {
 /**
  * Start a docker process for the given test
  */
-function runDocker(tag: string, name: string, port: number,
-                   callback: (host: string) => void) {
+function runDocker(
+    tag: string, name: string, port: number, callback: (host: string) => void) {
   let d = spawn(
       'docker',
-      [ 'run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag ]);
+      ['run', '--rm', '-i', '--name', name, '-p', `${port}:${port}`, tag]);
 
   d.stdout.on('data', log);
   d.stderr.on('data', log);
@@ -190,4 +196,44 @@ function runDocker(tag: string, name: string, port: number,
   }
 
   callback(host);
+}
+
+function dockerBuild(
+    tag: string, baseDir: string, cb: (err: Error|null) => void): void {
+  spawn('docker', ['build', '-t', tag, baseDir], {
+    stdio: 'inherit'
+  }).on('close', cb);
+}
+
+function prepareTest(cb: (err1: Error|null) => void): void {
+  const baseDir = path.join(__dirname, '..', '..');
+  const testDir = path.join(baseDir, 'test', 'definitions');
+  dockerBuild('test/nodejs', baseDir, () => {
+    fs.readdir(testDir, 'utf8', (err2, items) => {
+      if (err2) {
+        return cb(err2);
+      }
+
+      const buildDirs =
+          items
+              .filter(pathname => {
+                // TODO: When the infrastructure is available, update
+                //       the tests so that integration testing is
+                //       also done.
+                return pathname !== 'integration' &&
+                    fs.lstatSync(path.join(testDir, pathname)).isDirectory();
+              })
+              .map(pathname => {
+                return () => {
+                  dockerBuild(
+                      `test/definitions/${pathname}`,
+                      path.join(testDir, pathname), cb);
+                };
+              });
+
+      async.series(buildDirs as any, ((err3: Error|null) => {
+                                       cb(err3);
+                                     }) as any);
+    });
+  });
 }
