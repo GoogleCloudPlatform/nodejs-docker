@@ -4,7 +4,7 @@ import * as Docker from 'dockerode';
 import * as path from 'path';
 import * as request from 'request';
 
-const tar: {pack: (dir: string) => {}} = require('tar-fs');
+const tar: {pack: (dir: string) => NodeJS.ReadableStream} = require('tar-fs');
 
 const RUN_TIMEOUT_MS = 3000;
 const BUILD_TIMEOUT_MS = 5 * 60 * 1000;
@@ -203,7 +203,8 @@ function buildDocker(dir: string, tag: string): Promise<{}> {
         resolve(output);
       }
 
-      function onProgress(event: {}) {
+      function onProgress(
+          event: {stream?: string; status?: string; progress?: string;}) {
         log(event.stream);
         log(event.status);
         log(event.progress);
