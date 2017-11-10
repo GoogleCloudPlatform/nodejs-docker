@@ -219,14 +219,14 @@ async function buildDocker(dir: string, tag: string): Promise<{}> {
 
 async function runDocker(tag: string, port: number): Promise<Docker.Container> {
   const container = await DOCKER.createContainer({
-        Image: tag,
-        AttachStdin: false,
-        AttachStdout: true,
-        AttachStderr: true,
-        Tty: true,
-        ExposedPorts: {[`${port}/tcp`]: {}},
-        HostConfig: {PortBindings: {[`${port}/tcp`]: [{HostPort: `${port}`}]}}
-      });
-   await container.start();
-   return container;
+    Image: tag,
+    AttachStdin: false,
+    AttachStdout: true,
+    AttachStderr: true,
+    Tty: true,
+    ExposedPorts: {[`${port}/tcp`]: {}},
+    HostConfig: {PortBindings: {[`${port}/tcp`]: [{HostPort: `${port}`}]}}
+  });
+  await container.start();
+  return container;
 }
