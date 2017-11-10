@@ -17,12 +17,12 @@
     "@types/node": "^7.0.18",
     "@types/request": "0.0.45",
     "dockerode": "^2.5.3",
-    "gts": "^0.5.1",
+    "gts": "latest",
     "mocha": "^2.4.5",
     "request": "^2.69.0",
     "source-map-support": "^0.4.15",
     "tar-fs": "^1.16.0",
     "tslint": "^5.2.0",
-    "typescript": "^2.6.1"
+    "typescript": "~2.6.1"
   }
 }
