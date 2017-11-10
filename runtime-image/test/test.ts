@@ -187,37 +187,38 @@ describe('runtime image', () => {
   });
 });
 
-function buildDocker(dir: string, tag: string): Promise<{}> {
+async function buildDocker(dir: string, tag: string): Promise<{}> {
   const tarStream = tar.pack(dir);
-  return new Promise<{}>((resolve, reject) => {
-    DOCKER.buildImage(tarStream, {t: tag}, (err1, stream) => {
-      if (err1) {
-        return reject(err1);
-      }
+  const stream = await DOCKER.buildImage(tarStream, {t: tag});
 
-      function onFinished(err2: Error, output: {}) {
-        if (err2) {
-          return reject(err2);
-        }
-
-        resolve(output);
-      }
-
-      function onProgress(
-          event: {stream?: string; status?: string; progress?: string;}) {
-        log(event.stream);
-        log(event.status);
-        log(event.progress);
-      }
-
-      DOCKER.modem.followProgress(stream, onFinished, onProgress);
-    });
+  let resolve: (output: {}) => void;
+  let reject: (err: Error) => void;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
   });
+
+  function onFinished(err: Error, output: {}) {
+    if (err) {
+      return reject(err);
+    }
+
+    resolve(output);
+  }
+
+  function onProgress(
+      event: {stream?: string; status?: string; progress?: string;}) {
+    log(event.stream);
+    log(event.status);
+    log(event.progress);
+  }
+
+  DOCKER.modem.followProgress(stream, onFinished, onProgress);
+  return promise;
 }
 
-function runDocker(tag: string, port: number): Promise<Docker.Container> {
-  return DOCKER
-      .createContainer({
+async function runDocker(tag: string, port: number): Promise<Docker.Container> {
+  const container = await DOCKER.createContainer({
         Image: tag,
         AttachStdin: false,
         AttachStdout: true,
@@ -225,9 +226,7 @@ function runDocker(tag: string, port: number): Promise<Docker.Container> {
         Tty: true,
         ExposedPorts: {[`${port}/tcp`]: {}},
         HostConfig: {PortBindings: {[`${port}/tcp`]: [{HostPort: `${port}`}]}}
-      })
-      .then((container) => container.start())
-      .catch((err) => {
-        assert.ifError(err);
       });
+   await container.start();
+   return container;
 }
