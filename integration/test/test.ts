@@ -40,8 +40,8 @@ interface TestConfig {
   directoryName: string;
   expectedRunStdout: string;
   expectedRunStderr: string;
-  buildStdoutContains?: string;
-  buildStderrContains?: string;
+  buildStdoutContains?: string[];
+  buildStderrContains?: string[];
 }
 
 const CONFIGURATIONS: TestConfig[] = [
@@ -76,6 +76,16 @@ const CONFIGURATIONS: TestConfig[] = [
     directoryName: 'custom-yarn-complex',
     expectedRunStdout: '0.20.4\n',
     expectedRunStderr: ''
+  },
+  {
+    description: 'Should use a build command if specified',
+    directoryName: 'build-command',
+    expectedRunStdout: 'cp not-server.js server.js',
+    expectedRunStderr: '',
+    buildStdoutContains: [
+      `FROM ${RUNTIME_TAG} as build_step`, 'RUN npm run gcp-build',
+      'FROM build_step', 'COPY --from=build_step'
+    ]
   }
 ];
 
@@ -237,11 +247,13 @@ describe('Runtime image and builder integration', () => {
         });
       });
 
-      function verifyContains(text: string, contains?: string) {
+      function verifyContains(text: string, contains?: string[]) {
         if (contains) {
-          const valid = text.includes(contains);
-          if (!valid) {
-            assert.fail(text, contains, undefined, 'does not contain');
+          for (const c of contains) {
+            const index = text.indexOf(c);
+            if (index < 0) {
+              assert.fail(text, c, undefined, 'does not contain');
+            }
           }
         }
       }

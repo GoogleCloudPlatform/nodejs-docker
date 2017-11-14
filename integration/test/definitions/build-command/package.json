@@ -1,0 +1,13 @@
+{
+  "name": "build-command",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "pregcp-build": "rm -f server.js && ! ls server.js &> /dev/null",
+    "gcp-build": "cp not-server.js server.js",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

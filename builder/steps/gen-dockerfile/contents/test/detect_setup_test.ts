@@ -209,7 +209,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: false,
             useYarn: false,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
 
@@ -229,7 +230,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
 
@@ -253,7 +255,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
 
@@ -272,7 +275,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
 
@@ -295,7 +299,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
 
@@ -323,7 +328,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: true,
             useYarn: false,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
 
@@ -347,7 +353,8 @@ describe('detectSetup', () => {
           expectedResult: {
             canInstallDeps: true,
             useYarn: true,
-            appYamlPath: DEFAULT_APP_YAML
+            appYamlPath: DEFAULT_APP_YAML,
+            hasBuildCommand: false
           }
         });
       });
@@ -367,8 +374,12 @@ describe('detectSetup', () => {
         {path: 'yarn.lock', exists: true, contents: 'some content'},
         {path: 'package-lock.json', exists: false}
       ],
-      expectedResult:
-          {canInstallDeps: true, useYarn: true, appYamlPath: 'custom.yaml'},
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        appYamlPath: 'custom.yaml',
+        hasBuildCommand: false
+      },
       env: {GAE_APPLICATION_YAML_PATH: 'custom.yaml'}
     });
 
@@ -404,7 +415,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         useYarn: true,
-        appYamlPath: DEFAULT_APP_YAML
+        appYamlPath: DEFAULT_APP_YAML,
+        hasBuildCommand: false
       }
     });
   });
@@ -427,7 +439,8 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         useYarn: false,
         appYamlPath: DEFAULT_APP_YAML,
-        nodeVersion: '>=4.3.2'
+        nodeVersion: '>=4.3.2',
+        hasBuildCommand: false
       }
     });
 
@@ -449,7 +462,8 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         useYarn: false,
         appYamlPath: DEFAULT_APP_YAML,
-        // Note: nodeVersion is not defined
+        // Note: nodeVersion is not defined,
+        hasBuildCommand: false
       }
     });
   });
@@ -472,7 +486,8 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         yarnVersion: '5.x',
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -494,7 +509,8 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         // Note: yarnVersion is not specified
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
   });
@@ -517,7 +533,8 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         npmVersion: '5.x',
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -538,7 +555,8 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         // Note: nodeVersion is not specified
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
   });
@@ -565,7 +583,8 @@ describe('detectSetup', () => {
         npmVersion: '1.x',
         yarnVersion: '2.x',
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -590,7 +609,8 @@ describe('detectSetup', () => {
         npmVersion: '1.x',
         yarnVersion: '2.x',
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        hasBuildCommand: false
       }
     });
   });
@@ -609,7 +629,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -626,7 +647,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -643,7 +665,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -660,7 +683,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: false
+        useYarn: false,
+        hasBuildCommand: false
       }
     });
 
@@ -677,7 +701,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        hasBuildCommand: false
       }
     });
 
@@ -694,7 +719,8 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         appYamlPath: DEFAULT_APP_YAML,
-        useYarn: true
+        useYarn: true,
+        hasBuildCommand: false
       }
     });
 
@@ -738,6 +764,115 @@ describe('detectSetup', () => {
     });
   });
 
+  describe('should handle build commands', () => {
+    performTest({
+      title: 'should detect a build command if present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {scripts: {start: 'npm start', 'gcp-build': 'npm run build'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should detect a double quoted build command if present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify(
+              {scripts: {start: 'npm start', 'gcp-build': '"npm run build"'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should detect a single quoted build command if present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({
+            scripts: {start: 'npm start', 'gcp-build': '\'npm run build\''}
+          })
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+
+    performTest({
+      title: 'should not detect a build command if not present',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({scripts: {start: 'npm start'}})
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        appYamlPath: DEFAULT_APP_YAML,
+        hasBuildCommand: false
+      }
+    });
+
+    performTest({
+      title: 'should detect a build command with newlines',
+      locations: [
+        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS}, {
+          path: 'package.json',
+          exists: true,
+          contents: JSON.stringify({
+            scripts:
+                {start: 'npm start', 'gcp-build': 'npm \nrun\n build\n'}
+          })
+        },
+        {path: 'server.js', exists: true, contents: 'some content'},
+        {path: 'yarn.lock', exists: true, contents: 'some content'},
+        {path: 'package-lock.json', exists: false}
+      ],
+      expectedResult: {
+        canInstallDeps: true,
+        useYarn: true,
+        hasBuildCommand: true,
+        appYamlPath: DEFAULT_APP_YAML
+      }
+    });
+  });
+
   describe('should issue warnings', () => {
     performTest({
       title: 'should warn if not pinned to a node version with package.json',
@@ -752,6 +887,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -770,6 +906,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -792,6 +929,7 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         nodeVersion: 'something',
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -809,6 +947,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: true,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -826,6 +965,7 @@ describe('detectSetup', () => {
       expectedResult: {
         canInstallDeps: false,
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
@@ -849,6 +989,7 @@ describe('detectSetup', () => {
         canInstallDeps: true,
         nodeVersion: 'something',
         useYarn: false,
+        hasBuildCommand: false,
         appYamlPath: DEFAULT_APP_YAML
       }
     });
