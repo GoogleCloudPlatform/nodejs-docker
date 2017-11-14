@@ -25,15 +25,14 @@ RUN npm run gcp-build
   <% if (config.canInstallDeps) { %>
 RUN rm -Rf node_modules
   <% } %>
-<% } %>
 
-<% if (config.hasBuildCommand) { %>
 FROM build_step
 COPY --from=build_step /app .
 <% } else { %>
 # Dockerfile extending the generic Node image with application files for a
 # single application.
 FROM <%- baseImage %>
+COPY . /app/
 <% } %>
 
 <% if (config.nodeVersion) { %>
@@ -57,10 +56,6 @@ RUN yarn global add npm@'<%- config.npmVersion %>'
 # Install the version of yarn as requested by the engines.yarn field in
 # package.json.
 RUN yarn global add yarn@'<%- config.yarnVersion %>'
-<% } %>
-
-<% if (!config.hasBuildCommand) { %>
-COPY . /app/
 <% } %>
 
 <% if (config.canInstallDeps) { %>

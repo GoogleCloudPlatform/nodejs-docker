@@ -89,7 +89,7 @@ const CONFIGURATIONS: TestConfig[] = [
   }
 ];
 
-const DEBUG = true;
+const DEBUG = false;
 function log(message: string): void {
   if (DEBUG) {
     process.stdout.write(message);

@@ -221,7 +221,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile:
-               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START),
+               exactly(BASE + COPY_CONTENTS + UPGRADE_NODE + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -238,7 +238,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile:
-               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START),
+               exactly(BASE + COPY_CONTENTS + UPGRADE_NODE + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -287,7 +287,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile:
-               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + NPM_START),
+               exactly(BASE + COPY_CONTENTS + UPGRADE_NODE + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -304,7 +304,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile:
-               exactly(BASE + UPGRADE_NODE + COPY_CONTENTS + YARN_START),
+               exactly(BASE + COPY_CONTENTS + UPGRADE_NODE + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
        });
@@ -356,7 +356,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile: exactly(
-               BASE + UPGRADE_NODE + COPY_CONTENTS +
+               BASE + COPY_CONTENTS + UPGRADE_NODE +
                NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -374,7 +374,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile: exactly(
-               BASE + UPGRADE_NODE + COPY_CONTENTS +
+               BASE + COPY_CONTENTS + UPGRADE_NODE +
                YARN_INSTALL_PRODUCTION_DEPS + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -427,7 +427,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile: exactly(
-               BASE + UPGRADE_NODE + COPY_CONTENTS +
+               BASE + COPY_CONTENTS + UPGRADE_NODE +
                NPM_INSTALL_PRODUCTION_DEPS + NPM_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -445,7 +445,7 @@ describe('generateFiles', async () => {
              hasBuildCommand: false
            },
            expectedDockerfile: exactly(
-               BASE + UPGRADE_NODE + COPY_CONTENTS +
+               BASE + COPY_CONTENTS + UPGRADE_NODE +
                YARN_INSTALL_PRODUCTION_DEPS + YARN_START),
            expectedDockerignore: exactly(DEFAULT_DOCKERIGNORE)
          });
@@ -493,7 +493,7 @@ describe('generateFiles', async () => {
           hasBuildCommand: false
         },
         expectedDockerfile: exactly(
-            BASE + INSTALL_NPM + COPY_CONTENTS + NPM_INSTALL_PRODUCTION_DEPS +
+            BASE + COPY_CONTENTS + INSTALL_NPM + NPM_INSTALL_PRODUCTION_DEPS +
             NPM_START)
       });
     });
@@ -524,7 +524,7 @@ describe('generateFiles', async () => {
           hasBuildCommand: false
         },
         expectedDockerfile: exactly(
-            BASE + INSTALL_YARN + COPY_CONTENTS + YARN_INSTALL_PRODUCTION_DEPS +
+            BASE + COPY_CONTENTS + INSTALL_YARN + YARN_INSTALL_PRODUCTION_DEPS +
             YARN_START)
       });
     });
@@ -557,7 +557,7 @@ describe('generateFiles', async () => {
               hasBuildCommand: false
             },
             expectedDockerfile: exactly(
-                BASE + INSTALL_NPM + COPY_CONTENTS +
+                BASE + COPY_CONTENTS + INSTALL_NPM +
                 NPM_INSTALL_PRODUCTION_DEPS + NPM_START)
           });
         });
@@ -573,7 +573,7 @@ describe('generateFiles', async () => {
               hasBuildCommand: false
             },
             expectedDockerfile: exactly(
-                BASE + INSTALL_YARN + COPY_CONTENTS +
+                BASE + COPY_CONTENTS + INSTALL_YARN +
                 YARN_INSTALL_PRODUCTION_DEPS + YARN_START)
           });
         });
