@@ -4,18 +4,18 @@ import * as Docker from 'dockerode';
 import * as path from 'path';
 import * as request from 'request';
 
-const tar: {pack: (dir: string) => any} = require('tar-fs');
+const tar: {pack: (dir: string) => NodeJS.ReadableStream} = require('tar-fs');
 
 const RUN_TIMEOUT_MS = 3000;
 const BUILD_TIMEOUT_MS = 5 * 60 * 1000;
 const PORT = 8080;
 
-const host = process.env.DOCKER_HOST
-                 ? process.env.DOCKER_HOST.split('//')[1].split(':')[0]
-                 : 'localhost';
+const host = process.env.DOCKER_HOST ?
+    process.env.DOCKER_HOST.split('//')[1].split(':')[0] :
+    'localhost';
 
 const DOCKER = new Docker(
-    {socketPath : process.env.DOCKER_SOCKET || '/var/run/docker.sock'});
+    {socketPath: process.env.DOCKER_SOCKET || '/var/run/docker.sock'});
 
 const ROOT = path.join(__dirname, '..', '..');
 
@@ -96,56 +96,53 @@ interface TestConfig {
 
 const CONFIGURATIONS: TestConfig[] = [
   {
-    description : `serves traffic on port ${PORT}`,
-    tag : 'test/definitions/express',
-    expectedOutput : 'Hello World!'
+    description: `serves traffic on port ${PORT}`,
+    tag: 'test/definitions/express',
+    expectedOutput: 'Hello World!'
   },
   {
-    description : 'can install yarn locally',
-    tag : 'test/definitions/yarn-local',
-    expectedOutput : '0.18.0\n'
+    description: 'can install yarn locally',
+    tag: 'test/definitions/yarn-local',
+    expectedOutput: '0.18.0\n'
   },
   {
-    description : 'can install yarn globally',
-    tag : 'test/definitions/yarn-global',
-    expectedOutput : '0.18.0\n'
+    description: 'can install yarn globally',
+    tag: 'test/definitions/yarn-global',
+    expectedOutput: '0.18.0\n'
   },
   {
-    description : 'install_node installs and verifies verifiable Node versions',
-    tag : 'test/definitions/verifiable-node',
-    expectedOutput : 'v6.0.0'
+    description: 'install_node installs and verifies verifiable Node versions',
+    tag: 'test/definitions/verifiable-node',
+    expectedOutput: 'v6.0.0'
   },
   {
-    description :
-        'install_node still installs Node even if it cannot ' +
-            'be verified if --ingore-verification-failure is specified',
-    tag : 'test/definitions/unverifiable-node',
-    expectedOutput : 'v0.10.7'
+    description: 'install_node still installs Node even if it cannot ' +
+        'be verified if --ingore-verification-failure is specified',
+    tag: 'test/definitions/unverifiable-node',
+    expectedOutput: 'v0.10.7'
   },
   {
-    description :
-        'install_node aborts the installation if verification fails ' +
-            'and --ingore-verification-failure is not specified',
-    tag : 'test/definitions/verify-fail-aborts-install',
-    expectedOutput : 'v6.10.3'
+    description: 'install_node aborts the installation if verification fails ' +
+        'and --ingore-verification-failure is not specified',
+    tag: 'test/definitions/verify-fail-aborts-install',
+    expectedOutput: 'v6.10.3'
   },
   {
-    description :
-        'verify_node has a non-zero exit code if it is not supplied ' +
-            'the files it need for verification',
-    tag : 'test/definitions/verify-fail-without-files',
-    expectedOutput : 'Correctly failed verification'
+    description: 'verify_node has a non-zero exit code if it is not supplied ' +
+        'the files it need for verification',
+    tag: 'test/definitions/verify-fail-without-files',
+    expectedOutput: 'Correctly failed verification'
   },
   {
-    description : 'verify_node has a non-zero exit code if the checksum ' +
-                      'check fails',
-    tag : 'test/definitions/verify-fail-on-invalid-data',
-    expectedOutput : 'Correctly failed verification'
+    description: 'verify_node has a non-zero exit code if the checksum ' +
+        'check fails',
+    tag: 'test/definitions/verify-fail-on-invalid-data',
+    expectedOutput: 'Correctly failed verification'
   },
   {
-    description : 'verify the set of keys in the keyring',
-    tag : 'test/definitions/verify-gpg-keyring',
-    expectedOutput : GPG_KEYS
+    description: 'verify the set of keys in the keyring',
+    tag: 'test/definitions/verify-gpg-keyring',
+    expectedOutput: GPG_KEYS
   }
 ];
 
@@ -190,45 +187,46 @@ describe('runtime image', () => {
   });
 });
 
-function buildDocker(dir: string, tag: string): Promise<any> {
+async function buildDocker(dir: string, tag: string): Promise<{}> {
   const tarStream = tar.pack(dir);
-  return new Promise<any>((resolve, reject) => {
-    DOCKER.buildImage(tarStream, {t : tag}, (err1, stream) => {
-      if (err1) {
-        return reject(err1);
-      }
+  const stream = await DOCKER.buildImage(tarStream, {t: tag});
 
-      function onFinished(err2: Error, output: any) {
-        if (err2) {
-          return reject(err2);
-        }
-
-        resolve(output);
-      }
-
-      function onProgress(event: any) {
-        log(event.stream);
-        log(event.status);
-        log(event.progress);
-      }
-
-      DOCKER.modem.followProgress(stream, onFinished, onProgress);
-    });
+  let resolve: (output: {}) => void;
+  let reject: (err: Error) => void;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
   });
+
+  function onFinished(err: Error, output: {}) {
+    if (err) {
+      return reject(err);
+    }
+
+    resolve(output);
+  }
+
+  function onProgress(
+      event: {stream?: string; status?: string; progress?: string;}) {
+    log(event.stream);
+    log(event.status);
+    log(event.progress);
+  }
+
+  DOCKER.modem.followProgress(stream, onFinished, onProgress);
+  return promise;
 }
 
-function runDocker(tag: string, port: number): Promise<Docker.Container> {
-  return DOCKER
-      .createContainer({
-        Image : tag,
-        AttachStdin : false,
-        AttachStdout : true,
-        AttachStderr : true,
-        Tty : true,
-        ExposedPorts : {[`${port}/tcp`] : {}},
-        HostConfig :
-            {PortBindings : {[`${port}/tcp`] : [ {HostPort : `${port}`} ]}}
-      })
-      .then((container) => { return container.start(); })
-      .catch((err) => { assert.ifError(err); });
+async function runDocker(tag: string, port: number): Promise<Docker.Container> {
+  const container = await DOCKER.createContainer({
+    Image: tag,
+    AttachStdin: false,
+    AttachStdout: true,
+    AttachStderr: true,
+    Tty: true,
+    ExposedPorts: {[`${port}/tcp`]: {}},
+    HostConfig: {PortBindings: {[`${port}/tcp`]: [{HostPort: `${port}`}]}}
+  });
+  await container.start();
+  return container;
 }
