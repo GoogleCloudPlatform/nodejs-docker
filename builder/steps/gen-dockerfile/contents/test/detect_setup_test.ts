@@ -26,8 +26,7 @@ env: flex
 service: some-service
 `;
 
-const VALID_APP_YAML_CONTENTS_SKIP_YARN =
-    VALID_APP_YAML_CONTENTS + `skip_files:
+const VALID_APP_YAML_CONTENTS_SKIP_YARN = VALID_APP_YAML_CONTENTS + `skip_files:
 - ^(.*/)?\.bak$
 - ^yarn\.lock$
 `;
