@@ -1,6 +1,7 @@
 {
   "name": "nodejs-gen-dockerfile",
   "description": "",
+  "license": "Apache-2.0",
   "scripts": {
     "check": "gts check",
     "clean": "gts clean",
@@ -9,11 +10,12 @@
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "posttest": "npm run check",
+    "posttest": "npm run check && npm run license-check",
     "test": "mocha build/test/**/*.js",
     "prestart": "npm run compile",
     "prepublish": "npm run clean && npm run compile",
-    "start": "node build/src/main.js"
+    "start": "node build/src/main.js",
+    "license-check": "jsgl --local ."
   },
   "version": "0.0.1",
   "devDependencies": {
@@ -25,6 +27,7 @@
     "@types/node": "^7.0.5",
     "@types/pify": "0.0.28",
     "gts": "latest",
+    "js-green-licenses": "^0.2.0",
     "mocha": "^2.5.3",
     "source-map-support": "^0.4.11",
     "tslint": "^5.2.0",
