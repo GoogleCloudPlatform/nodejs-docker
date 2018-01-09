@@ -1,6 +1,9 @@
 {
   "name": "nodejs-docker",
+  "version": "1.0.0",
   "description": "This repository contains the Dockerfile used to build the Node.js runtime image used by Google App Engine",
+  "author": "Google LLC",
+  "license": "Apache-2.0",
   "scripts": {
     "test": "mocha -r source-map-support/register build/test/**/*.js --reporter spec --timeout 25000",
     "check": "gts check",
@@ -9,7 +12,8 @@
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "posttest": "npm run check"
+    "posttest": "npm run check && npm run license-check",
+    "license-check": "jsgl --local ."
   },
   "devDependencies": {
     "@types/dockerode": "^2.5.1",
@@ -18,6 +22,7 @@
     "@types/request": "0.0.45",
     "dockerode": "^2.5.3",
     "gts": "latest",
+    "js-green-licenses": "^0.2.0",
     "mocha": "^2.4.5",
     "request": "^2.69.0",
     "source-map-support": "^0.4.15",

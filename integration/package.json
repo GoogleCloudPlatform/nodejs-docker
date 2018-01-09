@@ -10,17 +10,19 @@
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "posttest": "npm run check",
-    "test": "mocha -r source-map-support/register build/test/**/*.js --reporter spec --timeout 25000"
+    "posttest": "npm run check && npm run license-check",
+    "test": "mocha -r source-map-support/register build/test/**/*.js --reporter spec --timeout 25000",
+    "license-check": "jsgl --local ."
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Google LLC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/mocha": "^2.2.42",
     "@types/node": "^8.0.26",
     "@types/request": "^2.0.3",
     "@types/uuid": "^3.4.1",
     "gts": "latest",
+    "js-green-licenses": "^0.2.0",
     "mocha": "^4.0.1",
     "request": "^2.81.0",
     "source-map-support": "^0.4.16",
