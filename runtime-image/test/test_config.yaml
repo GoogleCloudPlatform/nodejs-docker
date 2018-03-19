@@ -10,7 +10,7 @@ commandTests:
 
 - name: 'Node Version'
   command: ['node', '-v']
-  expectedOutput: ['v8.9.4\n']
+  expectedOutput: ['v8.10.0\n']
 
 - name: 'Custom Node Version'
   setup: [['install_node', 'v5.9.0']]
