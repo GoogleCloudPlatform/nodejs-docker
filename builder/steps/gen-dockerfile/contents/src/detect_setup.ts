@@ -141,16 +141,19 @@ export async function detectSetup(
     throw new Error(`The file ${appYamlPath} does not exist`);
   }
   const config = yaml.safeLoad(await fsview.read(appYamlPath));
+  if (!config) {
+    throw new Error(`Failed to load the file at ${appYamlPath}`);
+  }
 
   // If nodejs has been explicitly specified then treat warnings as errors.
   const warn: (m: string) => void =
-      config.runtime ? logger.error.bind(logger) : logger.log.bind(logger);
+      (config as {runtime: {}}).runtime ? logger.error.bind(logger) : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
   // Consider a file as present if and only if the file exists and is not
   // specified as being skipped in the deploment yaml file.
-  let skipFiles = config.skip_files || [];
+  let skipFiles = (config as {skip_files: string[]}).skip_files || [];
   if (!Array.isArray(skipFiles)) {
     skipFiles = [skipFiles];
   }
