@@ -91,6 +91,11 @@ export interface Setup {
   hasBuildCommand: boolean;
 }
 
+interface YamlConfig {
+  runtime?: {};
+  skip_files?: string[];
+}
+
 /**
  * Uses the `shell-escape` module to escape the given text and ensures that
  * the returned text is not enclosed in single quotes.  If the supplied text
@@ -140,7 +145,11 @@ export async function detectSetup(
   if (!(await fsview.exists(appYamlPath))) {
     throw new Error(`The file ${appYamlPath} does not exist`);
   }
-  const config = yaml.safeLoad(await fsview.read(appYamlPath));
+  const config: YamlConfig|undefined =
+      yaml.safeLoad(await fsview.read(appYamlPath));
+  if (!config) {
+    throw new Error(`Failed to load the file at ${appYamlPath}`);
+  }
 
   // If nodejs has been explicitly specified then treat warnings as errors.
   const warn: (m: string) => void =
