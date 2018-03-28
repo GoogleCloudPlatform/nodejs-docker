@@ -145,14 +145,10 @@ export async function detectSetup(
   if (!(await fsview.exists(appYamlPath))) {
     throw new Error(`The file ${appYamlPath} does not exist`);
   }
-  const rawConfig = yaml.safeLoad(await fsview.read(appYamlPath));
-  if (!rawConfig) {
+  const config: YamlConfig | undefined = yaml.safeLoad(await fsview.read(appYamlPath));
+  if (!config) {
     throw new Error(`Failed to load the file at ${appYamlPath}`);
   }
-
-  // If the JSON could be parsed correctly then YamlConfig describes
-  // type definitions for possible fields in the JSON.
-  const config = rawConfig as YamlConfig;
 
   // If nodejs has been explicitly specified then treat warnings as errors.
   const warn: (m: string) => void =
