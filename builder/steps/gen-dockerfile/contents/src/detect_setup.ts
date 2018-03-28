@@ -91,6 +91,11 @@ export interface Setup {
   hasBuildCommand: boolean;
 }
 
+interface YamlConfig {
+  runtime?: {};
+  skip_files?: string[];
+}
+
 /**
  * Uses the `shell-escape` module to escape the given text and ensures that
  * the returned text is not enclosed in single quotes.  If the supplied text
@@ -140,20 +145,24 @@ export async function detectSetup(
   if (!(await fsview.exists(appYamlPath))) {
     throw new Error(`The file ${appYamlPath} does not exist`);
   }
-  const config = yaml.safeLoad(await fsview.read(appYamlPath));
-  if (!config) {
+  const rawConfig = yaml.safeLoad(await fsview.read(appYamlPath));
+  if (!rawConfig) {
     throw new Error(`Failed to load the file at ${appYamlPath}`);
   }
 
+  // If the JSON could be parsed correctly then YamlConfig describes
+  // type definitions for possible fields in the JSON.
+  const config = rawConfig as YamlConfig;
+
   // If nodejs has been explicitly specified then treat warnings as errors.
   const warn: (m: string) => void =
-      (config as {runtime: {}}).runtime ? logger.error.bind(logger) : logger.log.bind(logger);
+      config.runtime ? logger.error.bind(logger) : logger.log.bind(logger);
 
   logger.log('Checking for Node.js.');
 
   // Consider a file as present if and only if the file exists and is not
   // specified as being skipped in the deploment yaml file.
-  let skipFiles = (config as {skip_files: string[]}).skip_files || [];
+  let skipFiles = config.skip_files || [];
   if (!Array.isArray(skipFiles)) {
     skipFiles = [skipFiles];
   }
