@@ -145,7 +145,8 @@ export async function detectSetup(
   if (!(await fsview.exists(appYamlPath))) {
     throw new Error(`The file ${appYamlPath} does not exist`);
   }
-  const config: YamlConfig | undefined = yaml.safeLoad(await fsview.read(appYamlPath));
+  const config: YamlConfig|undefined =
+      yaml.safeLoad(await fsview.read(appYamlPath));
   if (!config) {
     throw new Error(`Failed to load the file at ${appYamlPath}`);
   }
