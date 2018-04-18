@@ -24,4 +24,4 @@ pushd $(dirname $0)/.. > /dev/null
 npm install
 npm test
 
-../deps/container-structure-test -image -test.v test/nodejs test/test_config.yaml
+../deps/container-structure-test -image test/nodejs -test.v test/test_config.yaml
