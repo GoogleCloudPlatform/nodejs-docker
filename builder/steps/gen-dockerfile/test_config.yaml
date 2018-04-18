@@ -4,8 +4,8 @@ commandTests:
   # Create a directory that contains an app.yaml and server.js file
   # that will be used to generate a Dockerfile and .dockerignore file.
   setup: [['mkdir', '/tmp/gen_dockerfile_test_dir'],
-          ['echo "env: flex" > /tmp/gen_dockerfile_test_dir/app.yaml'],
-          ['echo "runtime: nodejs" >> /tmp/gen_dockerfile_test_dir/app.yaml'],
+          ['sh', '-c', 'echo "env: flex" > /tmp/gen_dockerfile_test_dir/app.yaml'],
+          ['sh', '-c', 'echo "runtime: nodejs" >> /tmp/gen_dockerfile_test_dir/app.yaml'],
           ['touch', '/tmp/gen_dockerfile_test_dir/server.js']]
   command: ['node', '/opt/nodejs-runtime-builder/build/src/main.js',
             '--app-dir', '/tmp/gen_dockerfile_test_dir',
