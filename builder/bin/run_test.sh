@@ -22,7 +22,7 @@ pushd $(dirname $0)/.. > /dev/null
   pushd steps > /dev/null
     pushd gen-dockerfile > /dev/null
       docker build -t test/gen-dockerfile .
-      ../../../deps/container-structure-test -image test/gen-dockerfile -test.v test_config.yaml
+      ../../../deps/container-structure-test test --verbose --image test/gen-dockerfile --config test_config.yaml
       pushd contents/ > /dev/null
         npm install
         npm test
