@@ -24,4 +24,10 @@ pushd $(dirname $0)/.. > /dev/null
 npm install
 npm test
 
-./bin/ext_run.sh -i test/nodejs -v --config test/test_config.yaml
+docker run -v /var/run/docker.sock:/var/run/docker.sock \
+           -v $(pwd):/nodejs-docker/ \
+           gcr.io/gcp-runtimes/container-structure-test \
+           test \
+           --verbose \
+           --image test/nodejs \
+           --config /nodejs-docker/test/test_config.yaml

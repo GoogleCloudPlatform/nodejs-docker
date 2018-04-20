@@ -22,7 +22,13 @@ pushd $(dirname $0)/.. > /dev/null
   pushd steps > /dev/null
     pushd gen-dockerfile > /dev/null
       docker build -t test/gen-dockerfile .
-      ../../bin/ext_run.sh -i test/gen-dockerfile -v --config test_config.yaml
+      docker run -v /var/run/docker.sock:/var/run/docker.sock \
+                 -v $(pwd):/nodejs-docker/ \
+                 gcr.io/gcp-runtimes/container-structure-test \
+                 test \
+                 --verbose \
+                 --image test/gen-dockerfile \
+                 --config /nodejs-docker/test_config.yaml
       pushd contents/ > /dev/null
         npm install
         npm test
