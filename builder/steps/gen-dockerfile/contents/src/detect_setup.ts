@@ -45,6 +45,8 @@ const NODE_UPDATED_WARNING = 'WARNING: The default Node.js major version ' +
     'version of the Node.js runtime, your application will automatically ' +
     'use Node 8.  To learn how to pin to a version of the Node.js runtime ' +
     'see https://cloud.google.com/appengine/docs/flexible/nodejs/runtime';
+const DEBIAN_9_WARNING = 'WARNING: Starting in May 2018, the Node.js runtime ' +
+    'image will be based on Debian 9 instead of Debian 8.';
 
 const BUILD_SCRIPT_NAME = 'gcp-build';
 
@@ -227,6 +229,8 @@ export async function detectSetup(
     warn(NODE_VERSION_WARNING);
     warn(NODE_UPDATED_WARNING);
   }
+
+  warn(DEBIAN_9_WARNING);
 
   if (!gotScriptsStart && !(await fsview.exists('server.js'))) {
     throw new Error(
