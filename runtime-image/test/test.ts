@@ -19,7 +19,7 @@ const DOCKER = new Docker(
 
 const ROOT = path.join(__dirname, '..', '..');
 
-const DEBUG = true;
+const DEBUG = false;
 function log(message?: string): void {
   if (DEBUG && message) {
     process.stdout.write(message.endsWith('\n') ? message : message + '\n');
