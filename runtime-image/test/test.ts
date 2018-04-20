@@ -28,65 +28,77 @@ function log(message?: string): void {
 
 const GPG_KEYS = `/tmp/keys
 ---------
-pub   4096R/7434390BDBE9B9C5 2015-07-21 [expires: 2019-07-21]
-uid                          Colin Ihrig <cjihrig@gmail.com>
-sub   4096R/4FEC3ECC9B596CE2 2015-07-21 [expires: 2019-07-21]
+pub   rsa4096/7434390BDBE9B9C5 2015-07-21 [SC] [expires: 2019-07-21]
+      94AE36675C464D64BAFA68DD7434390BDBE9B9C5
+uid                 [ unknown] Colin Ihrig <cjihrig@gmail.com>
+sub   rsa4096/4FEC3ECC9B596CE2 2015-07-21 [E] [expires: 2019-07-21]
 
-pub   4096R/09FE44734EB7990E 2014-04-01 [expires: 2024-03-29]
-uid                          Jeremiah Senkpiel <fishrock123@rocketmail.com>
-uid                          keybase.io/fishrock <fishrock@keybase.io>
-sub   4096R/45F5EEBD813DAE8E 2014-04-01 [expires: 2024-03-29]
+pub   rsa4096/09FE44734EB7990E 2014-04-01 [SCEA] [expires: 2024-03-29]
+      FD3A5288F042B6850C66B31F09FE44734EB7990E
+uid                 [ unknown] Jeremiah Senkpiel <fishrock123@rocketmail.com>
+uid                 [ unknown] keybase.io/fishrock <fishrock@keybase.io>
+sub   rsa4096/45F5EEBD813DAE8E 2014-04-01 [SEA] [expires: 2024-03-29]
 
-pub   4096R/C97EC7A07EDE3FC1 2014-11-10
-uid                          keybase.io/jasnell <jasnell@keybase.io>
-uid                          James M Snell <jasnell@gmail.com>
-uid                          James M Snell <jasnell@us.ibm.com>
-sub   2048R/7341B15C070877AC 2014-11-10 [expires: 2022-11-08]
-sub   2048R/8975BA8B6100C6B1 2014-11-10 [expires: 2022-11-08]
+pub   rsa4096/C97EC7A07EDE3FC1 2014-11-10 [SCEA]
+      71DCFD284A79C3B38668286BC97EC7A07EDE3FC1
+uid                 [ unknown] keybase.io/jasnell <jasnell@keybase.io>
+uid                 [ unknown] James M Snell <jasnell@gmail.com>
+uid                 [ unknown] James M Snell <jasnell@us.ibm.com>
+sub   rsa2048/7341B15C070877AC 2014-11-10 [S] [expires: 2022-11-08]
+sub   rsa2048/8975BA8B6100C6B1 2014-11-10 [E] [expires: 2022-11-08]
 
-pub   2048R/C273792F7D83545D 2013-11-18
-uid                          Rod Vagg <rod@vagg.org>
-uid                          Rod Vagg <r@va.gg>
-sub   2048R/1BDC911B8B6AED76 2013-11-18
+pub   rsa2048/C273792F7D83545D 2013-11-18 [SC]
+      DD8F2338BAE7501E3DD5AC78C273792F7D83545D
+uid                 [ unknown] Rod Vagg <rod@vagg.org>
+uid                 [ unknown] Rod Vagg <r@va.gg>
+sub   rsa2048/1BDC911B8B6AED76 2013-11-18 [E]
 
-pub   4096R/E73BC641CC11F4C8 2016-01-12
-uid                          Myles Borins <myles.borins@gmail.com>
-uid                          Myles Borins <mborins@google.com>
-uid                          Myles Borins <mylesborins@google.com>
-uid                          Myles Borins (Not used after January 2017) <mborins@us.ibm.com>
-sub   2048R/DEA16371974031A5 2016-01-12 [expires: 2024-01-10]
-sub   2048R/933B01F40B5CA946 2016-01-12 [expires: 2024-01-10]
+pub   rsa4096/E73BC641CC11F4C8 2016-01-12 [SC]
+      C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8
+uid                 [ unknown] Myles Borins <myles.borins@gmail.com>
+uid                 [ unknown] Myles Borins <mborins@google.com>
+uid                 [ unknown] Myles Borins <mylesborins@google.com>
+uid                 [ unknown] Myles Borins (Not used after January 2017) <mborins@us.ibm.com>
+sub   rsa2048/DEA16371974031A5 2016-01-12 [E] [expires: 2024-01-10]
+sub   rsa2048/933B01F40B5CA946 2016-01-12 [SA] [expires: 2024-01-10]
 
-pub   4096R/B63B535A4C206CA9 2015-12-17 [expires: 2019-12-17]
-uid                          Evan Lucas <evanlucas@me.com>
-uid                          Evan Lucas <evanlucas@keybase.io>
-sub   4096R/A39CBCAE8D765781 2015-12-17 [expires: 2019-12-17]
+pub   rsa4096/B63B535A4C206CA9 2015-12-17 [SC] [expires: 2019-12-17]
+      B9AE9905FFD7803F25714661B63B535A4C206CA9
+uid                 [ unknown] Evan Lucas <evanlucas@me.com>
+uid                 [ unknown] Evan Lucas <evanlucas@keybase.io>
+sub   rsa4096/A39CBCAE8D765781 2015-12-17 [E] [expires: 2019-12-17]
 
-pub   4096R/23EFEFE93C4CFFFE 2017-01-23 [expires: 2033-01-19]
-uid                          Italo A. Casas <me@italoacasas.com>
-sub   4096R/D3C55C2AAEC2131D 2017-01-23 [expires: 2033-01-19]
+pub   rsa4096/23EFEFE93C4CFFFE 2017-01-23 [SC] [expires: 2033-01-19]
+      56730D5401028683275BD23C23EFEFE93C4CFFFE
+uid                 [ unknown] Italo A. Casas <me@italoacasas.com>
+sub   rsa4096/D3C55C2AAEC2131D 2017-01-23 [E] [expires: 2033-01-19]
 
-pub   2048R/6D5A82AC7E37093B 2015-02-03
-uid                          Christopher Dickinson <christopher.s.dickinson@gmail.com>
-sub   2048R/3F4049298959D8C2 2015-02-03
+pub   rsa2048/6D5A82AC7E37093B 2015-02-03 [SC]
+      9554F04D7259F04124DE6B476D5A82AC7E37093B
+uid                 [ unknown] Christopher Dickinson <christopher.s.dickinson@gmail.com>
+sub   rsa2048/3F4049298959D8C2 2015-02-03 [E]
 
-pub   2048R/B0A78B0A6C481CF6 2010-08-31
-uid                          isaacs (http://blog.izs.me/) <i@izs.me>
-sub   2048R/12DAF9ECEDE8123E 2010-08-31
+pub   rsa2048/B0A78B0A6C481CF6 2010-08-31 [SC]
+      93C7E9E91B49E432C2F75674B0A78B0A6C481CF6
+uid                 [ unknown] isaacs (http://blog.izs.me/) <i@izs.me>
+sub   rsa2048/12DAF9ECEDE8123E 2010-08-31 [E]
 
-pub   4096R/50A3051F888C628D 2015-01-08 [expires: 2019-01-08]
-uid                          Julien Gilli <jgilli@fastmail.fm>
-sub   4096R/926EC77D21D4BD24 2015-01-08 [expires: 2019-01-08]
+pub   rsa4096/50A3051F888C628D 2015-01-08 [SC] [expires: 2019-01-08]
+      114F43EE0176B71C7BC219DD50A3051F888C628D
+uid                 [ unknown] Julien Gilli <jgilli@fastmail.fm>
+sub   rsa4096/926EC77D21D4BD24 2015-01-08 [E] [expires: 2019-01-08]
 
-pub   1024D/7D33FF9D0246406D 2006-01-18 [expired: 2016-03-26]
-uid                          Timothy J Fontaine (Personal) <tjfontaine@gmail.com>
-uid                          Timothy J Fontaine (OFTC) <tjfontaine@oftc.net>
-uid                          Timothy J Fontaine (Work) <tj.fontaine@joyent.com>
-uid                          Timothy J Fontaine (Personal Key) <tjfontaine@atxconsulting.com>
+pub   dsa1024/7D33FF9D0246406D 2006-01-18 [SC] [expired: 2016-03-26]
+      7937DFD2AB06298B2293C3187D33FF9D0246406D
+uid                 [ expired] Timothy J Fontaine (Personal) <tjfontaine@gmail.com>
+uid                 [ expired] Timothy J Fontaine (OFTC) <tjfontaine@oftc.net>
+uid                 [ expired] Timothy J Fontaine (Work) <tj.fontaine@joyent.com>
+uid                 [ expired] Timothy J Fontaine (Personal Key) <tjfontaine@atxconsulting.com>
 
-pub   4096R/B01FBB92821C587A 2016-10-07
-uid                          Gibson Fahnestock <gibfahn@gmail.com>
-sub   4096R/919AC8A92C482931 2016-10-07`;
+pub   rsa4096/B01FBB92821C587A 2016-10-07 [SC]
+      77984A986EBC2AA786BC0F66B01FBB92821C587A
+uid                 [ unknown] Gibson Fahnestock <gibfahn@gmail.com>
+sub   rsa4096/919AC8A92C482931 2016-10-07 [E]`;
 
 interface TestConfig {
   description: string;
