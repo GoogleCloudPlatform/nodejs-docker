@@ -19,7 +19,7 @@ const DOCKER = new Docker(
 
 const ROOT = path.join(__dirname, '..', '..');
 
-const DEBUG = false;
+const DEBUG = true;
 function log(message?: string): void {
   if (DEBUG && message) {
     process.stdout.write(message.endsWith('\n') ? message : message + '\n');
@@ -96,7 +96,12 @@ interface TestConfig {
 
 const CONFIGURATIONS: TestConfig[] = [
   {
-    description: `serves traffic on port ${PORT}`,
+    description: `serves traffic on port ${PORT} using 'http'`,
+    tag: 'test/definitions/http',
+    expectedOutput: `Hello World from port ${PORT}`
+  },
+  {
+    description: `serves traffic on port ${PORT} using 'express'`,
     tag: 'test/definitions/express',
     expectedOutput: 'Hello World!'
   },
