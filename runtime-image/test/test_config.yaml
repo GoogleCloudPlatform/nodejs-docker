@@ -93,7 +93,7 @@ fileExistenceTests:
   shouldExist: true
 
 licenseTests:
-- debian: true
+- debian: false
   files: [
           '/nodejs/lib/node_modules/npm/LICENSE',
           '/nodejs/LICENSE',
