@@ -21,7 +21,7 @@
     "@types/node": "^7.0.18",
     "@types/request": "0.0.45",
     "dockerode": "^2.5.3",
-    "gts": "latest",
+    "gts": "^0.5.4",
     "js-green-licenses": "^0.2.0",
     "mocha": "^2.4.5",
     "request": "^2.69.0",
