@@ -26,7 +26,7 @@ pushd $(dirname $0)/.. > /dev/null
                  -v $(pwd):/nodejs-docker/ \
                  gcr.io/gcp-runtimes/container-structure-test \
                  test \
-                 --verbose \
+                 -v DEBUG \
                  --image test/gen-dockerfile \
                  --config /nodejs-docker/test_config.yaml
       pushd contents/ > /dev/null

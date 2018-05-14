@@ -28,6 +28,6 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock \
            -v $(pwd):/nodejs-docker/ \
            gcr.io/gcp-runtimes/container-structure-test \
            test \
-           --verbose \
+           -v DEBUG \
            --image test/nodejs \
            --config /nodejs-docker/test/test_config.yaml
