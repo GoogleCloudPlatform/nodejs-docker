@@ -1,5 +1,5 @@
 # Use the base App Engine Docker image, based on debian jessie.
-FROM gcr.io/google-appengine/debian8
+FROM gcr.io/gcp-runtimes/ubuntu_16_0_4:latest
 
 # Install updates and dependencies
 RUN apt-get update -y && \
@@ -40,6 +40,7 @@ RUN npm install --unsafe-perm semver
 
 # Set common env vars
 ENV NODE_ENV production
+ENV PORT 8080
 
 WORKDIR /app
 
