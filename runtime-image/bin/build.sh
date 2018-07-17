@@ -157,7 +157,7 @@ cd $(dirname $0)/..
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 
 print "Building the image"
-gcloud beta container builds submit --config cloudbuild.yaml .
+gcloud builds submit --config cloudbuild.yaml .
 print "Done\n"
 
 if [ "${UPLOAD_TO_STAGING}" = "true" ]; then

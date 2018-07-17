@@ -37,7 +37,7 @@ export IMAGE="${UNTAGGED_BUILDER_NAME}:${BUILDER_TAG}"
 envsubst < cloudbuild.yaml.in > cloudbuild.yaml
 
 # Build the image
-gcloud container builds submit --config=cloudbuild.yaml .
+gcloud builds submit --config=cloudbuild.yaml .
 
 if [ "${UPLOAD_TO_STAGING}" = "true" ]; then
   gcloud --quiet beta container images add-tag ${IMAGE} ${UNTAGGED_BUILDER_NAME}:staging
