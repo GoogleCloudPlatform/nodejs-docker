@@ -7,7 +7,7 @@ This image can be found at `launcher.gcr.io/google/nodejs` or `gcr.io/google-app
 for running applications on [Google App Engine Flexible](https://cloud.google.com/appengine),
 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine), or any other Docker host.
 
-This image is based on Debian Jessie and includes [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/) and [yarn](https://yarnpkg.com) installed from [yarnpkg.com](https://yarnpkg.com).
+This image is based on Ubuntu 16.0.4 and includes [nodejs](https://nodejs.org) and [npm](https://npmjs.org) installed from [nodejs.org](http://nodejs.org/download/) and [yarn](https://yarnpkg.com) installed from [yarnpkg.com](https://yarnpkg.com).
 
 For a more thorough walk through of getting started with Node.js on Google Cloud Platform, please see the [documentation and guides](https://cloud.google.com/nodejs).
 

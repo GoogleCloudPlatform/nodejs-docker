@@ -1,4 +1,4 @@
-# Use the base App Engine Docker image, based on debian jessie.
+# Use the base App Engine Docker image, based on Ubuntu 16.0.4.
 FROM gcr.io/gcp-runtimes/ubuntu_16_0_4:latest
 
 # Install updates and dependencies
