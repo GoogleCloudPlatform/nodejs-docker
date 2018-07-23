@@ -64,32 +64,32 @@ commandTests:
 fileExistenceTests:
 - name: 'semver'
   path: '/node_modules/semver'
-  isDirectory: true
+  permissions: 'drwxr-xr-x'
   shouldExist: true
 
 - name: 'yarn'
   path: '/opt/yarn/bin/yarn'
-  isDirectory: false
+  permissions: '-rwxr-xr-x'
   shouldExist: true
 
 - name: KEYS
   path: '/opt/gcp/runtime/KEYS'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: install_node
   path: '/opt/gcp/runtime/install_node'
-  isDirectory: false
+  permissions: '-rwxr-xr-x'
   shouldExist: true
 
 - name: bootstrap_node
   path: '/opt/gcp/runtime/bootstrap_node'
-  isDirectory: false
+  permissions: '-rwxr-xr-x'
   shouldExist: true
 
 - name: verify_node
   path: '/opt/gcp/runtime/verify_node'
-  isDirectory: false
+  permissions: '-rwxr-xr-x'
   shouldExist: true
 
 licenseTests:
