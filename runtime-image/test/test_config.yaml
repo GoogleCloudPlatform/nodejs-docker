@@ -74,22 +74,22 @@ fileExistenceTests:
 
 - name: KEYS
   path: '/opt/gcp/runtime/KEYS'
-  permissions: '-rw-r--r--'
+  permissions: '-rw-rw-r--'
   shouldExist: true
 
 - name: install_node
   path: '/opt/gcp/runtime/install_node'
-  permissions: '-rwxr-xr-x'
+  permissions: '-rwxrwxr-x'
   shouldExist: true
 
 - name: bootstrap_node
   path: '/opt/gcp/runtime/bootstrap_node'
-  permissions: '-rwxr-xr-x'
+  permissions: '-rwxrwxr-x'
   shouldExist: true
 
 - name: verify_node
   path: '/opt/gcp/runtime/verify_node'
-  permissions: '-rwxr-xr-x'
+  permissions: '-rwxrwxr-x'
   shouldExist: true
 
 licenseTests:
