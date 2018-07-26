@@ -1,5 +1,5 @@
 # Cloud Builder pipeline
-# https://cloud.google.com/container-builder/docs/overview
+# https://cloud.google.com/cloud-build/docs/overview
 
 steps:
 - name: gcr.io/cloud-builders/docker
