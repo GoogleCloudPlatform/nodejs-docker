@@ -17,56 +17,55 @@ commandTests:
             ['rm', '/tmp/gen_dockerfile_test_dir/Dockerfile'],
             ['rm', '/tmp/gen_dockerfile_test_dir/.dockerignore'],
             ['rmdir', '/tmp/gen_dockerfile_test_dir']]
-  shellMode: true
   exitCode: 0
 
 fileExistenceTests:
 - name: 'build'
   path: '/opt/nodejs-runtime-builder/build'
-  isDirectory: true
+  permissions: 'drwxr-xr-x'
   shouldExist: true
 
 - name: 'build/src'
   path: '/opt/nodejs-runtime-builder/build/src'
-  isDirectory: true
+  permissions: 'drwxr-xr-x'
   shouldExist: true
 
 - name: 'build/src/detect_setup.js'
   path: '/opt/nodejs-runtime-builder/build/src/detect_setup.js'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: 'build/src/fsview.js'
   path: '/opt/nodejs-runtime-builder/build/src/fsview.js'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: 'build/src/generate_files.js'
   path: '/opt/nodejs-runtime-builder/build/src/generate_files.js'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: 'build/src/logger.js'
   path: '/opt/nodejs-runtime-builder/build/src/logger.js'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: 'build/src/main.js'
   path: '/opt/nodejs-runtime-builder/build/src/main.js'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: 'build/data'
   path: '/opt/nodejs-runtime-builder/build/data'
-  isDirectory: true
+  permissions: 'drwxr-xr-x'
   shouldExist: true
 
 - name: 'build/data/Dockerfile.txt'
   path: '/opt/nodejs-runtime-builder/build/data/Dockerfile.txt'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
 
 - name: 'build/data/dockerignore'
   path: '/opt/nodejs-runtime-builder/build/data/dockerignore'
-  isDirectory: false
+  permissions: '-rw-r--r--'
   shouldExist: true
