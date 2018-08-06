@@ -22,7 +22,7 @@ TimothyJFontaine=7937DFD2AB06298B2293C3187D33FF9D0246406D
 keylist="${ColinIhrig} ${EvanLucas} ${GibsonFahnestock} ${JamesMSnell} ${JeremiahSenkpiel} ${MichaelZasso} ${MylesBorins} ${RodVagg} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine}"
 
 for key in ${keylist} ; do
-  gpg --keyserver pool.sks-keyservers.net --recv-keys ${key}
+  gpg2 --keyserver pool.sks-keyservers.net --recv-keys ${key}
 done
 
-gpg --armor --output=contents/KEYS --export ${keylist}
+gpg2 --armor --output=contents/KEYS --export ${keylist}
