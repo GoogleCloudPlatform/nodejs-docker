@@ -910,9 +910,9 @@
       "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
     },
     "yarn": {
-      "version": "0.18.0",
-      "from": "yarn@0.18.0",
-      "resolved": "https://registry.npmjs.org/yarn/-/yarn-0.18.0.tgz"
+      "version": "1.12.1",
+      "from": "yarn@1.12.1",
+      "resolved": "https://registry.npmjs.org/yarn/-/yarn-1.12.1.tgz"
     }
   }
 }
