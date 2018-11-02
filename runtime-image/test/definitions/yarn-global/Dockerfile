@@ -1,6 +1,6 @@
 FROM test/nodejs
 COPY . /app/
-RUN npm install --global yarn@0.18.0
+RUN npm install --global yarn@1.12.1
 RUN yarn install --production || \
   ((if [ -f yarn-error.log ]; then \
       cat yarn-error.log; \
