@@ -1,7 +1,5 @@
 steps:
 - name: 'gcr.io/gcp-runtimes/nodejs/gen-dockerfile:latest'
   args: ['--runtime-image', 'gcr.io/google-appengine/nodejs:latest']
-- name: 'gcr.io/cloud_builders/docker:latest'
-  args: ['build', '-t', '$_OUTPUT_IMAGE', '.']
-images:
-- '$_OUTPUT_IMAGE'
+- name: 'gcr.io/kaniko-project/executor:v0.6.0'
+  args: ['--destination=$_OUTPUT_IMAGE']
