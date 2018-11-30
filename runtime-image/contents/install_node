@@ -43,7 +43,7 @@ function getAvailableVersions(cb) {
         body
           .trim()
           .split('\n')
-          .sort((a, b) => {
+          .sort(function(a, b) {
             if (semver.gt(a, b)) {
               return -1;
             }
