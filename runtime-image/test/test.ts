@@ -152,6 +152,11 @@ const CONFIGURATIONS: TestConfig[] = [
     description: 'verify the set of keys in the keyring',
     tag: 'test/definitions/verify-gpg-keyring',
     expectedOutput: GPG_KEYS
+  },
+  {
+    description: 'verify list of available versions is properly sorted',
+    tag: 'test/definitions/verify-version-sort',
+    expectedOutput: 'v9.11.2'
   }
 ];
 
