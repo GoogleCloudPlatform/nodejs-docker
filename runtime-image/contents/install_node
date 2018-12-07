@@ -38,7 +38,18 @@ function getAvailableVersions(cb) {
       if (err) {
         return cb(err);
       }
-      return cb(null, body.trim().split('\n').sort().reverse());
+      return cb(
+        null,
+        body
+          .trim()
+          .split('\n')
+          .sort(function(a, b) {
+            if (semver.gt(a, b)) {
+              return -1;
+            }
+            return +1;
+          })
+      );
     }
   );
 }
