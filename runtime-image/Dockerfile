@@ -23,7 +23,7 @@ RUN ln -s /opt/gcp/runtime/install_node /usr/local/bin/install_node
 # with the installation aborting if verification of the nodejs binaries fails.
 RUN /opt/gcp/runtime/bootstrap_node \
     --direct \
-    v10.14.1
+    v10.14.2
 ENV PATH $PATH:/nodejs/bin
 
 # Install yarn
