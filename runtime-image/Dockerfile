@@ -12,6 +12,7 @@ RUN apt-get update -y && \
       libkrb5-dev \
       netbase \
       python && \
+    apt-get upgrade -y && \
     apt-get clean && \
     rm /var/lib/apt/lists/*_*
 
