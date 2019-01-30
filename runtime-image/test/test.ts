@@ -61,9 +61,8 @@ pub   4096R/E73BC641CC11F4C8 2016-01-12
 uid                          Myles Borins <myles.borins@gmail.com>
 uid                          Myles Borins <mborins@google.com>
 uid                          Myles Borins <mylesborins@google.com>
-uid                          Myles Borins (Not used after January 2017) <mborins@us.ibm.com>
-sub   2048R/DEA16371974031A5 2016-01-12 [expires: 2024-01-10]
 sub   2048R/933B01F40B5CA946 2016-01-12 [expires: 2024-01-10]
+sub   2048R/A250501325FA7297 2018-10-31 [expires: 2022-10-31]
 
 pub   2048R/C273792F7D83545D 2013-11-18
 uid                          Rod Vagg <rod@vagg.org>
@@ -89,7 +88,19 @@ pub   1024D/7D33FF9D0246406D 2006-01-18 [expired: 2016-03-26]
 uid                          Timothy J Fontaine (Personal) <tjfontaine@gmail.com>
 uid                          Timothy J Fontaine (OFTC) <tjfontaine@oftc.net>
 uid                          Timothy J Fontaine (Work) <tj.fontaine@joyent.com>
-uid                          Timothy J Fontaine (Personal Key) <tjfontaine@atxconsulting.com>`;
+uid                          Timothy J Fontaine (Personal Key) <tjfontaine@atxconsulting.com>
+
+pub   2048R/D7062848A1AB005C 2018-03-26 [expires: 2020-03-25]
+uid                          Beth Griggs <Bethany.Griggs@uk.ibm.com>
+sub   2048R/B2CCB982D6DCC25D 2018-03-26 [expires: 2020-03-25]
+
+pub   4096R/F07496B3EB3C1762 2016-12-08 [expires: 2021-12-07]
+uid                          Ruben Bridgewater <ruben@bridgewater.de>
+sub   4096R/F320153C71827C7B 2016-12-08 [expires: 2021-12-07]
+
+pub   4096R/F13993A75599653C 2017-07-28
+uid                          Shelley Vohr (security is major key) <shelley.vohr@gmail.com>
+sub   4096R/3049F7B98AED0C89 2017-07-28`;
 
 interface TestConfig {
   description: string;

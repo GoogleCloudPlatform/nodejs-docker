@@ -18,8 +18,11 @@ IsaacZSchlueter=93C7E9E91B49E432C2F75674B0A78B0A6C481CF6
 ItaloACasas=56730D5401028683275BD23C23EFEFE93C4CFFFE
 JulienGilli=114F43EE0176B71C7BC219DD50A3051F888C628D
 TimothyJFontaine=7937DFD2AB06298B2293C3187D33FF9D0246406D
+BethGriggs=4ED778F539E3634C779C87C6D7062848A1AB005C
+RubenBridgewater=A48C2BEE680E841632CD4E44F07496B3EB3C1762
+ShelleyVohr=B9E2F5981AA6E0CD28160D9FF13993A75599653C
 
-keylist="${ColinIhrig} ${EvanLucas} ${GibsonFahnestock} ${JamesMSnell} ${JeremiahSenkpiel} ${MichaelZasso} ${MylesBorins} ${RodVagg} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine}"
+keylist="${ColinIhrig} ${EvanLucas} ${GibsonFahnestock} ${JamesMSnell} ${JeremiahSenkpiel} ${MichaelZasso} ${MylesBorins} ${RodVagg} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${BethGriggs} ${RubenBridgewater} ${ShelleyVohr}"
 
 for key in ${keylist} ; do
   gpg2 --keyserver pool.sks-keyservers.net --recv-keys ${key}
