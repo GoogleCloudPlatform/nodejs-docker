@@ -82,9 +82,8 @@ pub   4096R/23EFEFE93C4CFFFE 2017-01-23 [expires: 2033-01-19]
 uid                          Italo A. Casas <me@italoacasas.com>
 sub   4096R/D3C55C2AAEC2131D 2017-01-23 [expires: 2033-01-19]
 
-pub   4096R/50A3051F888C628D 2015-01-08 [expires: 2019-01-08]
+pub   4096R/50A3051F888C628D 2015-01-08 [expired: 2019-01-08]
 uid                          Julien Gilli <jgilli@fastmail.fm>
-sub   4096R/926EC77D21D4BD24 2015-01-08 [expires: 2019-01-08]
 
 pub   1024D/7D33FF9D0246406D 2006-01-18 [expired: 2016-03-26]
 uid                          Timothy J Fontaine (Personal) <tjfontaine@gmail.com>
@@ -112,7 +111,7 @@ const CONFIGURATIONS: TestConfig[] = [
   {
     description: 'can install yarn locally',
     tag: 'test/definitions/yarn-local',
-    expectedOutput: '1.12.3\n'
+    expectedOutput: '1.13.0\n'
   },
   {
     description: 'can install yarn globally',

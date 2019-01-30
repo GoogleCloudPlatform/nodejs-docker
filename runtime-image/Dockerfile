@@ -12,6 +12,7 @@ RUN apt-get update -y && \
       libkrb5-dev \
       netbase \
       python && \
+    apt-get upgrade -y && \
     apt-get clean && \
     rm /var/lib/apt/lists/*_*
 
@@ -23,7 +24,7 @@ RUN ln -s /opt/gcp/runtime/install_node /usr/local/bin/install_node
 # with the installation aborting if verification of the nodejs binaries fails.
 RUN /opt/gcp/runtime/bootstrap_node \
     --direct \
-    v10.14.2
+    v10.15.0
 ENV PATH $PATH:/nodejs/bin
 
 # Install yarn
