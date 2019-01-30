@@ -100,7 +100,7 @@ sub   4096R/F320153C71827C7B 2016-12-08 [expires: 2021-12-07]
 
 pub   4096R/F13993A75599653C 2017-07-28
 uid                          Shelley Vohr (security is major key) <shelley.vohr@gmail.com>
-sub   4096R/3049F7B98AED0C89 2017-07-28';
+sub   4096R/3049F7B98AED0C89 2017-07-28`;
 
 interface TestConfig {
   description: string;
