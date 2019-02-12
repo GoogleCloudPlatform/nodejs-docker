@@ -69,7 +69,7 @@ fileExistenceTests:
 
 - name: 'yarn'
   path: '/usr/bin/yarn'
-  permissions: '-rwxr-xr-x'
+  permissions: 'Lrwxrwxrwx'
   shouldExist: true
 
 - name: KEYS
