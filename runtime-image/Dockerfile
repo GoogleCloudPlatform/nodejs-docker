@@ -31,7 +31,9 @@ ENV PATH $PATH:/nodejs/bin
 # Install yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main"  >> /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && apt-get install -y -q yarn
+    apt-get update && apt-get install -y -q yarn && \
+    mkdir -p /opt/yarn/bin && \
+    ln -s /usr/bin/yarn /opt/yarn/bin/yarn
 
 # The use of --unsafe-perm is used here so that the installation is done
 # as the current (root) user.  Otherwise, a failure in running 'npm install'
