@@ -68,7 +68,7 @@ fileExistenceTests:
   shouldExist: true
 
 - name: 'yarn'
-  path: '/opt/yarn/bin/yarn'
+  path: '/usr/bin/yarn'
   permissions: '-rwxr-xr-x'
   shouldExist: true
 
