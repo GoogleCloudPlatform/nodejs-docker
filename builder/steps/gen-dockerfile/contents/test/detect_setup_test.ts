@@ -719,25 +719,6 @@ describe('detectSetup', () => {
 
     performTest({
       title: 'should throw an error if both yarn.lock and ' +
-          'package-lock.json exist and package.json exists',
-      locations: [
-        {path: 'package.json', exists: true, contents: '{}'},
-        {path: 'server.js', exists: true, contents: SERVER_JS_CONTENTS},
-        {path: 'app.yaml', exists: true, contents: VALID_APP_YAML_CONTENTS},
-        {path: 'yarn.lock', exists: true},
-        {path: 'package-lock.json', exists: true}
-      ],
-      expectedResult: undefined,
-      expectedThrownErrMessage: new RegExp(
-          'The presence of yarn.lock ' +
-          'indicates that yarn should be used, but the presence of ' +
-          'package-lock.json indicates npm should be used.  Use the skip_files ' +
-          'section of app.yaml to ignore the appropriate file to indicate ' +
-          'which package manager to use.')
-    });
-
-    performTest({
-      title: 'should throw an error if both yarn.lock and ' +
           'package-lock.json exist and package.json does not exist',
       locations: [
         {path: 'package.json', exists: false},
