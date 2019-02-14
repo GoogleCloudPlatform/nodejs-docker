@@ -236,7 +236,7 @@ export async function detectSetup(
     npmVersion: escape(npmVersion),
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
-    useYarn: yarnLockExists && !(yarnLockExists && packageLockExists)
+    useYarn: yarnLockExists && !(yarnLockExists && packageLockExists),
     hasBuildCommand,
     appYamlPath
   };
