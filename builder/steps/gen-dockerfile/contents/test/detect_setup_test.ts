@@ -716,7 +716,6 @@ describe('detectSetup', () => {
         hasBuildCommand: false
       }
     });
-
   });
 
   describe('should handle build commands', () => {
