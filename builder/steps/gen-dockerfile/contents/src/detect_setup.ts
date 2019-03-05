@@ -168,9 +168,6 @@ export async function detectSetup(
       !isSkipped(YARN_LOCK) && await fsview.exists(YARN_LOCK);
   const packageLockExists: boolean =
       !isSkipped(PACKAGE_LOCK_JSON) && await fsview.exists(PACKAGE_LOCK_JSON);
-  if (yarnLockExists && packageLockExists) {
-    throw new Error(CANNOT_RESOLVE_PACKAGE_MANAGER);
-  }
 
   let canInstallDeps: boolean;
   let gotScriptsStart: boolean;
@@ -232,12 +229,14 @@ export async function detectSetup(
   // to properly verify it is of type `Setup`.  If its value is directly
   // passed to the `extend` function, the compiler cannot check
   // that the input is of type `Setup` since `extend` takes `Object`s.
+  //
+  // if both yarn lock and package lock exist, default to using NPM
   const setup: Setup = {
     canInstallDeps,
     npmVersion: escape(npmVersion),
     yarnVersion: escape(yarnVersion),
     nodeVersion: escape(nodeVersion),
-    useYarn: yarnLockExists,
+    useYarn: yarnLockExists && !(yarnLockExists && packageLockExists),
     hasBuildCommand,
     appYamlPath
   };
