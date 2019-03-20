@@ -122,12 +122,12 @@ const CONFIGURATIONS: TestConfig[] = [
   {
     description: 'can install yarn locally',
     tag: 'test/definitions/yarn-local',
-    expectedOutput: '1.13.0\n'
+    expectedOutput: '1.15.2\n'
   },
   {
     description: 'can install yarn globally',
     tag: 'test/definitions/yarn-global',
-    expectedOutput: '1.13.0\n'
+    expectedOutput: '1.15.2\n'
   },
   {
     description: 'install_node installs and verifies verifiable Node versions',
