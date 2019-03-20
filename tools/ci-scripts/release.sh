@@ -3,7 +3,7 @@ set -ex
 export KOKORO_GITHUB_DIR=${KOKORO_ROOT}/src/github
 source ${KOKORO_GFILE_DIR}/kokoro/common.sh
 
-cd ${KOKORO_GITHUB_DIR}
+cd ${KOKORO_GITHUB_DIR}/nodejs-docker
 ./runtime-image/bin/build.sh --docker-namespace="${DOCKER_NAMESPACE}" \
                              --candidate-name="${TAG}" \
                              --node-version="${NODE_VERSION_TAG}" \
