@@ -4,6 +4,7 @@ FROM gcr.io/gcp-runtimes/ubuntu_16_0_4:latest
 # Install updates and dependencies
 RUN apt-get update -y && \
     apt-get install --no-install-recommends -y -q \
+      apt-transport-https \
       build-essential \
       ca-certificates \
       curl \
@@ -24,12 +25,15 @@ RUN ln -s /opt/gcp/runtime/install_node /usr/local/bin/install_node
 # with the installation aborting if verification of the nodejs binaries fails.
 RUN /opt/gcp/runtime/bootstrap_node \
     --direct \
-    v10.15.0
+    v10.15.3
 ENV PATH $PATH:/nodejs/bin
 
 # Install yarn
-RUN mkdir -p /opt/yarn && curl -L https://yarnpkg.com/latest.tar.gz | tar xvzf - -C /opt/yarn --strip-components=1
-ENV PATH $PATH:/opt/yarn/bin
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main"  >> /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y -q yarn && \
+    mkdir -p /opt/yarn/bin && \
+    ln -s /usr/bin/yarn /opt/yarn/bin/yarn
 
 # The use of --unsafe-perm is used here so that the installation is done
 # as the current (root) user.  Otherwise, a failure in running 'npm install'

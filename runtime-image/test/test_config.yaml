@@ -10,7 +10,7 @@ commandTests:
 
 - name: 'Node Version'
   command: ['node', '-v']
-  expectedOutput: ['v10.15.0\n']
+  expectedOutput: ['v10.15.3\n']
 
 - name: 'Custom Node Version'
   setup: [['install_node', 'v5.9.0']]
@@ -68,8 +68,8 @@ fileExistenceTests:
   shouldExist: true
 
 - name: 'yarn'
-  path: '/opt/yarn/bin/yarn'
-  permissions: '-rwxr-xr-x'
+  path: '/usr/bin/yarn'
+  permissions: 'Lrwxrwxrwx'
   shouldExist: true
 
 - name: KEYS
