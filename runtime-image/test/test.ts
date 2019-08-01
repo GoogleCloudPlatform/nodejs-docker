@@ -28,10 +28,6 @@ function log(message?: string): void {
 
 const GPG_KEYS = `/tmp/keys
 ---------
-pub   4096R/7434390BDBE9B9C5 2015-07-21 [expires: 2019-07-21]
-uid                          Colin Ihrig <cjihrig@gmail.com>
-sub   4096R/4FEC3ECC9B596CE2 2015-07-21 [expires: 2019-07-21]
-
 pub   4096R/B63B535A4C206CA9 2015-12-17 [expires: 2019-12-17]
 uid                          Evan Lucas <evanlucas@me.com>
 uid                          Evan Lucas <evanlucas@keybase.io>
