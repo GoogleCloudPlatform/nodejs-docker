@@ -5,7 +5,6 @@
 
 set -e
 
-ColinIhrig=94AE36675C464D64BAFA68DD7434390BDBE9B9C5
 EvanLucas=B9AE9905FFD7803F25714661B63B535A4C206CA9
 GibsonFahnestock=77984A986EBC2AA786BC0F66B01FBB92821C587A
 JamesMSnell=71DCFD284A79C3B38668286BC97EC7A07EDE3FC1
@@ -22,7 +21,7 @@ BethGriggs=4ED778F539E3634C779C87C6D7062848A1AB005C
 RubenBridgewater=A48C2BEE680E841632CD4E44F07496B3EB3C1762
 ShelleyVohr=B9E2F5981AA6E0CD28160D9FF13993A75599653C
 
-keylist="${ColinIhrig} ${EvanLucas} ${GibsonFahnestock} ${JamesMSnell} ${JeremiahSenkpiel} ${MichaelZasso} ${MylesBorins} ${RodVagg} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${BethGriggs} ${RubenBridgewater} ${ShelleyVohr}"
+keylist="${EvanLucas} ${GibsonFahnestock} ${JamesMSnell} ${JeremiahSenkpiel} ${MichaelZasso} ${MylesBorins} ${RodVagg} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${BethGriggs} ${RubenBridgewater} ${ShelleyVohr}"
 
 for key in ${keylist} ; do
   gpg2 --keyserver pool.sks-keyservers.net --recv-keys ${key}
