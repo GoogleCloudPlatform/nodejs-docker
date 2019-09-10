@@ -11,3 +11,4 @@ steps:
 #      '-i', '${IMAGE}',
 #      '-d', 'test/integration']
 images: ['${IMAGE}']
+timeout: 3600s
