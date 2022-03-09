@@ -16,7 +16,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as pify from 'pify';
+import pify from 'pify';
 
 /**
  * Represents an entity that is capable of reading a filesystem or a
