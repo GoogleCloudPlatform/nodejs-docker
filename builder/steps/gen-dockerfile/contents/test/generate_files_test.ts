@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
+import assert from 'assert';
 
 import {Setup} from '../src/detect_setup';
 import {generateFiles} from '../src/generate_files';

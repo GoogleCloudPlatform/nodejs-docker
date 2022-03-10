@@ -19,7 +19,7 @@
 // since the `shell-escape` module does not have type definitions available.
 const shellEscape: (args: string[]) => string = require('shell-escape');
 
-import * as extend from 'extend';
+import extend from 'extend';
 import * as yaml from 'js-yaml';
 
 import {Locator, Reader} from './fsview';
