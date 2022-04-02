@@ -20,6 +20,7 @@ DanielleAdamsOld=1C050899334244A8AF75E53792EF661D867B9DFA
 #Latest releases are signed with these keys
 
 BethGriggs=4ED778F539E3634C779C87C6D7062848A1AB005C
+BryanEnglish=141F07595B7B3FFE74309A937405533BE57C7D57
 ColinIhrig=94AE36675C464D64BAFA68DD7434390BDBE9B9C5
 DanielleAdams=74F12602B6F1C4E913FAA37AD3A89613643B6201
 JamesMSnell=71DCFD284A79C3B38668286BC97EC7A07EDE3FC1
@@ -31,7 +32,7 @@ RubenBridgewater=A48C2BEE680E841632CD4E44F07496B3EB3C1762
 RuyAdorno=108F52B48DB57BB0CC439B2997B01419BD92F80A
 ShelleyVohr=B9E2F5981AA6E0CD28160D9FF13993A75599653C
 
-keylist="${EvanLucas} ${GibsonFahnestock} ${JeremiahSenkpiel} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${DanielleAdamsOld} ${BethGriggs} ${ColinIhrig} ${DanielleAdams} ${JamesMSnell} ${MichaelZasso} ${MylesBorins} ${RichardLau} ${RodVagg} ${RubenBridgewater} ${RuyAdorno} ${ShelleyVohr}"
+keylist="${EvanLucas} ${GibsonFahnestock} ${JeremiahSenkpiel} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${DanielleAdamsOld} ${BethGriggs} ${BryanEnglish} ${ColinIhrig} ${DanielleAdams} ${JamesMSnell} ${MichaelZasso} ${MylesBorins} ${RichardLau} ${RodVagg} ${RubenBridgewater} ${RuyAdorno} ${ShelleyVohr}"
 
 for key in ${keylist} ; do
   gpg2 --keyserver hkp://pgp.mit.edu:11371 --recv-keys ${key}
