@@ -12,11 +12,11 @@ fi
 
 cd ${KOKORO_GFILE_DIR}/appengine/integration_tests
 
-sudo /usr/local/bin/pip install --upgrade -r requirements.txt
+sudo -E /usr/local/bin/pip install --upgrade -r requirements.txt
 
 if [ -f ${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}/requirements.txt ]
 then
-  sudo /usr/local/bin/pip install --upgrade -r ${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}/requirements.txt
+  sudo -E /usr/local/bin/pip install --upgrade -r ${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}/requirements.txt
 fi
 
 export DEPLOY_LATENCY_PROJECT='cloud-deploy-latency'

@@ -7,11 +7,11 @@ source ${KOKORO_GFILE_DIR}/kokoro/common.sh
 
 export GOOGLE_CLOUD_PROJECT=gcp-runtimes
 
-sudo /usr/local/bin/pip install --upgrade -r ${KOKORO_GFILE_DIR}/appengine/integration_tests/requirements.txt
+sudo -E /usr/local/bin/pip install --upgrade -r ${KOKORO_GFILE_DIR}/appengine/integration_tests/requirements.txt
 
 if [ -f ${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}/requirements.txt ]
 then
-  sudo /usr/local/bin/pip install --upgrade -r ${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}/requirements.txt
+  sudo -E /usr/local/bin/pip install --upgrade -r ${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}/requirements.txt
 fi
 
 export GOPATH=${KOKORO_GITHUB_DIR}/${SAMPLE_APP_DIRECTORY}
