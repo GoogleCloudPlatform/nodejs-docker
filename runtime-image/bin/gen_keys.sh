@@ -31,8 +31,10 @@ RodVagg=DD8F2338BAE7501E3DD5AC78C273792F7D83545D
 RubenBridgewater=A48C2BEE680E841632CD4E44F07496B3EB3C1762
 RuyAdorno=108F52B48DB57BB0CC439B2997B01419BD92F80A
 ShelleyVohr=B9E2F5981AA6E0CD28160D9FF13993A75599653C
+JuanJoseArboleda=61FC681DFB92A079F1685E77973F295594EC4689
+RafaelGSS=890C08DB8579162FEE0DF9DB8BEAB4DFCF555EF4
 
-keylist="${EvanLucas} ${GibsonFahnestock} ${JeremiahSenkpiel} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${DanielleAdamsOld} ${BethGriggs} ${BryanEnglish} ${ColinIhrig} ${DanielleAdams} ${JamesMSnell} ${MichaelZasso} ${MylesBorins} ${RichardLau} ${RodVagg} ${RubenBridgewater} ${RuyAdorno} ${ShelleyVohr}"
+keylist="${EvanLucas} ${GibsonFahnestock} ${JeremiahSenkpiel} ${ChrisDickinson} ${IsaacZSchlueter} ${ItaloACasas} ${JulienGilli} ${TimothyJFontaine} ${DanielleAdamsOld} ${BethGriggs} ${BryanEnglish} ${ColinIhrig} ${DanielleAdams} ${JamesMSnell} ${MichaelZasso} ${MylesBorins} ${RichardLau} ${RodVagg} ${RubenBridgewater} ${RuyAdorno} ${ShelleyVohr} ${JuanJoseArboleda} ${RafaelGSS}"
 
 for key in ${keylist} ; do
   gpg2 --keyserver hkp://pgp.mit.edu:11371 --recv-keys ${key}
