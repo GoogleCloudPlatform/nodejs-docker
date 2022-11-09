@@ -37,9 +37,10 @@
     ansi-styles "^2.2.1"
     esutils "^2.0.2"
 
-"@google-cloud/nodejs-repo-tools@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@google-cloud/nodejs-repo-tools/-/nodejs-repo-tools-1.3.0.tgz#2872c3fcc0f0b0d840e1a71ba8f9009761b0df11"
+"@google-cloud/nodejs-repo-tools@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@google-cloud/nodejs-repo-tools/-/nodejs-repo-tools-1.3.1.tgz#9a081f8c373cd5d9d72641097160af3079437d9a"
+  integrity sha512-KsfOr0TjZnnjqHN8rJ/77Vus6AW7Z6RNlTl2/qCQLtVeY/rBo74+mF6TzkMW7teciSG036ws2mMm50HBwDKuQA==
   dependencies:
     async "2.3.0"
     ava "0.19.1"
