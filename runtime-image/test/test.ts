@@ -207,7 +207,7 @@ describe('runtime image', () => {
   });
 });
 
-async function buildDocker(dir: string, tag: string): Promise<any> {
+async function buildDocker(dir: string, tag: string): Promise<{}> {
   const tarStream = tar.pack(dir);
   const stream = await DOCKER.buildImage(tarStream, {t: tag});
 
