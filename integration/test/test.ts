@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
+import assert from 'assert';
 import {spawn} from 'child_process';
 import {exec} from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as request from 'request';
+import request from 'request';
 import * as util from 'util';
 import * as uuid from 'uuid';
 
