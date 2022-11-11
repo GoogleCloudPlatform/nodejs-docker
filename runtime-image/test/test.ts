@@ -1,8 +1,8 @@
 
 import * as assert from 'assert';
-import * as Docker from 'dockerode';
+import Docker from 'dockerode';
 import * as path from 'path';
-import * as request from 'request';
+import request from 'request';
 
 const tar: {pack: (dir: string) => NodeJS.ReadableStream} = require('tar-fs');
 
