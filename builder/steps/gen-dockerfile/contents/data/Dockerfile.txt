@@ -1,8 +1,3 @@
-<% if (config.nodeVersion) { %>
-# Check to see if the the version included in the base runtime satisfies
-# '<%- config.nodeVersion %>' and, if not, install a version of Node.js that does satisfy it.
-RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
-<% } %>
 <% if (config.hasBuildCommand) { %>
 FROM <%- baseImage %> as build_step
 COPY . /app/
@@ -38,6 +33,12 @@ COPY --from=build_step /app .
 # single application.
 FROM <%- baseImage %>
 COPY . /app/
+<% } %>
+
+<% if (config.nodeVersion) { %>
+# Check to see if the the version included in the base runtime satisfies
+# '<%- config.nodeVersion %>' and, if not, install a version of Node.js that does satisfy it.
+RUN /usr/local/bin/install_node '<%- config.nodeVersion %>'
 <% } %>
 
 <% if (config.npmVersion && !config.useYarn) { %>
