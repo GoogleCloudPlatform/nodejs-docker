@@ -33,7 +33,7 @@ function request(method, host, path, cb) {
 
 function getAvailableVersions(cb) {
   request(
-    'GET', 'storage.googleapis.com', '/gae_node_packages/node_versions',
+    'GET', 'storage.googleapis.com', '/gcp-node-packages/node_versions',
     function(err, body) {
       if (err) {
         return cb(err);
@@ -78,7 +78,7 @@ function verifyBinaryExists(version, cb) {
   request(
     'HEAD',
     'storage.googleapis.com',
-    '/gae_node_packages/node-' + version + '-linux-x64.tar.gz',
+    '/gcp-node-packages/node-' + version + '-linux-x64.tar.gz',
     function(err) {
       if (err) {
         return cb(new Error(
@@ -160,7 +160,7 @@ function printUsageAndExit() {
   console.log('                                 fails, the installation is aborted.');
   console.log('  --direct                       Download and install directly from');
   console.log('                                 nodejs.org instead of from');
-  console.log('                                 https://storage.googleapis.com/gae_node_packages');
+  console.log('                                 https://storage.googleapis.com/gcp-node-packages');
   console.log('  --help                         Prints this help message');
   console.log('');
   console.log('  version                        The version of Node.js to install.');
