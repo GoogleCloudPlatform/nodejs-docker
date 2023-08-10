@@ -29,7 +29,7 @@ function usage() {
   echo "                                 fails, the installation is aborted."
   echo "  --direct                       Download and install directly from"
   echo "                                 nodejs.org instead of from"
-  echo "                                 https://storage.googleapis.com/gae_node_packages"
+  echo "                                 https://storage.googleapis.com/gcp_node_packages"
   echo "  --help                         Prints this help message"
   echo ""
   echo "  version                        The version of Node.js to install."
