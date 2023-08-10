@@ -93,7 +93,7 @@ if [ "${direct}" == "true" ]; then
   # verify the Node.js binary
   checksum_file="SHASUMS256.txt.asc"
 else
-  base_url="https://storage.googleapis.com/gae_node_packages"
+  base_url="https://storage.googleapis.com/gcp-node-packages"
   checksum_file="${node_version}-SHASUMS256.txt.asc"
 fi
 
