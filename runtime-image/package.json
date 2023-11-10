@@ -22,7 +22,7 @@
     "@types/request": "0.0.45",
     "dockerode": "^2.5.3",
     "gts": "^0.6.0",
-    "js-green-licenses": "^0.2.0",
+    "js-green-licenses": "^4.0.0",
     "mocha": "^9.2.2",
     "request": "^2.86.0",
     "source-map-support": "^0.4.15",
