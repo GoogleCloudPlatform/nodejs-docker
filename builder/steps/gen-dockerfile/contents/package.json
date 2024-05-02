@@ -36,7 +36,7 @@
   "dependencies": {
     "@types/extend": "^2.0.30",
     "argparse": "^1.0.9",
-    "ejs": "^3.1.8",
+    "ejs": "^3.1.10",
     "extend": "^3.0.2",
     "js-yaml": "^3.14.1",
     "pify": "^2.3.0",
